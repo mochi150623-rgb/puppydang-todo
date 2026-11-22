@@ -302,7 +302,7 @@
   .cdot-b1{background:#C4904F}
   .cdot-b2{background:#7F9463}
   .cdot-p{background:#C4715C}
-  .caldg{position:absolute;right:3px;bottom:2px;font-size:10px;line-height:1;opacity:.95}
+  .cdots .caldg{font-size:9px;line-height:1;margin-left:1px;opacity:.95}
   .callegend{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;padding:9px 4px 2px;margin-top:5px;border-top:1px solid var(--line)}
   .callegend span{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;color:var(--muted)}
   .callegend i{width:6px;height:6px;border-radius:50%;display:block}
@@ -1199,8 +1199,7 @@
       html += '<button type="button" class="' + cls + '" data-day="' + key + '" aria-label="' +
         (d.getMonth()+1) + '월 ' + d.getDate() + '일">' +
         '<span class="dnum">' + d.getDate() + '</span>' +
-        '<span class="cdots">' + dots + '</span>' +
-        (diary.entries[key] ? '<span class="caldg">📔</span>' : '') +
+        '<span class="cdots">' + dots + (diary.entries[key] ? '<span class="caldg">📔</span>' : '') + '</span>' +
         '</button>';
     }
     $('#calGrid').innerHTML = html;
