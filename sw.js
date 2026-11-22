@@ -1,5 +1,5 @@
 /* 퍼피댕 할일 — 최소 서비스 워커 (네트워크 우선, 오프라인일 때만 캐시) */
-var CACHE = 'puppydang-todo-v1';
+var CACHE = 'puppydang-todo-v2';
 
 self.addEventListener('install', function(){ self.skipWaiting(); });
 
