@@ -188,8 +188,8 @@
 
   /* ---------- overlay / sheet ---------- */
   .overlay{position:fixed;inset:0;z-index:80;display:flex;align-items:flex-end;justify-content:center;
-    background:rgba(43,28,16,.45);opacity:0;pointer-events:none;transition:opacity .2s ease}
-  .overlay.show{opacity:1;pointer-events:auto}
+    background:rgba(43,28,16,.45);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s ease, visibility .2s}
+  .overlay.show{opacity:1;visibility:visible;pointer-events:auto}
   .sheet{width:100%;max-width:480px;max-height:90vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
     background:#fff;border-radius:26px 26px 0 0;padding:8px 18px calc(20px + env(safe-area-inset-bottom));
     transform:translateY(36px);transition:transform .26s cubic-bezier(.2,.85,.3,1);box-shadow:0 -12px 44px rgba(60,38,18,.2)}
@@ -301,7 +301,7 @@
   .cdot-b1{background:#C4904F}
   .cdot-b2{background:#7F9463}
   .cdot-p{background:#C4715C}
-  .caldg{position:absolute;right:2px;top:1px;font-size:9px;line-height:1;opacity:.9}
+  .caldg{position:absolute;right:3px;bottom:2px;font-size:10px;line-height:1;opacity:.95}
   .callegend{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;padding:9px 4px 2px;margin-top:5px;border-top:1px solid var(--line)}
   .callegend span{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;color:var(--muted)}
   .callegend i{width:6px;height:6px;border-radius:50%;display:block}
@@ -357,6 +357,7 @@
   .dtodo .bd.b2{background:#E9EFDF;color:#546B36}
   .dtodo .bd.p{background:#F8E9E4;color:#A2533C}
   .dtempty{font-size:12px;font-weight:600;color:var(--muted);padding:1px 2px}
+  .dtmore{height:34px;border-radius:10px;background:#FBF5EE;border:1.5px dashed #E3D3BE;font-size:11.5px;font-weight:800;color:var(--muted);letter-spacing:-.02em}
   .mrows{display:grid;gap:5px}
   .mrow{display:flex;align-items:center;gap:8px}
   .mrow .mlab{flex:none;width:72px;font-size:10.5px;font-weight:800;color:var(--muted);letter-spacing:-.01em}
@@ -376,7 +377,7 @@
   .dnote::placeholder{color:#A7957F;font-size:12.5px}
   .dnote:focus{outline:none;border-color:var(--tint-3);background:#fff;box-shadow:0 0 0 4px rgba(168,120,74,.1)}
   .stars{display:flex;gap:8px;padding:2px 1px}
-  .star{font-size:25px;line-height:1;color:#DFCBB2;transition:.13s}
+  .star{font-size:25px;line-height:1;color:#D6C0A6;transition:.13s}
   .star.on{color:#C9973F;text-shadow:0 2px 7px rgba(201,151,63,.32)}
   .star:active{transform:scale(.9)}
   .dstatus{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;padding-top:12px;border-top:1px dashed #EBDFCE}
@@ -498,12 +499,12 @@
 
       <div class="plansec">
         <div class="slabel">Goals <span>오늘의 목표</span></div>
-        <textarea class="dnote" id="dGoals" rows="2" maxlength="400" placeholder="퍼피댕 2마리, 디데이펫 1마리 분양하기!"></textarea>
+        <textarea class="dnote" id="dGoals" rows="2" maxlength="400" aria-label="오늘의 목표" placeholder="퍼피댕 2마리, 디데이펫 1마리 분양하기!"></textarea>
       </div>
 
       <div class="plansec">
         <div class="slabel">I am Grateful for <span>감사한 일</span></div>
-        <textarea class="dnote" id="dGrateful" rows="3" maxlength="1200" placeholder="오늘 감사했던 일을 적어봐요"></textarea>
+        <textarea class="dnote" id="dGrateful" rows="3" maxlength="1200" aria-label="감사한 일" placeholder="오늘 감사했던 일을 적어봐요"></textarea>
       </div>
 
       <div class="plansec">
@@ -513,7 +514,7 @@
 
       <div class="plansec">
         <div class="slabel">Affirmations <span>오늘의 확언</span></div>
-        <textarea class="dnote" id="dAffirm" rows="2" maxlength="400" placeholder="난 순수익으로 월 2억을 버는 사람이다"></textarea>
+        <textarea class="dnote" id="dAffirm" rows="2" maxlength="400" aria-label="오늘의 확언" placeholder="난 순수익으로 월 2억을 버는 사람이다"></textarea>
       </div>
 
       <div class="plansec">
@@ -779,6 +780,7 @@
   var calMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
   var diaryDate = todayStr;
   var diaryDraft = {mood:'', sleep:'', stars:0};
+  var diaryTodoOpen = false;
   var diaryTimer = null;
   var snapshot = null;
   var toastTimer = null;
@@ -1277,7 +1279,7 @@
     }).join('');
     var sh = '';
     for(var i = 1; i <= 5; i++){
-      sh += '<button type="button" class="star" data-star="' + i + '" aria-label="별점 ' + i + '점">★</button>';
+      sh += '<button type="button" class="star" data-star="' + i + '" aria-pressed="false" aria-label="별점 ' + i + '점">☆</button>';
     }
     stars.innerHTML = sh;
     $('#dMorning').innerHTML = MORNING.map(function(m){
@@ -1305,6 +1307,7 @@
     });
     Array.prototype.forEach.call($('#dStars').children, function(b){
       var on = !!en && Number(b.dataset.star) <= en.stars;
+      b.textContent = on ? '★' : '☆';
       b.classList.toggle('on', on); b.setAttribute('aria-pressed', on);
     });
     Array.prototype.forEach.call($('#dMorning').querySelectorAll('.mtext'), function(inp){
@@ -1337,13 +1340,20 @@
       el.innerHTML = '<div class="dtempty">이 날은 아직 할 일이 없어요 · 캘린더에서 추가할 수 있어요</div>';
       return;
     }
-    el.innerHTML = list.map(function(t){
+    var LIMIT = 4;
+    var shown = diaryTodoOpen ? list : list.slice(0, LIMIT);
+    var html = shown.map(function(t){
       return '<button type="button" class="dtodo' + (t.done ? ' done' : '') + '" data-act="complete" data-id="' + t.id + '">' +
         '<span class="cb">✓</span>' +
         '<span class="tt">' + (t.time ? '<b style="color:#B08A3E">' + esc(t.time) + '</b> ' : '') + esc(t.title) + '</span>' +
         '<span class="bd ' + t.branch + '">' + esc(scopeLabel(t.branch)) + '</span>' +
         '</button>';
     }).join('');
+    if(list.length > LIMIT){
+      html += '<button type="button" class="dtmore" data-dtodo="1">' +
+        (diaryTodoOpen ? '접기 ▴' : '외 ' + (list.length - LIMIT) + '개 더 보기 ▾') + '</button>';
+    }
+    el.innerHTML = html;
   }
   function renderDiaryList(){
     var el = $('#diaryList');
@@ -1984,6 +1994,7 @@
       diaryDraft.stars = diaryDraft.stars === n ? 0 : n;
       Array.prototype.forEach.call($('#dStars').children, function(b){
         var on = Number(b.dataset.star) <= diaryDraft.stars;
+        b.textContent = on ? '★' : '☆';
         b.classList.toggle('on', on); b.setAttribute('aria-pressed', on);
       });
       saveDiaryNow();
@@ -1997,6 +2008,11 @@
       return;
     }
     if(e.target.closest('#dDelete')){ deleteDiaryEntry(); return; }
+    if(e.target.closest('[data-dtodo]')){
+      diaryTodoOpen = !diaryTodoOpen;
+      renderDiaryTodo();
+      return;
+    }
     var el = e.target.closest('[data-act]');
     if(!el) return;
     var act = el.dataset.act;
