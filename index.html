@@ -210,6 +210,7 @@
   .in.err{border-color:#E8A08C;background:#FFF9F6;box-shadow:0 0 0 4px rgba(201,74,56,.1)}
   .seg{display:grid;grid-template-columns:1fr 1fr;gap:7px}
   .seg.seg3{grid-template-columns:repeat(3,1fr)}
+  .seg.seg2 .segbtn{height:auto;min-height:46px;padding:8px 6px;line-height:1.3;white-space:normal;font-size:13px}
   .segbtn{height:46px;border-radius:13px;border:1.5px solid var(--line);background:#FCF8F3;font-size:13.5px;
     font-weight:700;color:var(--ink-2);letter-spacing:-.03em;transition:.13s}
   .segbtn.on{background:var(--tint);border-color:var(--tint-3);color:var(--brown-d);font-weight:800}
@@ -360,7 +361,7 @@
   .dtmore{height:34px;border-radius:10px;background:#FBF5EE;border:1.5px dashed #E3D3BE;font-size:11.5px;font-weight:800;color:var(--muted);letter-spacing:-.02em}
   .mrows{display:grid;gap:5px}
   .mrow{display:flex;align-items:center;gap:8px}
-  .mrow .mlab{flex:none;width:72px;font-size:10.5px;font-weight:800;color:var(--muted);letter-spacing:-.01em}
+  .mrow .mlab{flex:none;width:66px;font-size:10.5px;font-weight:800;color:var(--muted);letter-spacing:-.01em}
   .mrow .mtext{flex:1;min-width:0;height:40px;border-radius:11px;border:1.5px solid var(--line);background:#FCF8F3;
     padding:0 10px;font-size:13px;font-weight:600;color:var(--ink);letter-spacing:-.02em}
   .mrow .mtext::placeholder{color:#A7957F;font-weight:500}
@@ -1655,7 +1656,7 @@
   function catSegHTML(scope, value){
     var keys = scope === PERSONAL ? PERSONAL_CATS : BRANCH_CATS;
     var v = keys.indexOf(value) !== -1 ? value : keys[0];
-    return '<div class="seg seg3" data-seg="category" data-value="' + v + '">' +
+    return '<div class="seg ' + (scope === PERSONAL ? 'seg2' : 'seg3') + '" data-seg="category" data-value="' + v + '">' +
       keys.map(function(k){
         return '<button type="button" class="segbtn ' + (k === v ? 'on' : '') + '" data-val="' + k + '">' +
           CATS[k].icon + ' ' + esc(CATS[k].label) + '</button>';
