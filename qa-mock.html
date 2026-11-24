@@ -536,6 +536,18 @@
   var p = new URLSearchParams(location.search);
   var EMAIL = (p.get('u') || '1234') + '@puppydaeng.app';
   var user = { email: EMAIL, user_metadata: {}, id: 'qa-user' };
+  if (p.get('legacy') === '1') {
+    try {
+      var d = new Date(); var iso = d.toISOString(); var ymd = iso.slice(0,10);
+      localStorage.setItem('puppydang_puppies_v1', JSON.stringify({
+        v:2, worker:'직원1', staff:['직원1'], hintDismissed:true, autoStaffPurged:true, seeded:true, createdAt:iso,
+        puppies:[{ id:'qa-legacy', branch:'퍼피댕', cage:'9번장', name:'레거시', breed:'말티푸', sex:'female', color:'크림',
+          price:700000, cost:0, regNo:'QA-09', adopter:'', status:'available', intakeDate:ymd, birthDate:'', photoProfile:'', photoStore:'',
+          healthFlags:[], baths:[], vaccines:[{id:'v1', type:'구충', date:ymd, by:'직원1', memo:''}], nextVaccine:'', memo:'', createdAt:iso, updatedAt:iso }]
+      }));
+    } catch(e) {}
+  }
+
   window.supabase = { createClient: function(){
     return {
       auth: {
