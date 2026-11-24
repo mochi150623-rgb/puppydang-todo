@@ -485,7 +485,7 @@
     <div class="branchbar" id="branchBar" role="tablist" aria-label="지점 선택"></div>
     <div class="searchbox">
       <span class="ic">🔍</span>
-      <input class="search" id="q" type="search" placeholder="장 번호 · 품종 · 이름 검색 (예: A-03, 비숑)" autocomplete="off" aria-label="검색">
+      <input class="search" id="q" type="search" placeholder="장 번호 · 품종 · 이름 · 개체관리번호 · 입양처" autocomplete="off" aria-label="검색">
       <button class="searchclear" id="qClear" aria-label="검색 지우기" hidden>✕</button>
     </div>
     <div class="filterwrap">
@@ -679,6 +679,9 @@
       color: String(p.color == null ? '' : p.color).slice(0, 20),
       price: Math.max(0, Math.round(Number(p.price) || 0)),
       cost: Math.max(0, Math.round(Number(p.cost) || 0)),
+      /* 개체관리번호 · 입양처 (목록 카드의 관리번호/입양처) */
+      regNo: String(p.regNo == null ? '' : p.regNo).slice(0, 30).trim(),
+      adopter: String(p.adopter == null ? '' : p.adopter).slice(0, 40).trim(),
       status: status,
       intakeDate: isValidDate(p.intakeDate) ? p.intakeDate : todayStr(),
       birthDate: isValidDate(p.birthDate) ? p.birthDate : '',
@@ -711,7 +714,8 @@
     return [
       norm({
         branch:'퍼피댕', cage:'1번장', name:'콩이', breed:'말티푸', sex:'female', color:'크림',
-        price:850000, cost:450000, status:'available',
+        price:850000, status:'available',
+        regNo:'A-2817984', adopter:'아르벨리켄넬',
         intakeDate: shiftDate(-14), birthDate: shiftDate(-96),
         baths:[{date:shiftDate(-3), by:'대표님'},{date:shiftDate(-10), by:'직원1'}],
         vaccines:[
@@ -724,7 +728,8 @@
       }),
       norm({
         branch:'퍼피댕', cage:'A-03', name:'두부', breed:'포메라니안', sex:'male', color:'화이트',
-        price:1200000, cost:700000, status:'reserved',
+        price:1200000, status:'reserved',
+        regNo:'A-2818103', adopter:'아르벨리켄넬',
         intakeDate: shiftDate(-22), birthDate: shiftDate(-142),
         baths:[{date:shiftDate(-7), by:'직원2'}],
         vaccines:[
@@ -737,7 +742,8 @@
       }),
       norm({
         branch:'디데이펫', cage:'2번장', name:'보리', breed:'비숑 프리제', sex:'female', color:'아이보리',
-        price:950000, cost:500000, status:'available',
+        price:950000, status:'available',
+        regNo:'B-1902347', adopter:'디데이펫',
         intakeDate: shiftDate(-27), birthDate: shiftDate(-115),
         baths:[{date:shiftDate(-11), by:'직원1'}],
         vaccines:[
@@ -750,7 +756,8 @@
       }),
       norm({
         branch:'디데이펫', cage:'5번장', name:'라떼', breed:'웰시코기', sex:'male', color:'레드',
-        price:1150000, cost:650000, status:'sold',
+        price:1150000, status:'sold',
+        regNo:'B-1902288', adopter:'디데이펫',
         intakeDate: shiftDate(-55), birthDate: shiftDate(-200),
         baths:[{date:shiftDate(-2), by:'대표님'},{date:shiftDate(-9), by:'대표님'}],
         vaccines:[
@@ -1308,7 +1315,7 @@
 
   function matchQuery(p, q){
     if(!q) return true;
-    var hay = [p.cage, p.breed, p.name, p.color, p.branch].join(' ').toLowerCase();
+    var hay = [p.cage, p.breed, p.name, p.color, p.branch, p.regNo, p.adopter].join(' ').toLowerCase();
     return hay.indexOf(q) >= 0;
   }
 
@@ -1694,6 +1701,7 @@
       '<section class="scard"><div class="shead"><h3>📋 기본 정보</h3>' +
         (p.cage ? '<span class="sbadge calm">' + esc(p.cage) + '</span>' : '') + '</div>' +
         '<div class="inforows">' +
+          '<div class="irow"><span class="ilab">개체관리번호</span><span class="ival">' + (p.regNo ? '<b>' + esc(p.regNo) + '</b>' : '<span style="color:var(--muted-2);font-weight:700">미입력</span>') + '</span></div>' +
           '<div class="irow"><span class="ilab">장 번호</span><span class="ival"><b>' + esc(p.cage || '미정') + '</b><span class="tiny">' + p.branch + '</span></span></div>' +
           '<div class="irow"><span class="ilab">입소일</span><span class="ival">' + fmtFull(p.intakeDate) +
             (inDays !== null ? '<span class="tiny amber">입소 ' + Math.max(1, inDays) + '일차</span>' : '') + '</span></div>' +
@@ -1704,7 +1712,7 @@
           '<div class="irow"><span class="ilab">모색</span><span class="ival">' + esc(p.color || '미정') + '</span></div>' +
           '<div class="irow"><span class="ilab">분양가</span><span class="ival"><b>' + (p.price ? manwon(p.price) : '미정') + '</b>' +
             (p.price ? '<span class="tiny">' + won(p.price) + '</span>' : '') + '</span></div>' +
-          '<div class="irow"><span class="ilab">원가</span><span class="ival">' + (p.cost ? '<b>' + manwon(p.cost) + '</b><span class="tiny calm">' + won(p.cost) + '</span>' : '<span style="color:var(--muted-2);font-weight:700">미입력</span>') + '</span></div>' +
+          '<div class="irow"><span class="ilab">입양처</span><span class="ival">' + (p.adopter ? esc(p.adopter) : '<span style="color:var(--muted-2);font-weight:700">미입력</span>') + '</span></div>' +
         '</div>' +
       '</section>' +
 
@@ -1768,7 +1776,8 @@
 
   /* ================= 폼 ================= */
   function newDraft(){
-    return norm({ name:'', cage:'', breed:'', color:'', price:0, cost:0, status:'available', branch:'퍼피댕',
+    return norm({ name:'', cage:'', breed:'', color:'', price:0, status:'available', branch:'퍼피댕',
+      regNo:'', adopter:'',
       intakeDate: todayStr(), birthDate:'', nextVaccine:'', memo:'' });
   }
 
@@ -1804,6 +1813,13 @@
           '</div></div>' +
       '</div>' +
 
+      '<div class="fsec"><h3>개체관리번호 · 입양처</h3>' +
+        '<div class="frow">' +
+          '<div class="field"><label>개체관리번호</label><input class="txt" id="fRegNo" value="' + esc(d.regNo) + '" placeholder="A-2817984" autocomplete="off"></div>' +
+          '<div class="field"><label>입양처</label><input class="txt" id="fAdopter" value="' + esc(d.adopter) + '" placeholder="아르벨리켄넬" autocomplete="off"></div>' +
+        '</div>' +
+      '</div>' +
+
       '<div class="fsec"><h3>아이 정보</h3>' +
         '<div class="frow">' +
           '<div class="field"><label>이름 / 관리명 <span style="color:var(--red)">*</span></label><input class="txt" id="fName" value="' + esc(d.name) + '" placeholder="콩이" autocomplete="off"></div>' +
@@ -1825,16 +1841,6 @@
             '<button type="button" class="pchip" data-act="priceChip" data-v="0">미정</button>' +
           '</div>' +
           '<div class="hint" id="priceHint">' + (d.price ? '<b>' + won(d.price) + '</b> · ' + manwon(d.price) : '비워두면 ‘분양가 미정’으로 표시돼요') + '</div>' +
-        '</div>' +
-        '<div class="field"><label>원가 (원)</label>' +
-          '<input class="txt" id="fCost" inputmode="numeric" value="' + (d.cost ? String(d.cost) : '') + '" placeholder="450000">' +
-          '<div class="pricechips">' +
-            [300000,400000,450000,500000,650000].map(function(v){
-              return '<button type="button" class="pchip" data-act="costChip" data-v="' + v + '">' + (v/10000) + '만</button>';
-            }).join('') +
-            '<button type="button" class="pchip" data-act="costChip" data-v="0">미입력</button>' +
-          '</div>' +
-          '<div class="hint" id="costHint">' + (d.cost ? '<b>' + won(d.cost) + '</b> · ' + manwon(d.cost) : '상세에서 분양가와 나란히 보여드려요') + '</div>' +
         '</div>' +
       '</div>' +
 
@@ -1892,8 +1898,8 @@
     draft.color = ($('#fColor') ? $('#fColor').value : draft.color).trim();
     var priceRaw = $('#fPrice') ? $('#fPrice').value : '';
     draft.price = Math.max(0, Math.round(Number(String(priceRaw).replace(/[^0-9]/g,'')) || 0));
-    var costRaw = $('#fCost') ? $('#fCost').value : '';
-    draft.cost = Math.max(0, Math.round(Number(String(costRaw).replace(/[^0-9]/g,'')) || 0));
+    draft.regNo = ($('#fRegNo') ? $('#fRegNo').value : (draft.regNo || '')).trim();
+    draft.adopter = ($('#fAdopter') ? $('#fAdopter').value : (draft.adopter || '')).trim();
     draft.intakeDate = $('#fIntake') ? $('#fIntake').value : draft.intakeDate;
     draft.birthDate = $('#fBirth') ? $('#fBirth').value : draft.birthDate;
     draft.memo = $('#fMemo') ? $('#fMemo').value : draft.memo;
@@ -2414,16 +2420,6 @@
           if(h) h.innerHTML = v ? '<b>' + won(v) + '</b> · ' + manwon(v) : '비워두면 ‘분양가 미정’으로 표시돼요';
         })();
         break;
-      case 'costChip':
-        (function(){
-          var v = Number(el.getAttribute('data-v')) || 0;
-          var inp = $('#fCost');
-          if(inp){ inp.value = v ? String(v) : ''; }
-          draft.cost = v;
-          var h = $('#costHint');
-          if(h) h.innerHTML = v ? '<b>' + won(v) + '</b> · ' + manwon(v) : '상세에서 분양가와 나란히 보여드려요';
-        })();
-        break;
       case 'photoPick':
         (function(){ var input = $('#fileProfile'); if(input) input.click(); })();
         break;
@@ -2533,11 +2529,11 @@
       '<section class="scard" style="margin-top:0"><h3 class="sh3">🐾 카드에서 바로</h3>' +
         '<p class="sp">· 카드를 누르면 상세에서 <b>＋ 목욕 완료</b>로 오늘 날짜에 바로 기록할 수 있어요.<br>· 상세에서 <b>🩺 특이사항</b>을 체크하면 카드 사진 아래에 표시됩니다.<br>· 상세에서는 접종·메모·날짜 수정까지 할 수 있어요.</p></section>' +
       '<section class="scard"><h3 class="sh3">🔎 찾기</h3>' +
-        '<p class="sp">지점(전체/퍼피댕/디데이펫)과 분양 상태로 거르고, <b>장 번호·품종·이름</b>으로 검색하세요. 정렬은 장 번호순·최근 입소순·<b>목욕 오래된 순</b>이 있어요.</p></section>' +
+        '<p class="sp">지점(전체/퍼피댕/디데이펫)과 분양 상태로 거르고, <b>장 번호·품종·이름·개체관리번호·입양처</b>로 검색하세요. 정렬은 장 번호순·최근 입소순·<b>목욕 오래된 순</b>이 있어요.</p></section>' +
       '<section class="scard"><h3 class="sh3">📷 사진</h3>' +
         '<p class="sp"><b>강아지 사진</b> 한 장을 올려두면 목록 카드와 상세에서 크게 보여요. 올릴 때 자동으로 압축됩니다.</p></section>' +
-      '<section class="scard"><h3 class="sh3">👤 작업자 · 원가</h3>' +
-        '<p class="sp">상단 <b>👤 이름 ▾</b>에서 작업자를 고르면, 그 뒤 목욕·접종 기록에 <b>누가 했는지</b>가 함께 남아요. 등록·수정 화면에서 <b>원가</b>를 적어두면 상세에서 분양가와 나란히 보여드려요.</p></section>' +
+      '<section class="scard"><h3 class="sh3">👤 작업자 · 개체 정보</h3>' +
+        '<p class="sp">상단 <b>👤 이름 ▾</b>에서 작업자를 고르면, 그 뒤 목욕·접종 기록에 <b>누가 했는지</b>가 함께 남아요. 등록·수정 화면에 <b>개체관리번호·입양처</b>를 적어두면 상세에서 바로 볼 수 있어요.</p></section>' +
       '<section class="scard"><h3 class="sh3">🔄 직원 공유 · 백업</h3>' +
         '<p class="sp">상단 날짜 옆 <b>동기화 배지</b>를 누르면 연결 상태를 볼 수 있어요. 연결되면 직원 폰과 같은 목록을 실시간으로 함께 쓰고, ⚙️ 설정에서 JSON 백업도 받아둘 수 있어요.</p></section>' +
       '<button class="btn primary wide" data-act="closeSheet" style="margin-top:4px">알겠어요</button>' +
@@ -2575,12 +2571,6 @@
       var v = Math.max(0, Math.round(Number(String(t.value).replace(/[^0-9]/g,'')) || 0));
       var h = $('#priceHint');
       if(h) h.innerHTML = v ? '<b>' + won(v) + '</b> · ' + manwon(v) : '비워두면 ‘분양가 미정’으로 표시돼요';
-      return;
-    }
-    if(t.id === 'fCost'){
-      var cv = Math.max(0, Math.round(Number(String(t.value).replace(/[^0-9]/g,'')) || 0));
-      var ch = $('#costHint');
-      if(ch) ch.innerHTML = cv ? '<b>' + won(cv) + '</b> · ' + manwon(cv) : '상세에서 분양가와 나란히 보여드려요';
       return;
     }
     if(t.id === 'fIntake'){
