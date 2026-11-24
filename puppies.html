@@ -123,13 +123,17 @@
   .card{background:#fff;border-radius:20px;box-shadow:var(--shadow);border:1px solid rgba(237,226,213,.85);
     overflow:hidden;margin-bottom:12px;transition:transform .15s}
   .card:active{transform:scale(.996)}
-  .cphoto{position:relative;aspect-ratio:16/9.4;background:#EFE5DA;cursor:pointer;overflow:hidden}
+  .cphoto{position:relative;aspect-ratio:16/9;background:#EFE5DA;cursor:pointer;overflow:hidden}
   .cphoto img{width:100%;height:100%;object-fit:cover;display:block}
-  .ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  .ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
     background:radial-gradient(120% 100% at 20% 0%,#FFF7EC 0%,#F3E4D1 55%,#E7D3BB 100%);color:#A97C4E}
+  .ph::before{content:'';position:absolute;inset:0;opacity:.5;
+    background-image:radial-gradient(circle at 13px 13px, rgba(160,120,80,.16) 2px, transparent 2.4px);background-size:28px 28px}
   .ph.b2{background:radial-gradient(120% 100% at 20% 0%,#F9FAF2 0%,#EBEFE0 55%,#DBE2CD 100%);color:#6C7F4E}
-  .ph .phemo{font-size:40px;line-height:1;filter:drop-shadow(0 5px 9px rgba(120,80,40,.16))}
-  .ph .phlab{font-size:11px;font-weight:800;color:#9C7B5A;letter-spacing:-.02em}
+  .ph.b2::before{background-image:radial-gradient(circle at 13px 13px, rgba(96,116,70,.16) 2px, transparent 2.4px)}
+  .ph .phemo{position:relative;font-size:52px;line-height:1;filter:drop-shadow(0 6px 10px rgba(120,80,40,.18));opacity:.9}
+  .ph .phlab{position:relative;font-size:11.5px;font-weight:800;color:#9C7B5A;letter-spacing:-.02em;
+    background:rgba(255,255,255,.6);padding:2px 8px;border-radius:7px;margin-top:4px}
   .ph.b2 .phlab{color:#778A5A}
   .cbadges{position:absolute;left:10px;top:10px;display:flex;gap:5px;max-width:82%;flex-wrap:wrap}
   .btag{height:24px;padding:0 9px;border-radius:8px;font-size:11px;font-weight:800;letter-spacing:-.02em;
@@ -746,6 +750,10 @@
       return matchQuery(p, q);
     });
     arr.sort(function(a,b){
+      if(ui.sort === 'cage' && ui.branch === '전체'){
+        var bi = BRANCHES.indexOf(a.branch) - BRANCHES.indexOf(b.branch);
+        if(bi !== 0) return bi;
+      }
       if(ui.sort === 'intake'){
         var c = String(b.intakeDate).localeCompare(String(a.intakeDate));
         return c !== 0 ? c : String(a.cage).localeCompare(String(b.cage), 'ko', {numeric:true});
@@ -1123,13 +1131,11 @@
         '<div class="field"><label>지점</label><div class="seg" id="segBranch">' +
           BRANCHES.map(function(b){ return '<button type="button" data-act="fBranch" data-v="' + b + '" class="' + (d.branch === b ? 'on' : '') + '">' + b + '</button>'; }).join('') +
         '</div></div>' +
-        '<div class="frow">' +
-          '<div class="field"><label>장 번호 <span style="color:var(--red)">*</span></label>' +
+        '<div class="field"><label>장 번호 <span style="color:var(--red)">*</span></label>' +
             '<input class="txt" id="fCage" value="' + esc(d.cage) + '" placeholder="1번장 / A-03" autocomplete="off"></div>' +
-          '<div class="field"><label>분양 상태</label><div class="seg" id="segStatus">' +
+        '<div class="field"><label>분양 상태</label><div class="seg" id="segStatus">' +
             STATUS_KEYS.map(function(k){ return '<button type="button" data-act="fStatus" data-v="' + k + '" class="' + (d.status === k ? 'on' : '') + '">' + STATUS[k].label + '</button>'; }).join('') +
           '</div></div>' +
-        '</div>' +
       '</div>' +
 
       '<div class="fsec"><h3>아이 정보</h3>' +
