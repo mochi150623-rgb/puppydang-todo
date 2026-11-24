@@ -60,7 +60,15 @@
   .gbtn:active{transform:scale(.94)}
   .greet{font-size:23px;line-height:1.3;font-weight:800;letter-spacing:-.035em;margin:0 0 4px}
   .greet em{font-style:normal;color:var(--brown)}
-  .dateline{font-size:12.5px;color:var(--muted);font-weight:700;letter-spacing:-.01em}
+  .dateline{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);font-weight:700;letter-spacing:-.01em}
+  .syncbadge{height:23px;padding:0 8px;border-radius:7px;font-size:10.5px;font-weight:800;letter-spacing:-.02em;white-space:nowrap;
+    background:#F2ECE3;color:var(--muted);border:1px solid #E7DACA;display:inline-flex;align-items:center;gap:3px}
+  .syncbadge.live{background:#EDF3E6;color:#4F7A4A;border-color:#DCE6CE}
+  .syncbadge.wait{background:#FFF6E6;color:#A05E12;border-color:#F0DEBE}
+  .syncbadge.off{background:#FCEFEC;color:#B8432F;border-color:#F2D6CF}
+  .syncbadge:active{transform:scale(.97)}
+  .sqlbox{margin-top:10px;background:#2E2116;color:#F6EEE3;border-radius:12px;padding:11px 12px;font-size:11px;line-height:1.55;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;overflow-x:auto;max-height:230px}
 
   /* ---------- stats ---------- */
   .statrow{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:15px}
@@ -425,7 +433,7 @@
       </div>
     </div>
     <h1 class="greet">아이들 <em>관리 노트</em></h1>
-    <div class="dateline" id="todayLine">—</div>
+    <div class="dateline"><span id="todayLine">—</span><button class="syncbadge" id="syncBadge" data-act="openSync" aria-label="동기화 상태">🟡 연결 중…</button></div>
     <div class="statrow" id="statRow"></div>
     <div class="branchbar" id="branchBar" role="tablist" aria-label="지점 선택"></div>
     <div class="searchbox">
@@ -464,6 +472,8 @@
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+<!-- 실시간 동기화 (Supabase) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
   'use strict';
@@ -690,8 +700,8 @@
   }
 
   function blankState(){
-    return { v:1, worker:'대표님', staff:['대표님','직원1','직원2','직원3'], hintDismissed:false,
-      puppies: samplePuppies(), seeded:true, createdAt:new Date().toISOString() };
+    return { v:2, worker:'대표님', staff:['대표님','직원1','직원2','직원3'], hintDismissed:false,
+      puppies: [], seeded:false, createdAt:new Date().toISOString() };
   }
 
   function loadState(){
@@ -729,22 +739,291 @@
   var ui = {
     branch:'전체', status:'전체', q:'', sort:'cage',
     photo:{}, detailId:null, detailTab:'profile', compare:false,
-    vacType: VAC_PRESETS[0], formEdit:false, formId:null
+    vacType: VAC_PRESETS[0], formEdit:false, formId:null, sheet:null
   };
   var draft = null;
 
+  /* ================= 실시간 동기화 (Supabase) ================= */
+  var SB_URL = 'https://hrhvpihzuerwjzcqebfs.supabase.co';
+  var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhyaHZwaWh6dWVyd2p6Y3FlYmZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU1Mjc4NDksImV4cCI6MjExMTEwMzg0OX0.KJr1tqN4JBvPpcmwDoI-uL0IEumOoy2MSRF74jXeloQ';
+  var META_ID = '__staff__';
+  var SB_SQL = 'create table if not exists public.puppies (\n' +
+    '  id text primary key,\n' +
+    '  data jsonb not null,\n' +
+    '  updated_at timestamptz not null default now()\n' +
+    ');\n\n' +
+    'alter table public.puppies enable row level security;\n\n' +
+    'drop policy if exists "puppies all" on public.puppies;\n' +
+    'create policy "puppies all" on public.puppies\n' +
+    '  for all to anon using (true) with check (true);\n\n' +
+    'do $$ begin\n' +
+    '  alter publication supabase_realtime add table public.puppies;\n' +
+    'exception when duplicate_object then null;\n' +
+    'end $$;';
+
+  var sync = { mode:'local', client:null, channel:null, lastAt:null, err:null, busy:false };
+  var pushed = {};      // id -> 마지막으로 DB에 있는 것으로 확인된 스냅샷
+  var localOnly = {};   // 이 기기에만 있는(아직 공유 목록에 없는) id
+
+  var SYNC_META = {
+    live:      { text:'🟢 실시간 동기화', cls:'live' },
+    connecting:{ text:'🟠 연결 중', cls:'wait' },
+    waiting:   { text:'🟡 테이블 대기', cls:'wait' },
+    error:     { text:'🔴 동기화 오류', cls:'off' },
+    offline:   { text:'⚪ 오프라인', cls:'off' },
+    local:     { text:'🟡 이 기기 저장', cls:'off' }
+  };
+
+  function isLive(){ return sync.mode === 'live' && !!sync.client; }
+  function saveLocal(){
+    try { localStorage.setItem(KEY, JSON.stringify(state)); return true; }
+    catch(e){ return false; }
+  }
   function save(){
-    try {
-      localStorage.setItem(KEY, JSON.stringify(state));
-      return true;
-    } catch(e){
-      toast('저장 공간이 부족해요. 사진을 줄이거나 ⚙️ 설정에서 백업 후 정리해 주세요.');
-      return false;
-    }
+    var ok = saveLocal();
+    if(!ok) toast('저장 공간이 부족해요. 사진을 줄이거나 ⚙️ 설정에서 백업 후 정리해 주세요.');
+    try { syncDirty(); } catch(e){}
+    return ok;
   }
   function get(id){
     for(var i=0;i<state.puppies.length;i++){ if(state.puppies[i].id === id) return state.puppies[i]; }
     return null;
+  }
+
+  function renderSyncBadge(){
+    var b = $('#syncBadge');
+    if(!b) return;
+    var m = SYNC_META[sync.mode] || SYNC_META.local;
+    b.textContent = m.text;
+    b.className = 'syncbadge ' + m.cls;
+  }
+  function setSync(mode, err){
+    sync.mode = mode;
+    if(err) sync.err = String(err);
+    renderSyncBadge();
+    if(ui.sheet === 'sync') setSheet(syncHTML(), true);
+  }
+
+  function initSync(){
+    if(!window.supabase || typeof window.supabase.createClient !== 'function'){
+      setSync('local');
+      return;
+    }
+    try {
+      sync.client = window.supabase.createClient(SB_URL, SB_KEY, {
+        auth: { persistSession:false, autoRefreshToken:false, detectSessionInUrl:false }
+      });
+    } catch(e){ setSync('local', e); return; }
+    setSync('connecting');
+    pullRemote(true);
+  }
+
+  function handleSyncError(err){
+    var code = (err && err.code) || '';
+    var msg = (err && (err.message || err.hint || err.error_description)) || String(err || '');
+    if(navigator.onLine === false || /Failed to fetch|NetworkError|network|fetch/i.test(msg)){
+      setSync('offline', msg); return;
+    }
+    if(code === 'PGRST205' || code === '42P01' || /schema cache|does not exist/i.test(msg)){
+      setSync('waiting', msg); return;
+    }
+    setSync('error', msg);
+  }
+
+  function pullRemote(initial){
+    if(!sync.client) return;
+    if(sync.busy) return;
+    sync.busy = true;
+    sync.client.from('puppies').select('id,data,updated_at').limit(1000).then(function(res){
+      sync.busy = false;
+      if(res && res.error){ handleSyncError(res.error); return; }
+      applyRows((res && res.data) || []);
+      sync.lastAt = new Date();
+      setSync('live');
+      if(initial) subscribeRealtime();
+    }, function(err){
+      sync.busy = false;
+      handleSyncError(err || {message:'network'});
+    });
+  }
+
+  function subscribeRealtime(){
+    if(!sync.client || sync.channel) return;
+    try {
+      sync.channel = sync.client.channel('puppies-live')
+        .on('postgres_changes', { event:'*', schema:'public', table:'puppies' }, onRealtime)
+        .subscribe(function(status){
+          if(status === 'SUBSCRIBED') setSync('live');
+          else if(status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') setSync('error', 'realtime ' + status);
+        });
+    } catch(e){ setSync('error', e); }
+  }
+
+  function applyStaff(data){
+    if(!data || !Array.isArray(data.names)) return;
+    var names = data.names.filter(function(s){ return typeof s === 'string' && s.trim(); })
+      .map(function(s){ return s.trim().slice(0,12); });
+    names = names.filter(function(s, i){ return names.indexOf(s) === i; }).slice(0,12);
+    if(names.indexOf('대표님') < 0) names.unshift('대표님');
+    if(!names.length) return;
+    var changed = JSON.stringify(names) !== JSON.stringify(state.staff);
+    state.staff = names;
+    if(state.staff.indexOf(state.worker) < 0) state.worker = state.staff[0];
+    if(changed){ saveLocal(); renderAll(); }
+  }
+
+  function applyRows(rows){
+    var remote = [];
+    (rows || []).forEach(function(r){
+      if(!r || !r.id) return;
+      if(r.id === META_ID){ applyStaff(r.data); return; }
+      try { remote.push(norm(r.data || {})); } catch(e){}
+    });
+    var remoteIds = {}, snap = {};
+    remote.forEach(function(p){ remoteIds[p.id] = 1; snap[p.id] = JSON.stringify(p); });
+    var keep = [];
+    state.puppies.forEach(function(p){
+      if(remoteIds[p.id]) return;
+      if(localOnly[p.id] || !pushed[p.id]) keep.push(p);
+    });
+    state.puppies = remote.concat(keep);
+    pushed = snap;
+    localOnly = {};
+    keep.forEach(function(p){ localOnly[p.id] = 1; });
+    saveLocal();
+    renderAll();
+    if(ui.sheet === 'detail' && ui.detailId && !get(ui.detailId)) closeSheet();
+    else if(ui.sheet === 'detail' && ui.detailId) refreshDetail();
+  }
+
+  function onRealtime(payload){
+    if(!payload || payload.table !== 'puppies') return;
+    if(payload.eventType === 'DELETE'){
+      var oldId = payload.old && payload.old.id;
+      if(!oldId || oldId === META_ID) return;
+      var gone = get(oldId);
+      if(!gone) return;
+      state.puppies = state.puppies.filter(function(x){ return x.id !== oldId; });
+      delete pushed[oldId]; delete localOnly[oldId];
+      saveLocal(); renderAll();
+      if(ui.sheet === 'detail' && ui.detailId === oldId) closeSheet();
+      toast('다른 기기에서 ‘' + gone.name + '’ 노트를 지웠어요');
+      return;
+    }
+    var row = payload.new;
+    if(!row || !row.id) return;
+    if(row.id === META_ID){ applyStaff(row.data); return; }
+    var incoming = norm(row.data || {});
+    var cur = get(incoming.id);
+    var s = JSON.stringify(incoming);
+    if(cur && JSON.stringify(cur) === s){ pushed[incoming.id] = s; delete localOnly[incoming.id]; return; }
+    if(cur){
+      var tIn = new Date(incoming.updatedAt || 0).getTime(), tCur = new Date(cur.updatedAt || 0).getTime();
+      if(tIn && tCur && tIn < tCur) return;
+      for(var k in incoming) cur[k] = incoming[k];
+    } else {
+      state.puppies.push(incoming);
+    }
+    pushed[incoming.id] = s;
+    delete localOnly[incoming.id];
+    saveLocal();
+    renderAll();
+    if(ui.sheet === 'detail' && ui.detailId === incoming.id) refreshDetail();
+    toast('다른 기기에서 업데이트 · ' + incoming.name);
+  }
+
+  function upsertPuppy(p){
+    if(!sync.client) return;
+    sync.client.from('puppies').upsert({ id: p.id, data: p, updated_at: new Date().toISOString() }).then(function(res){
+      if(res && res.error){ delete pushed[p.id]; handleSyncError(res.error); }
+    }, function(err){ delete pushed[p.id]; handleSyncError(err); });
+  }
+  function deleteRow(id){
+    if(!sync.client) return;
+    sync.client.from('puppies').delete().eq('id', id).then(function(res){
+      if(res && res.error) handleSyncError(res.error);
+    }, function(err){ handleSyncError(err); });
+  }
+  function pushMeta(){
+    if(!isLive()) return;
+    sync.client.from('puppies').upsert({ id: META_ID, data: { names: state.staff }, updated_at: new Date().toISOString() }).then(function(res){
+      if(res && res.error) handleSyncError(res.error);
+    }, function(err){ handleSyncError(err); });
+  }
+  function syncDirty(){
+    if(!isLive()) return;
+    Object.keys(pushed).forEach(function(id){
+      if(get(id)) return;
+      delete pushed[id];
+      if(localOnly[id]){ delete localOnly[id]; return; }
+      deleteRow(id);
+    });
+    state.puppies.forEach(function(p){
+      if(localOnly[p.id]) return;
+      var s = JSON.stringify(p);
+      if(pushed[p.id] === s) return;
+      pushed[p.id] = s;
+      upsertPuppy(p);
+    });
+  }
+
+  function uploadLocalOnly(){
+    if(!isLive()){ toast('공유 연결이 아직 준비되지 않았어요'); return; }
+    var list = state.puppies.slice();
+    if(!list.length) return;
+    var rows = list.map(function(p){ return { id:p.id, data:p, updated_at:new Date().toISOString() }; });
+    sync.client.from('puppies').upsert(rows).then(function(res){
+      if(res && res.error){ handleSyncError(res.error); toast('올리지 못했어요 · ' + (res.error.message || '')); return; }
+      localOnly = {};
+      list.forEach(function(p){ pushed[p.id] = JSON.stringify(p); });
+      saveLocal(); renderAll();
+      if(ui.sheet === 'sync') setSheet(syncHTML(), true);
+      toast(list.length + '마리를 공유 목록에 올렸어요');
+    }, function(err){ handleSyncError(err); });
+  }
+
+  function timeText(d){
+    try { return d.getHours() + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()); } catch(e){ return ''; }
+  }
+  function syncDesc(){
+    switch(sync.mode){
+      case 'live': return '직원 폰과 같은 목록을 보고 있어요. 한쪽에서 고치면 다른 폰에 <b>바로</b> 반영됩니다.';
+      case 'connecting': return '공유 목록에 연결하는 중이에요. 잠시만 기다려 주세요.';
+      case 'waiting': return '공유 테이블이 아직 없어서 <b>이 기기에만</b> 저장하고 있어요. 아래 SQL을 한 번 실행하면 바로 연결돼요.';
+      case 'error': return '동기화에 문제가 있어 <b>이 기기에만</b> 저장하고 있어요. 잠시 후 새로고침해 보세요.';
+      case 'offline': return '인터넷이 끊겨 이 기기에서만 저장 중이에요. 연결되면 자동으로 맞춰요.';
+      default: return '지금은 이 기기 브라우저에만 저장하고 있어요.';
+    }
+  }
+  function syncHTML(){
+    var m = SYNC_META[sync.mode] || SYNC_META.local;
+    var onlyN = Object.keys(localOnly).length;
+    var html = sheetbar('동기화', '직원 폰과 같은 목록') +
+      '<div class="sheetbody">' +
+      '<section class="scard" style="margin-top:0"><div class="shead"><h3>연결 상태</h3><span class="sbadge ' + (m.cls === 'live' ? 'ok' : m.cls === 'off' ? 'alert' : 'warn') + '">' + m.text + '</span></div>' +
+      '<p class="sp">' + syncDesc() + '</p>' +
+      (sync.lastAt ? '<p class="sp small">마지막 확인 ' + timeText(sync.lastAt) + '</p>' : '') +
+      '<div class="btnrow"><button class="btn primary" data-act="syncNow">지금 새로고침</button>' +
+      (onlyN ? '<button class="btn" data-act="uploadLocal">이 기기 노트 ' + onlyN + '마리 올리기</button>' : '') + '</div>' +
+      '</section>';
+    if(sync.mode === 'waiting' || sync.mode === 'error'){
+      html += '<section class="scard"><h3 class="sh3">🛠 공유 테이블 만들기 (한 번만)</h3>' +
+        '<p class="sp">Supabase 대시보드 → <b>SQL Editor</b>에 아래를 붙여 넣고 Run 하세요. 표가 생기면 새로고침만 하면 연결됩니다.</p>' +
+        '<pre class="sqlbox">' + esc(SB_SQL) + '</pre>' +
+        '<div class="btnrow"><button class="btn primary" data-act="copySQL">SQL 복사</button>' +
+        '<button class="btn" data-act="openSupabase">Supabase 열기</button></div>' +
+        (sync.err ? '<p class="sp small">최근 오류: ' + esc(String(sync.err).slice(0, 180)) + '</p>' : '') +
+        '</section>';
+    }
+    html += '<section class="scard"><h3 class="sh3">🔄 이렇게 동작해요</h3>' +
+      '<p class="sp">· 등록·수정·목욕·접종·삭제가 공유 목록에 바로 저장돼요.<br>· 다른 직원 폰의 변경은 <b>실시간</b>으로 이 화면에 나타나요.<br>· 인터넷이 끊겨도 이 기기에서는 계속 볼 수 있어요.</p></section>' +
+      '<p class="sfoot">데이터 · Supabase public.puppies</p></div>';
+    return html;
+  }
+  function openSync(){
+    ui.sheet = 'sync';
+    setSheet(syncHTML());
+    openSheet();
   }
 
   /* ================= 토스트 ================= */
@@ -871,8 +1150,12 @@
     }
     $('#alertWrap').innerHTML = out;
     var notice = '';
-    if(!state.hintDismissed){
-      notice = '<div class="notice"><span>샘플 4마리로 시작했어요. 카드를 눌러 상세를 보고, 자유롭게 고치거나 지우세요.</span>' +
+    var onlyN = Object.keys(localOnly).length;
+    if(onlyN && sync.mode !== 'local'){
+      notice = '<div class="notice"><span>이 기기의 노트 ' + onlyN + '마리가 아직 공유 목록에 없어요.</span>' +
+        '<button class="nx" data-act="uploadLocal" style="width:auto;padding:0 9px;font-size:11px;font-weight:800">공유하기</button></div>';
+    } else if(!state.hintDismissed && !state.puppies.length){
+      notice = '<div class="notice"><span>직원 폰과 <b>같은 목록</b>을 실시간으로 써요. 날짜 옆 배지를 누르면 연결 상태를 볼 수 있어요.</span>' +
         '<button class="nx" data-act="dismissHint" aria-label="안내 닫기">✕</button></div>';
     }
     $('#noticeWrap').innerHTML = notice;
@@ -931,8 +1214,11 @@
       var msg, sub, cta;
       if(!any){
         msg = '아직 등록된 아이가 없어요';
-        sub = '아래 <b>＋ 새 아이 등록</b>을 눌러 첫 아이를 추가해 보세요.<br>샘플 4마리는 ⚙️ 설정에서 다시 넣을 수 있어요.';
-        cta = '<button class="btn primary" data-act="openForm">＋ 첫 아이 등록하기</button>';
+        sub = isLive()
+          ? '등록하면 <b>직원 폰과 바로 공유</b>돼요. 먼저 둘러보려면 샘플로 시작해도 좋아요.'
+          : '아래 <b>＋ 새 아이 등록</b>으로 첫 아이를 추가해 보세요.';
+        cta = '<button class="btn primary" data-act="openForm">＋ 첫 아이 등록하기</button>' +
+          '<button class="btn" data-act="seedAgain" style="margin-top:8px">샘플 4마리로 시작</button>';
       } else {
         msg = '조건에 맞는 아이가 없어요';
         sub = '지점·상태 필터를 <b>전체</b>로 바꾸거나 검색어를 지워 보세요.';
@@ -958,6 +1244,7 @@
   function renderAll(){
     renderTodayLine();
     renderWorker();
+    renderSyncBadge();
     renderStats();
     renderBranchBar();
     renderStatusChips();
@@ -978,6 +1265,7 @@
     document.body.classList.remove('lock');
     ui.detailId = null;
     ui.formId = null;
+    ui.sheet = null;
     draft = null;
   }
   function setSheet(html, keepScroll){
@@ -1120,6 +1408,7 @@
     ui.detailTab = 'profile';
     ui.compare = false;
     ui.vacType = VAC_PRESETS[0];
+    ui.sheet = 'detail';
     setSheet(detailHTML(id));
     openSheet();
   }
@@ -1242,6 +1531,7 @@
       ui.formEdit = false;
       ui.formId = null;
     }
+    ui.sheet = 'form';
     setSheet(formHTML());
     openSheet();
   }
@@ -1304,6 +1594,7 @@
     ui.detailId = saved.id;
     ui.detailTab = 'profile';
     ui.compare = false;
+    ui.sheet = 'detail';
     setSheet(detailHTML(saved.id));
     toast(wasEdit ? saved.name +' 정보를 저장했어요' : saved.name + ' 등록 완료!');
   }
@@ -1375,6 +1666,7 @@
       '</div>';
   }
   function openWorker(){
+    ui.sheet = 'worker';
     setSheet(workerHTML());
     openSheet();
     var inp = $('#newWorker');
@@ -1400,8 +1692,10 @@
     return sheetbar('설정 · 안내', '저장 방식과 공유') +
       '<div class="sheetbody">' +
       '<section class="scard" style="margin-top:0">' +
-        '<h3 class="sh3">💾 지금은 ‘이 기기’에만 저장돼요</h3>' +
-        '<p class="sp">노트는 이 브라우저의 저장 공간(localStorage)에 들어갑니다. 서버로 보내지 않아 인터넷이 없어도 열리고, 같은 휴대폰·PC의 <b>같은 브라우저</b>에서만 보여요. 시크릿 모드나 방문 기록 삭제를 하면 사라질 수 있으니 가끔 백업해 주세요.</p>' +
+        '<h3 class="sh3">💾 ' + (isLive() ? '공유 목록 + 이 기기에 함께 저장' : '지금은 ‘이 기기’에만 저장돼요') + '</h3>' +
+        '<p class="sp">' + (isLive()
+          ? '노트는 Supabase 공유 목록에 저장되고, 이 브라우저에도 사본을 두어 인터넷이 없어도 열립니다. 직원 폰에서 고친 내용은 바로 반영돼요.'
+          : '노트는 이 브라우저의 저장 공간(localStorage)에 들어갑니다. 서버로 보내지 않아 인터넷이 없어도 열리고, 같은 휴대폰·PC의 <b>같은 브라우저</b>에서만 보여요. 시크릿 모드나 방문 기록 삭제를 하면 사라질 수 있으니 가끔 백업해 주세요.') + '</p>' +
         '<div class="meterbar"><i style="width:' + Math.max(2, pct) + '%"></i></div>' +
         '<div class="meterlab"><span>사진 포함 약 ' + info.kb + 'KB</span><span>브라우저 한도 약 5MB</span></div>' +
       '</section>' +
@@ -1413,13 +1707,12 @@
         '<input type="file" id="restoreFile" accept="application/json,.json" hidden>' +
       '</section>' +
       '<section class="scard">' +
-        '<h3 class="sh3">👥 직원들과 실시간 공유 (다음 단계)</h3>' +
-        '<ol class="steps">' +
-          '<li><b>Firebase</b> 또는 <b>Supabase</b> 무료 프로젝트 1개 만들기 (10~20분)</li>' +
-          '<li>이 노트의 데이터를 그 프로젝트에 연결 (제가 이어서 세팅해 드릴 수 있어요)</li>' +
-          '<li>직원 계정으로 로그인하면 같은 목록을 <b>실시간으로 함께</b> 보고 수정</li>' +
-        '</ol>' +
-        '<p class="sp small">연결하면 지금의 기기 저장은 ‘오프라인 사본’이 되고, 추가·수정이 자동으로 동기화돼요. 지금 만든 데이터는 그대로 옮겨집니다. 공개 저장소에 올라간 페이지라 손님에게는 주소를 공유하지 않는 걸 권해요.</p>' +
+        '<h3 class="sh3">🔄 직원들과 실시간 공유</h3>' +
+        '<div class="settingrow"><div><b>' + (SYNC_META[sync.mode] || SYNC_META.local).text + '</b>' +
+          '<span>' + (sync.mode === 'live' ? '변경이 직원 폰에 바로 반영돼요' : '이 기기에도 안전하게 저장되고 있어요') + '</span></div>' +
+          '<button class="btn sm" data-act="openSync">상태</button></div>' +
+        (sync.lastAt ? '<p class="sp small">마지막 확인 ' + timeText(sync.lastAt) + ' · 같은 목록을 직원 폰과 함께 봐요</p>' : '') +
+        '<p class="sp small">공개 페이지라 링크를 아는 사람은 목록을 볼 수 있어요. 손님께는 주소를 공유하지 마세요.</p>' +
       '</section>' +
       '<section class="scard">' +
         '<h3 class="sh3">👤 작업자 · 안내</h3>' +
@@ -1435,12 +1728,13 @@
         '<div class="settingrow"><div><b>전체 비우기</b><span>모든 노트를 지워요 · 되돌릴 수 없어요</span></div>' +
           '<button class="btn sm danger" data-act="wipeAll">비우기</button></div>' +
       '</section>' +
-      '<p class="sfoot">퍼피댕 · 디데이펫 관리 노트 · 프로토타입 v1</p>' +
+      '<p class="sfoot">퍼피댕 · 디데이펫 관리 노트 · 실시간 공유 v2</p>' +
       '</div>';
   }
 
   function openSettings(){
     ui.detailId = null;
+    ui.sheet = 'settings';
     setSheet(settingsHTML());
     openSheet();
   }
@@ -1476,9 +1770,10 @@
       if(data && Array.isArray(data.puppies)) list = data.puppies;
       else if(Array.isArray(data)) list = data;
       if(!list){ toast('백업 파일 형식이 아니에요.'); return; }
-      var ok = window.confirm('백업 파일로 바꿀까요?\n현재 ' + state.puppies.length + '마리 → 불러온 ' + list.length + '마리\n(지금 데이터는 사라집니다)');
+      var ok = window.confirm('백업 파일로 바꿀까요?\n현재 ' + state.puppies.length + '마리 → 불러온 ' + list.length + '마리\n(지금 데이터는 사라집니다' + (isLive() ? ', 직원 폰의 공유 목록도 바뀝니다' : '') + ')');
       if(!ok) return;
       state.puppies = list.map(norm);
+      localOnly = {};
       if(Array.isArray(data.staff)){
         var st = data.staff.filter(function(s){ return typeof s === 'string' && s.trim(); }).map(function(s){ return s.trim().slice(0,12); });
         if(st.indexOf('대표님') < 0) st.unshift('대표님');
@@ -1488,6 +1783,7 @@
       save();
       renderAll();
       setSheet(settingsHTML(), true);
+      if(isLive()) pushMeta();
       toast('백업을 복원했어요 · ' + state.puppies.length + '마리');
     };
     reader.onerror = function(){ toast('파일을 읽지 못했어요.'); };
@@ -1601,6 +1897,7 @@
           state.staff.push(n);
           state.worker = n;
           save();
+          pushMeta();
           renderWorker();
           setSheet(workerHTML(), true);
           toast(n + ' 님을 작업자로 추가했어요');
@@ -1615,6 +1912,7 @@
           state.staff = state.staff.filter(function(s){ return s !== n; });
           if(state.worker === n) state.worker = state.staff[0];
           save();
+          pushMeta();
           renderWorker();
           setSheet(workerHTML(), true);
           toast('작업자를 정리했어요');
@@ -1637,6 +1935,31 @@
         break;
       case 'openSettings':
         openSettings();
+        break;
+      case 'openSync':
+        openSync();
+        break;
+      case 'syncNow':
+        if(!sync.client){ initSync(); toast('다시 연결을 시도했어요'); break; }
+        if(sync.channel){ try { sync.client.removeChannel(sync.channel); } catch(e){} sync.channel = null; }
+        setSync('connecting');
+        pullRemote(true);
+        toast('공유 목록을 다시 확인하고 있어요');
+        break;
+      case 'uploadLocal':
+        uploadLocalOnly();
+        break;
+      case 'copySQL':
+        (function(){
+          try {
+            navigator.clipboard.writeText(SB_SQL).then(function(){ toast('SQL을 복사했어요 · SQL Editor에 붙여넣으세요'); },
+              function(){ toast('복사가 안 되면 코드를 길게 눌러 직접 복사해 주세요'); });
+          } catch(e){ toast('복사가 안 되면 코드를 길게 눌러 직접 복사해 주세요'); }
+        })();
+        break;
+      case 'openSupabase':
+        try { window.open('https://supabase.com/dashboard/project/hrhvpihzuerwjzcqebfs/sql/new', '_blank'); }
+        catch(e){ toast('supabase.com 대시보드에서 SQL Editor를 열어 주세요'); }
         break;
       case 'openGuide':
         openGuide();
@@ -1785,17 +2108,24 @@
         break;
       case 'seedAgain':
         (function(){
-          if(!window.confirm('샘플 4마리를 목록에 추가할까요?')) return;
+          var msg = isLive()
+            ? '샘플 4마리를 추가할까요?\n공유 목록에도 함께 올라가 직원 폰에 보입니다.'
+            : '샘플 4마리를 목록에 추가할까요?';
+          if(!window.confirm(msg)) return;
           state.puppies = state.puppies.concat(samplePuppies());
-          save(); renderAll(); setSheet(settingsHTML(), true);
+          save(); renderAll();
+          if(ui.sheet === 'settings') setSheet(settingsHTML(), true);
           toast('샘플 4마리를 추가했어요');
         })();
         break;
       case 'wipeAll':
         (function(){
           if(!state.puppies.length){ toast('이미 비어 있어요'); return; }
-          if(!window.confirm('모든 노트(' + state.puppies.length + '마리)를 지울까요?\n되돌릴 수 없어요. 먼저 백업을 권해요.')) return;
+          var msg = '모든 노트(' + state.puppies.length + '마리)를 지울까요?\n되돌릴 수 없어요.' +
+            (isLive() ? '\n공유 목록에서도 지워져 직원 폰에서도 사라집니다.' : '');
+          if(!window.confirm(msg)) return;
           state.puppies = [];
+          localOnly = {};
           save(); renderAll(); setSheet(settingsHTML(), true);
           toast('모든 노트를 비웠어요');
         })();
@@ -1809,6 +2139,7 @@
   }
 
   function openGuide(){
+    ui.sheet = 'guide';
     setSheet(sheetbar('사용 안내', '1분이면 익혀요') +
       '<div class="sheetbody">' +
       '<section class="scard" style="margin-top:0"><h3 class="sh3">🐾 카드에서 바로</h3>' +
@@ -1819,8 +2150,8 @@
         '<p class="sp"><b>예쁜 사진</b>(대표)과 <b>분양장 사진</b>(케이지 현장)을 따로 올려 두고, 상세에서 <b>⧉ 나란히</b>로 크게 비교할 수 있어요. 올릴 때 자동으로 압축됩니다.</p></section>' +
       '<section class="scard"><h3 class="sh3">👤 작업자 · 원가</h3>' +
         '<p class="sp">상단 <b>대표님 ▾</b>에서 작업자를 고르면, 그 뒤 목욕·접종 기록에 <b>누가 했는지</b>가 함께 남아요. 등록·수정 화면에서 <b>원가</b>를 적어두면 상세에서 분양가와 나란히 보여드려요.</p></section>' +
-      '<section class="scard"><h3 class="sh3">💾 백업</h3>' +
-        '<p class="sp">⚙️ 설정에서 JSON으로 내려받고, 새 기기에서 복원하세요. 직원 실시간 공유는 Firebase/Supabase 연결로 이어갈 수 있어요.</p></section>' +
+      '<section class="scard"><h3 class="sh3">🔄 직원 공유 · 백업</h3>' +
+        '<p class="sp">상단 날짜 옆 <b>동기화 배지</b>를 누르면 연결 상태를 볼 수 있어요. 연결되면 직원 폰과 같은 목록을 실시간으로 함께 쓰고, ⚙️ 설정에서 JSON 백업도 받아둘 수 있어요.</p></section>' +
       '<button class="btn primary wide" data-act="closeSheet" style="margin-top:4px">알겠어요</button>' +
       '</div>');
     openSheet();
@@ -1967,9 +2298,14 @@
 
   /* ================= 시작 ================= */
   renderAll();
+  initSync();
+  window.addEventListener('online', function(){ if(sync.mode !== 'live') pullRemote(!sync.channel); });
   if(window.__errors.length){
     // 개발 중 조용한 확인용
     console.warn('init errors', window.__errors);
+  }
+  if(/[?&]debug=1/.test(location.search)){
+    window.__puppy = { state: state, ui: ui, sync: sync, feed: applyRows, event: onRealtime, mode: setSync, pull: pullRemote };
   }
 })();
 </script>
