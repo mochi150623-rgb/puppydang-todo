@@ -41,7 +41,20 @@
   .brand{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:800;letter-spacing:-.01em;color:var(--brown-d)}
   .brand .logo{width:29px;height:29px;border-radius:10px;display:grid;place-items:center;font-size:15px;
     background:linear-gradient(140deg,#A9743F,#6B4423);box-shadow:0 5px 12px rgba(107,68,35,.3)}
-  .topact{display:flex;gap:7px}
+  .topact{display:flex;gap:7px;align-items:center}
+  .wpill{height:34px;padding:0 9px 0 8px;border-radius:11px;background:#fff;border:1.5px solid var(--line);display:inline-flex;align-items:center;gap:4px;
+    font-size:12px;font-weight:800;color:var(--ink-2);letter-spacing:-.02em;box-shadow:0 3px 10px rgba(122,88,52,.06);max-width:104px}
+  .wpill b{font-weight:800;color:var(--brown-d);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:58px}
+  .wpill .chev{font-size:9px;color:var(--muted-2)}
+  .wgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .wopt{position:relative;height:48px;border-radius:13px;border:1.5px solid var(--line);background:#fff;
+    font-size:13.5px;font-weight:800;color:var(--ink-2);display:flex;align-items:center;justify-content:center;gap:6px;letter-spacing:-.02em;padding:0 18px 0 10px}
+  .wopt.on{background:linear-gradient(140deg,#8C5C2E,#5A381E);border-color:transparent;color:#fff;box-shadow:0 6px 16px rgba(107,68,35,.22)}
+  .wopt .wdel{position:absolute;right:5px;top:5px;width:20px;height:20px;border-radius:6px;background:#F3E7D6;color:var(--muted);font-size:9px;display:grid;place-items:center}
+  .wopt.on .wdel{background:rgba(255,255,255,.24);color:#fff}
+  .wadd{display:flex;gap:7px;margin-top:10px}
+  .wmem{display:flex;align-items:center;gap:8px;margin-top:14px;padding:10px 12px;border-radius:13px;background:#FBF6EF;font-size:11.5px;font-weight:700;color:var(--muted);line-height:1.5;letter-spacing:-.02em}
+  .htype .hby{font-style:normal;font-size:10.5px;font-weight:800;color:var(--brown);background:#F3E7D6;border-radius:6px;padding:1px 5px}
   .gbtn{width:40px;height:40px;border-radius:13px;background:#fff;box-shadow:var(--shadow);display:grid;place-items:center;
     font-size:16px;color:var(--ink-2);transition:transform .12s;border:1px solid rgba(237,226,213,.7)}
   .gbtn:active{transform:scale(.94)}
@@ -406,6 +419,7 @@
     <div class="topline">
       <div class="brand"><span class="logo">🐾</span> 퍼피댕 · 디데이펫</div>
       <div class="topact">
+        <button class="wpill" data-act="openWorker" aria-label="작업자 선택">👤 <b id="workerName">대표님</b><span class="chev">▾</span></button>
         <button class="gbtn" data-act="openGuide" aria-label="사용 안내">?</button>
         <button class="gbtn" data-act="openSettings" aria-label="설정">⚙️</button>
       </div>
@@ -424,7 +438,6 @@
       <div class="toolrow">
         <span class="rcount" id="resultCount"></span>
         <div class="tools">
-          <button class="tbtn" id="hidePriceBtn" data-act="toggleHide">🙈 분양가 숨기기</button>
           <select class="sortsel" id="sortSel" aria-label="정렬">
             <option value="cage">장 번호순</option>
             <option value="intake">최근 입소순</option>
@@ -598,16 +611,17 @@
       sex: p.sex === 'female' ? 'female' : 'male',
       color: String(p.color == null ? '' : p.color).slice(0, 20),
       price: Math.max(0, Math.round(Number(p.price) || 0)),
+      cost: Math.max(0, Math.round(Number(p.cost) || 0)),
       status: status,
       intakeDate: isValidDate(p.intakeDate) ? p.intakeDate : todayStr(),
       birthDate: isValidDate(p.birthDate) ? p.birthDate : '',
       photoProfile: typeof p.photoProfile === 'string' ? p.photoProfile : '',
       photoStore: typeof p.photoStore === 'string' ? p.photoStore : '',
       baths: Array.isArray(p.baths) ? p.baths.filter(function(b){ return b && isValidDate(b.date); }).map(function(b){
-        return { id: b.id || uid(), date: b.date, memo: String(b.memo || '') };
+        return { id: b.id || uid(), date: b.date, by: String(b.by || '').slice(0, 12), memo: String(b.memo || '') };
       }) : [],
       vaccines: Array.isArray(p.vaccines) ? p.vaccines.filter(function(v){ return v && isValidDate(v.date); }).map(function(v){
-        return { id: v.id || uid(), type: String(v.type || '접종'), date: v.date, memo: String(v.memo || '') };
+        return { id: v.id || uid(), type: String(v.type || '접종'), date: v.date, by: String(v.by || '').slice(0, 12), memo: String(v.memo || '') };
       }) : [],
       nextVaccine: isValidDate(p.nextVaccine) ? p.nextVaccine : '',
       memo: String(p.memo == null ? '' : p.memo).slice(0, 2000),
@@ -620,54 +634,54 @@
     return [
       norm({
         branch:'퍼피댕', cage:'1번장', name:'콩이', breed:'말티푸', sex:'female', color:'크림',
-        price:850000, status:'available',
+        price:850000, cost:450000, status:'available',
         intakeDate: shiftDate(-14), birthDate: shiftDate(-96),
-        baths:[{date:shiftDate(-3)},{date:shiftDate(-10)}],
+        baths:[{date:shiftDate(-3), by:'대표님'},{date:shiftDate(-10), by:'직원1'}],
         vaccines:[
-          {type:'1차 종합백신', date:shiftDate(-66), memo:'이상 반응 없음'},
-          {type:'2차 종합백신', date:shiftDate(-38), memo:''},
-          {type:'심장사상충', date:shiftDate(-6), memo:'월 1회'}
+          {type:'1차 종합백신', date:shiftDate(-66), by:'대표님', memo:'이상 반응 없음'},
+          {type:'2차 종합백신', date:shiftDate(-38), by:'직원1', memo:''},
+          {type:'심장사상충', date:shiftDate(-6), by:'직원1', memo:'월 1회'}
         ],
         nextVaccine: shiftDate(4),
         memo:'식욕 좋고 배변 정상. 사람 손 타는 걸 좋아해서 상담실에 나가면 잘 놀아요. 눈물 자국은 하루 두 번 닦아주기.'
       }),
       norm({
         branch:'퍼피댕', cage:'A-03', name:'두부', breed:'포메라니안', sex:'male', color:'화이트',
-        price:1200000, status:'reserved',
+        price:1200000, cost:700000, status:'reserved',
         intakeDate: shiftDate(-22), birthDate: shiftDate(-142),
-        baths:[{date:shiftDate(-7)}],
+        baths:[{date:shiftDate(-7), by:'직원2'}],
         vaccines:[
-          {type:'1차 종합백신', date:shiftDate(-110), memo:''},
-          {type:'2차 종합백신', date:shiftDate(-82), memo:''},
-          {type:'3차 종합백신', date:shiftDate(-55), memo:'체중 1.8kg'}
+          {type:'1차 종합백신', date:shiftDate(-110), by:'대표님', memo:''},
+          {type:'2차 종합백신', date:shiftDate(-82), by:'대표님', memo:''},
+          {type:'3차 종합백신', date:shiftDate(-55), by:'직원2', memo:'체중 1.8kg'}
         ],
         nextVaccine: shiftDate(8),
         memo:'예약 고객님 11/29 오후 방문 예정. 낯가림이 조금 있어요. 털 빠짐이 많아 브러싱 하루 1회.'
       }),
       norm({
         branch:'디데이펫', cage:'2번장', name:'보리', breed:'비숑 프리제', sex:'female', color:'아이보리',
-        price:950000, status:'available',
+        price:950000, cost:500000, status:'available',
         intakeDate: shiftDate(-27), birthDate: shiftDate(-115),
-        baths:[{date:shiftDate(-11)}],
+        baths:[{date:shiftDate(-11), by:'직원1'}],
         vaccines:[
-          {type:'1차 종합백신', date:shiftDate(-90), memo:''},
-          {type:'2차 종합백신', date:shiftDate(-62), memo:''},
-          {type:'구충', date:shiftDate(-20), memo:'구충제 1정'}
+          {type:'1차 종합백신', date:shiftDate(-90), by:'대표님', memo:''},
+          {type:'2차 종합백신', date:shiftDate(-62), by:'직원1', memo:''},
+          {type:'구충', date:shiftDate(-20), by:'직원1', memo:'구충제 1정'}
         ],
         nextVaccine: shiftDate(2),
         memo:'활발하고 애교 많아요. 사료는 하루 3회(30g씩). 귀 청소 주 1회, 목욕은 10일 간격으로.'
       }),
       norm({
         branch:'디데이펫', cage:'5번장', name:'라떼', breed:'웰시코기', sex:'male', color:'레드',
-        price:1150000, status:'sold',
+        price:1150000, cost:650000, status:'sold',
         intakeDate: shiftDate(-55), birthDate: shiftDate(-200),
-        baths:[{date:shiftDate(-2)},{date:shiftDate(-9)}],
+        baths:[{date:shiftDate(-2), by:'대표님'},{date:shiftDate(-9), by:'대표님'}],
         vaccines:[
-          {type:'1차 종합백신', date:shiftDate(-170), memo:''},
-          {type:'2차 종합백신', date:shiftDate(-143), memo:''},
-          {type:'3차 종합백신', date:shiftDate(-116), memo:''},
-          {type:'4차 종합백신', date:shiftDate(-88), memo:''},
-          {type:'광견병', date:shiftDate(-60), memo:'동물병원 접종'}
+          {type:'1차 종합백신', date:shiftDate(-170), by:'대표님', memo:''},
+          {type:'2차 종합백신', date:shiftDate(-143), by:'대표님', memo:''},
+          {type:'3차 종합백신', date:shiftDate(-116), by:'대표님', memo:''},
+          {type:'4차 종합백신', date:shiftDate(-88), by:'대표님', memo:''},
+          {type:'광견병', date:shiftDate(-60), by:'대표님', memo:'동물병원 접종'}
         ],
         nextVaccine: shiftDate(14),
         memo:'분양 완료(11/18 출고). 보호자님께 접종 수첩 전달했고 사후 안부 연락은 12/2 예정.'
@@ -676,7 +690,8 @@
   }
 
   function blankState(){
-    return { v:1, hidePrice:false, hintDismissed:false, puppies: samplePuppies(), seeded:true, createdAt:new Date().toISOString() };
+    return { v:1, worker:'대표님', staff:['대표님','직원1','직원2','직원3'], hintDismissed:false,
+      puppies: samplePuppies(), seeded:true, createdAt:new Date().toISOString() };
   }
 
   function loadState(){
@@ -692,9 +707,15 @@
     if(!data || typeof data !== 'object' || !Array.isArray(data.puppies)){
       return blankState();
     }
+    var staff = Array.isArray(data.staff) ? data.staff.filter(function(s){ return typeof s === 'string' && s.trim(); }).map(function(s){ return s.trim().slice(0,12); }) : [];
+    staff = staff.filter(function(s, i){ return staff.indexOf(s) === i; }).slice(0, 12);
+    if(staff.indexOf('대표님') < 0) staff.unshift('대표님');
+    if(!staff.length) staff = ['대표님'];
+    var worker = staff.indexOf(data.worker) >= 0 ? data.worker : staff[0];
     return {
       v: 1,
-      hidePrice: !!data.hidePrice,
+      worker: worker,
+      staff: staff,
       hintDismissed: !!data.hintDismissed,
       puppies: data.puppies.map(norm),
       seeded: !!data.seeded,
@@ -821,11 +842,13 @@
   function renderTools(){
     var n = filtered().length;
     $('#resultCount').innerHTML = '<b>' + n + '</b>마리';
-    var hp = $('#hidePriceBtn');
-    hp.classList.toggle('on', !!state.hidePrice);
-    hp.textContent = state.hidePrice ? '👁 분양가 보기' : '🙈 분양가 숨기기';
     $('#sortSel').value = ui.sort;
     $('#qClear').hidden = !ui.q;
+  }
+
+  function renderWorker(){
+    var el = $('#workerName');
+    if(el) el.textContent = state.worker || '대표님';
   }
 
   function renderAlert(){
@@ -873,9 +896,7 @@
     var inDays = intakeDays(p);
     var age = ageInfo(p.birthDate);
     var vac = p.nextVaccine ? dday(p.nextVaccine) : null;
-    var priceHTML = state.hidePrice
-      ? '<span class="cprice muted">분양가 비공개</span>'
-      : '<span class="cprice">' + (p.price ? manwon(p.price) : '가격 미정') + '</span>';
+    var priceHTML = '<span class="cprice">' + (p.price ? manwon(p.price) : '분양가 미정') + '</span>';
     var toggleLabel = mode === 'store' ? '대표 사진 ›' : '분양장 사진 ›';
     var meta = [];
     if(inDays !== null) meta.push('<span class="mchip">🏠 입소 ' + Math.max(1, inDays) + '일차</span>');
@@ -934,6 +955,7 @@
 
   function renderAll(){
     renderTodayLine();
+    renderWorker();
     renderStats();
     renderBranchBar();
     renderStatusChips();
@@ -978,8 +1000,7 @@
     var bl = bathLabel(p);
     var last = lastBath(p);
     var vac = p.nextVaccine ? dday(p.nextVaccine) : null;
-    var priceTxt = p.price ? manwon(p.price) : '가격 미정';
-    var showPrice = !state.hidePrice;
+    var priceTxt = p.price ? manwon(p.price) : '분양가 미정';
 
     var photoArea;
     if(ui.compare){
@@ -992,13 +1013,15 @@
     }
 
     var bathHistory = (p.baths || []).slice().sort(function(a,b){ return String(b.date).localeCompare(String(a.date)); }).map(function(b){
-      return '<li class="hrow"><span class="htype">🛁 목욕 <em>' + agoText(b.date) + '</em></span>' +
+      return '<li class="hrow"><span class="htype">🛁 목욕 <em>' + agoText(b.date) + '</em>' +
+        (b.by ? '<span class="hby">' + esc(b.by) + '</span>' : '') + '</span>' +
         '<input type="date" class="hdate" value="' + b.date + '" data-act="bathDate" data-id="' + b.id + '" aria-label="목욕 날짜">' +
         '<button class="hdel" data-act="bathDel" data-id="' + b.id + '" aria-label="목욕 기록 삭제">✕</button></li>';
     }).join('');
 
     var vacHistory = (p.vaccines || []).slice().sort(function(a,b){ return String(b.date).localeCompare(String(a.date)); }).map(function(v){
-      return '<li class="hrow"><span class="htype">💉 ' + esc(v.type) + ' <em>' + agoText(v.date) + '</em></span>' +
+      return '<li class="hrow"><span class="htype">💉 ' + esc(v.type) + ' <em>' + agoText(v.date) + '</em>' +
+        (v.by ? '<span class="hby">' + esc(v.by) + '</span>' : '') + '</span>' +
         '<input type="date" class="hdate" value="' + v.date + '" data-act="vacDate" data-id="' + v.id + '" aria-label="접종 날짜">' +
         '<button class="hdel" data-act="vacDel" data-id="' + v.id + '" aria-label="접종 기록 삭제">✕</button>' +
         '<input type="text" class="hmemo" value="' + esc(v.memo || '') + '" placeholder="메모 (선택)" data-act="vacMemo" data-id="' + v.id + '" aria-label="접종 메모"></li>';
@@ -1028,7 +1051,7 @@
 
       '<div class="dhead">' +
         '<div class="dnamerow"><h2 class="dname">' + esc(p.name || '이름 없음') + '</h2>' +
-          '<span class="dprice ' + (showPrice ? '' : 'muted') + '">' + (showPrice ? priceTxt : '분양가 비공개') + '</span></div>' +
+          '<span class="dprice">' + priceTxt + '</span></div>' +
         '<div class="dsub">' + esc(p.breed || '품종 미정') + '<span class="sep">·</span>' + (p.sex === 'female' ? '여아' : '남아') +
           (p.color ? '<span class="sep">·</span>' + esc(p.color) : '') + '<span class="sep">·</span>' + p.branch + '</div>' +
         '<div class="statusseg">' + sseg + '</div>' +
@@ -1045,19 +1068,21 @@
           '<div class="irow"><span class="ilab">품종</span><span class="ival">' + esc(p.breed || '미정') + '</span></div>' +
           '<div class="irow"><span class="ilab">성별</span><span class="ival">' + (p.sex === 'female' ? '여아' : '남아') + '</span></div>' +
           '<div class="irow"><span class="ilab">모색</span><span class="ival">' + esc(p.color || '미정') + '</span></div>' +
-          '<div class="irow"><span class="ilab">분양가</span><span class="ival"><b>' + (state.hidePrice ? '비공개' : (p.price ? won(p.price) : '미정')) + '</b>' +
-            (state.hidePrice ? '<span class="tiny">숨김</span>' : (p.price ? '<button class="tiny" data-act="toggleHide" style="cursor:pointer">숨기기</button>' : '')) + '</span></div>' +
+          '<div class="irow"><span class="ilab">분양가</span><span class="ival"><b>' + (p.price ? manwon(p.price) : '미정') + '</b>' +
+            (p.price ? '<span class="tiny">' + won(p.price) + '</span>' : '') + '</span></div>' +
+          '<div class="irow"><span class="ilab">원가</span><span class="ival">' + (p.cost ? '<b>' + manwon(p.cost) + '</b><span class="tiny calm">' + won(p.cost) + '</span>' : '<span style="color:var(--muted-2);font-weight:700">미입력</span>') + '</span></div>' +
         '</div>' +
       '</section>' +
 
       '<section class="scard"><div class="shead"><h3>🛁 목욕 기록</h3><span class="sbadge ' + bl.cls + '">' + bl.text + '</span></div>' +
         '<div class="bathnow"><div class="bathlast">마지막 목욕' +
           '<b>' + (last ? fmtMD(last.date) : '기록 없음') + '</b>' +
-          (last ? '<span class="sub">' + fmtFull(last.date) + ' · ' + agoText(last.date) + '</span>' : '<span class="sub">아래 버튼으로 오늘 목욕을 기록해 보세요</span>') +
+          (last ? '<span class="sub">' + fmtFull(last.date) + ' · ' + agoText(last.date) + (last.by ? ' · ' + esc(last.by) : '') + '</span>' : '<span class="sub">아래 버튼으로 오늘 목욕을 기록해 보세요</span>') +
         '</div><button class="btn primary sm" data-act="bathToday">오늘 목욕 완료</button></div>' +
         '<div class="bathadd"><label class="mini">다른 날짜로 기록 / 수정</label>' +
           '<div class="row"><input type="date" class="fdate grow" id="bathNewDate" value="' + todayStr() + '" aria-label="목욕 날짜 지정">' +
-          '<button class="btn sm" data-act="bathAdd">이 날짜로 기록</button></div></div>' +
+          '<button class="btn sm" data-act="bathAdd">이 날 처음 기록</button></div>' +
+          '<div class="hint" style="margin-top:6px">기록은 지금 작업자 <b>' + esc(state.worker) + '</b> 이름으로 남아요</div></div>' +
         '<ul class="hlist">' + bathHistory + '</ul>' +
       '</section>' +
 
@@ -1104,7 +1129,7 @@
 
   /* ================= 폼 ================= */
   function newDraft(){
-    return norm({ name:'', cage:'', breed:'', color:'', price:0, status:'available', branch:'퍼피댕',
+    return norm({ name:'', cage:'', breed:'', color:'', price:0, cost:0, status:'available', branch:'퍼피댕',
       intakeDate: todayStr(), birthDate:'', nextVaccine:'', memo:'' });
   }
 
@@ -1160,7 +1185,17 @@
             }).join('') +
             '<button type="button" class="pchip" data-act="priceChip" data-v="0">미정</button>' +
           '</div>' +
-          '<div class="hint" id="priceHint">' + (d.price ? '<b>' + won(d.price) + '</b> · ' + manwon(d.price) : '비워두면 ‘가격 미정’으로 표시돼요') + '</div>' +
+          '<div class="hint" id="priceHint">' + (d.price ? '<b>' + won(d.price) + '</b> · ' + manwon(d.price) : '비워두면 ‘분양가 미정’으로 표시돼요') + '</div>' +
+        '</div>' +
+        '<div class="field"><label>원가 (원)</label>' +
+          '<input class="txt" id="fCost" inputmode="numeric" value="' + (d.cost ? String(d.cost) : '') + '" placeholder="450000">' +
+          '<div class="pricechips">' +
+            [300000,400000,450000,500000,650000,700000].map(function(v){
+              return '<button type="button" class="pchip" data-act="costChip" data-v="' + v + '">' + (v/10000) + '만</button>';
+            }).join('') +
+            '<button type="button" class="pchip" data-act="costChip" data-v="0">미입력</button>' +
+          '</div>' +
+          '<div class="hint" id="costHint">' + (d.cost ? '<b>' + won(d.cost) + '</b> · ' + manwon(d.cost) : '상세에서 분양가와 나란히 보여드려요') + '</div>' +
         '</div>' +
       '</div>' +
 
@@ -1217,6 +1252,8 @@
     draft.color = ($('#fColor') ? $('#fColor').value : draft.color).trim();
     var priceRaw = $('#fPrice') ? $('#fPrice').value : '';
     draft.price = Math.max(0, Math.round(Number(String(priceRaw).replace(/[^0-9]/g,'')) || 0));
+    var costRaw = $('#fCost') ? $('#fCost').value : '';
+    draft.cost = Math.max(0, Math.round(Number(String(costRaw).replace(/[^0-9]/g,'')) || 0));
     draft.intakeDate = $('#fIntake') ? $('#fIntake').value : draft.intakeDate;
     draft.birthDate = $('#fBirth') ? $('#fBirth').value : draft.birthDate;
     draft.memo = $('#fMemo') ? $('#fMemo').value : draft.memo;
@@ -1319,6 +1356,29 @@
     });
   }
 
+  /* ================= 작업자 ================= */
+  function workerHTML(){
+    var list = state.staff.map(function(n){
+      var on = state.worker === n;
+      var del = (n === '대표님') ? '' : '<span class="wdel" data-act="delWorker" data-name="' + esc(n) + '" role="button" aria-label="' + esc(n) + ' 삭제">✕</span>';
+      return '<div class="wopt ' + (on ? 'on' : '') + '" data-act="pickWorker" data-name="' + esc(n) + '" role="button" tabindex="0" aria-pressed="' + on + '">' + esc(n) + del + '</div>';
+    }).join('');
+    return sheetbar('작업자 선택', '지금 누구 차례인가요?') +
+      '<div class="sheetbody">' +
+      '<div class="wgrid">' + list + '</div>' +
+      '<div class="wadd"><input class="txt grow" id="newWorker" placeholder="직원 이름 추가 (예: 김실장)" maxlength="12" autocomplete="off" aria-label="새 직원 이름">' +
+        '<button class="btn primary" data-act="addWorker">추가</button></div>' +
+      '<div class="wmem"><span>👤</span><span>여기서 고른 이름으로 목욕·접종 기록에 <b style="color:var(--brown-d)">누가 했는지</b>가 함께 남아요. 기록은 기기마다 따로 저장돼요.</span></div>' +
+      '<p class="sp small">직원 이름은 ✕로 정리할 수 있어요(지난 기록의 이름은 그대로 남습니다).</p>' +
+      '</div>';
+  }
+  function openWorker(){
+    setSheet(workerHTML());
+    openSheet();
+    var inp = $('#newWorker');
+    if(inp) inp.value = '';
+  }
+
   /* ================= 설정 ================= */
   function storageInfo(){
     var bytes = 0;
@@ -1360,9 +1420,9 @@
         '<p class="sp small">연결하면 지금의 기기 저장은 ‘오프라인 사본’이 되고, 추가·수정이 자동으로 동기화돼요. 지금 만든 데이터는 그대로 옮겨집니다. 공개 저장소에 올라간 페이지라 손님에게는 주소를 공유하지 않는 걸 권해요.</p>' +
       '</section>' +
       '<section class="scard">' +
-        '<h3 class="sh3">👁 화면 표시</h3>' +
-        '<div class="settingrow"><div><b>분양가 숨기기</b><span>손님과 함께 볼 때 가격을 ‘비공개’로 가려요</span></div>' +
-          '<button class="toggle ' + (state.hidePrice ? 'on' : '') + '" data-act="toggleHide" role="switch" aria-checked="' + state.hidePrice + '"><i></i></button></div>' +
+        '<h3 class="sh3">👤 작업자 · 안내</h3>' +
+        '<div class="settingrow"><div><b>지금 작업자: ' + esc(state.worker) + '</b><span>목욕·접종 기록에 누가 했는지 남아요</span></div>' +
+          '<button class="btn sm" data-act="openWorker">바꾸기</button></div>' +
         '<div class="settingrow"><div><b>첫 화면 안내문</b><span>샘플 안내를 다시 볼 수 있어요</span></div>' +
           '<button class="btn sm" data-act="showHint">다시 보기</button></div>' +
       '</section>' +
@@ -1385,8 +1445,8 @@
 
   function exportJSON(){
     var data = {
-      app: 'puppydang-puppies', version: 1, exportedAt: new Date().toISOString(),
-      hidePrice: state.hidePrice, puppies: state.puppies
+      app: 'puppydang-puppies', version: 2, exportedAt: new Date().toISOString(),
+      worker: state.worker, staff: state.staff, puppies: state.puppies
     };
     try {
       var blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
@@ -1417,7 +1477,12 @@
       var ok = window.confirm('백업 파일로 바꿀까요?\n현재 ' + state.puppies.length + '마리 → 불러온 ' + list.length + '마리\n(지금 데이터는 사라집니다)');
       if(!ok) return;
       state.puppies = list.map(norm);
-      if(data && typeof data.hidePrice === 'boolean') state.hidePrice = data.hidePrice;
+      if(Array.isArray(data.staff)){
+        var st = data.staff.filter(function(s){ return typeof s === 'string' && s.trim(); }).map(function(s){ return s.trim().slice(0,12); });
+        if(st.indexOf('대표님') < 0) st.unshift('대표님');
+        if(st.length) state.staff = st;
+      }
+      if(typeof data.worker === 'string' && state.staff.indexOf(data.worker) >= 0) state.worker = data.worker;
       save();
       renderAll();
       setSheet(settingsHTML(), true);
@@ -1437,12 +1502,12 @@
       return;
     }
     p.baths = p.baths || [];
-    p.baths.push({ id: uid(), date: t, memo:'' });
+    p.baths.push({ id: uid(), date: t, by: state.worker, memo:'' });
     p.updatedAt = new Date().toISOString();
     save();
     renderAll();
     if(ui.detailId === id) refreshDetail();
-    toast(p.name + ' 목욕 완료 · ' + fmtMD(t) + ' 기록');
+    toast(p.name + ' 목욕 완료 · ' + state.worker);
   }
 
   function deleteDog(id){
@@ -1510,12 +1575,48 @@
         renderAll();
         toast('첫 화면 안내를 다시 켰어요');
         break;
-      case 'toggleHide':
-        state.hidePrice = !state.hidePrice;
-        save();
-        renderAll();
-        if(ui.detailId) refreshDetail();
-        toast(state.hidePrice ? '분양가를 가렸어요 (손님 노출용)' : '분양가를 다시 보여요');
+      case 'openWorker':
+        openWorker();
+        break;
+      case 'pickWorker':
+        (function(){
+          var n = el.getAttribute('data-name');
+          if(!n || state.staff.indexOf(n) < 0) return;
+          state.worker = n;
+          save();
+          renderWorker();
+          setSheet(workerHTML(), true);
+          toast('작업자: ' + n);
+        })();
+        break;
+      case 'addWorker':
+        (function(){
+          var inp = $('#newWorker');
+          var n = inp ? inp.value.trim().slice(0, 12) : '';
+          if(!n){ toast('직원 이름을 적어주세요'); if(inp) inp.focus(); return; }
+          if(state.staff.indexOf(n) >= 0){ toast('이미 있는 이름이에요'); return; }
+          if(state.staff.length >= 12){ toast('작업자는 12명까지예요'); return; }
+          state.staff.push(n);
+          state.worker = n;
+          save();
+          renderWorker();
+          setSheet(workerHTML(), true);
+          toast(n + ' 님을 작업자로 추가했어요');
+        })();
+        break;
+      case 'delWorker':
+        (function(){
+          var n = el.getAttribute('data-name');
+          if(!n || n === '대표님'){ toast('대표님은 지울 수 없어요'); return; }
+          if(state.staff.length <= 1) return;
+          if(!window.confirm('작업자 “‘' + n + '”을(를) 목록에서 지울까요?\n지난 기록에 남은 이름은 그대로 남아요.')) return;
+          state.staff = state.staff.filter(function(s){ return s !== n; });
+          if(state.worker === n) state.worker = state.staff[0];
+          save();
+          renderWorker();
+          setSheet(workerHTML(), true);
+          toast('작업자를 정리했어요');
+        })();
         break;
       case 'openCard':
         if(el.closest('[data-act="togglePhoto"]')) break;
@@ -1569,10 +1670,10 @@
           if(!isValidDate(dt)){ toast('날짜를 골라주세요'); return; }
           p.baths = p.baths || [];
           if(p.baths.some(function(b){ return b.date === dt; })){ toast('그 날짜는 이미 기록되어 있어요'); return; }
-          p.baths.push({ id: uid(), date: dt, memo:'' });
+          p.baths.push({ id: uid(), date: dt, by: state.worker, memo:'' });
           p.updatedAt = new Date().toISOString();
           save(); renderAll(); refreshDetail();
-          toast(fmtMD(dt) + ' 목욕으로 기록했어요');
+          toast(fmtMD(dt) + ' 목욕 기록 · ' + state.worker);
         })();
         break;
       case 'bathDel':
@@ -1597,10 +1698,10 @@
           var memo = $('#vacNewMemo') ? $('#vacNewMemo').value.trim() : '';
           if(!isValidDate(dt)){ toast('접종 날짜를 골라주세요'); return; }
           p.vaccines = p.vaccines || [];
-          p.vaccines.push({ id: uid(), type: ui.vacType || VAC_PRESETS[0], date: dt, memo: memo });
+          p.vaccines.push({ id: uid(), type: ui.vacType || VAC_PRESETS[0], date: dt, by: state.worker, memo: memo });
           p.updatedAt = new Date().toISOString();
           save(); renderAll(); refreshDetail();
-          toast(ui.vacType + ' 기록을 추가했어요');
+          toast(ui.vacType + ' 기록 · ' + state.worker);
         })();
         break;
       case 'vacDel':
@@ -1642,7 +1743,17 @@
           if(inp){ inp.value = v ? String(v) : ''; }
           draft.price = v;
           var h = $('#priceHint');
-          if(h) h.innerHTML = v ? '<b>' + won(v) + '</b> · ' + manwon(v) : '비워두면 ‘가격 미정’으로 표시돼요';
+          if(h) h.innerHTML = v ? '<b>' + won(v) + '</b> · ' + manwon(v) : '비워두면 ‘분양가 미정’으로 표시돼요';
+        })();
+        break;
+      case 'costChip':
+        (function(){
+          var v = Number(el.getAttribute('data-v')) || 0;
+          var inp = $('#fCost');
+          if(inp){ inp.value = v ? String(v) : ''; }
+          draft.cost = v;
+          var h = $('#costHint');
+          if(h) h.innerHTML = v ? '<b>' + won(v) + '</b> · ' + manwon(v) : '상세에서 분양가와 나란히 보여드려요';
         })();
         break;
       case 'photoPick':
@@ -1704,8 +1815,8 @@
         '<p class="sp">지점(전체/퍼피댕/디데이펫)과 분양 상태로 거르고, <b>장 번호·품종·이름</b>으로 검색하세요. 정렬은 장 번호순·최근 입소순·<b>목욕 오래된 순</b>이 있어요.</p></section>' +
       '<section class="scard"><h3 class="sh3">📷 사진 두 장</h3>' +
         '<p class="sp"><b>예쁜 사진</b>(대표)과 <b>분양장 사진</b>(케이지 현장)을 따로 올려 두고, 상세에서 <b>⧉ 나란히</b>로 크게 비교할 수 있어요. 올릴 때 자동으로 압축됩니다.</p></section>' +
-      '<section class="scard"><h3 class="sh3">🙈 손님과 볼 때</h3>' +
-        '<p class="sp">상단 <b>분양가 숨기기</b>를 켜면 모든 금액이 ‘비공개’로 바뀝니다. 다시 누르면 원래대로 돌아와요.</p></section>' +
+      '<section class="scard"><h3 class="sh3">👤 작업자 · 원가</h3>' +
+        '<p class="sp">상단 <b>대표님 ▾</b>에서 작업자를 고르면, 그 뒤 목욕·접종 기록에 <b>누가 했는지</b>가 함께 남아요. 등록·수정 화면에서 <b>원가</b>를 적어두면 상세에서 분양가와 나란히 보여드려요.</p></section>' +
       '<section class="scard"><h3 class="sh3">💾 백업</h3>' +
         '<p class="sp">⚙️ 설정에서 JSON으로 내려받고, 새 기기에서 복원하세요. 직원 실시간 공유는 Firebase/Supabase 연결로 이어갈 수 있어요.</p></section>' +
       '<button class="btn primary wide" data-act="closeSheet" style="margin-top:4px">알겠어요</button>' +
@@ -1742,7 +1853,13 @@
     if(t.id === 'fPrice'){
       var v = Math.max(0, Math.round(Number(String(t.value).replace(/[^0-9]/g,'')) || 0));
       var h = $('#priceHint');
-      if(h) h.innerHTML = v ? '<b>' + won(v) + '</b> · ' + manwon(v) : '비워두면 ‘가격 미정’으로 표시돼요';
+      if(h) h.innerHTML = v ? '<b>' + won(v) + '</b> · ' + manwon(v) : '비워두면 ‘분양가 미정’으로 표시돼요';
+      return;
+    }
+    if(t.id === 'fCost'){
+      var cv = Math.max(0, Math.round(Number(String(t.value).replace(/[^0-9]/g,'')) || 0));
+      var ch = $('#costHint');
+      if(ch) ch.innerHTML = cv ? '<b>' + won(cv) + '</b> · ' + manwon(cv) : '상세에서 분양가와 나란히 보여드려요';
       return;
     }
     if(t.id === 'fIntake'){
