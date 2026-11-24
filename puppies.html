@@ -887,19 +887,30 @@
       if(r.id === META_ID){ applyStaff(r.data); return; }
       try { remote.push(norm(r.data || {})); } catch(e){}
     });
-    var remoteIds = {}, snap = {};
-    remote.forEach(function(p){ remoteIds[p.id] = 1; snap[p.id] = JSON.stringify(p); });
+    var remoteIds = {}, snap = {}, merged = [], pushAfter = [];
+    remote.forEach(function(rp){
+      remoteIds[rp.id] = 1;
+      snap[rp.id] = JSON.stringify(rp);
+      var lp = get(rp.id);
+      if(lp && lp.updatedAt && rp.updatedAt && new Date(lp.updatedAt) > new Date(rp.updatedAt)){
+        merged.push(lp);
+        pushAfter.push(lp);
+      } else {
+        merged.push(rp);
+      }
+    });
     var keep = [];
     state.puppies.forEach(function(p){
       if(remoteIds[p.id]) return;
       if(localOnly[p.id] || !pushed[p.id]) keep.push(p);
     });
-    state.puppies = remote.concat(keep);
+    state.puppies = merged.concat(keep);
     pushed = snap;
     localOnly = {};
     keep.forEach(function(p){ localOnly[p.id] = 1; });
     saveLocal();
     renderAll();
+    pushAfter.forEach(function(p){ pushed[p.id] = JSON.stringify(p); upsertPuppy(p); });
     if(ui.sheet === 'detail' && ui.detailId && !get(ui.detailId)) closeSheet();
     else if(ui.sheet === 'detail' && ui.detailId) refreshDetail();
   }
@@ -1514,7 +1525,7 @@
           photoTile('profile', '예쁜 사진', '대표 프로필') +
           photoTile('store', '분양장 사진', '매장 케이지') +
         '</div>' +
-        '<p class="hint">긴 쪽 1080px · JPEG로 자동 압축해 저장해요. 사진은 이 기기에만 보관됩니다.</p>' +
+        '<p class="hint">긴 쪽 1080px · JPEG로 자동 압축해 저장해요. 사진은 노트와 함께 저장됩니다.</p>' +
       '</div>' +
 
       '<div class="fsec"><h3>특이사항 · 건강 메모</h3>' +
