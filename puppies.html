@@ -1079,11 +1079,11 @@
       '<section class="scard"><div class="shead"><h3>🛁 목욕 기록</h3><span class="sbadge ' + bl.cls + '">' + bl.text + '</span></div>' +
         '<div class="bathnow"><div class="bathlast">마지막 목욕' +
           '<b>' + (last ? fmtMD(last.date) : '기록 없음') + '</b>' +
-          (last ? '<span class="sub">' + fmtFull(last.date) + ' · ' + agoText(last.date) + (last.by ? ' · ' + esc(last.by) : '') + '</span>' : '<span class="sub">아래 버튼으로 오늘 목욕을 기록해 보세요</span>') +
+          (last ? '<span class="sub">' + agoText(last.date) + (last.by ? ' · ' + esc(last.by) : '') + '</span>' : '<span class="sub">아래 버튼으로 오늘 목욕을 기록해 보세요</span>') +
         '</div><button class="btn primary sm" data-act="bathToday">오늘 목욕 완료</button></div>' +
         '<div class="bathadd"><label class="mini">다른 날짜로 기록 / 수정</label>' +
           '<div class="row"><input type="date" class="fdate grow" id="bathNewDate" value="' + todayStr() + '" aria-label="목욕 날짜 지정">' +
-          '<button class="btn sm" data-act="bathAdd">이 날 처음 기록</button></div>' +
+          '<button class="btn sm" data-act="bathAdd">이 날짜로 기록</button></div>' +
           '<div class="hint" style="margin-top:6px">기록은 지금 작업자 <b>' + esc(state.worker) + '</b> 이름으로 남아요</div></div>' +
         '<ul class="hlist">' + bathHistory + '</ul>' +
       '</section>' +
@@ -1182,7 +1182,7 @@
         '<div class="field"><label>분양가 (원)</label>' +
           '<input class="txt" id="fPrice" inputmode="numeric" value="' + (d.price ? String(d.price) : '') + '" placeholder="850000">' +
           '<div class="pricechips">' +
-            [500000,700000,850000,1000000,1200000,1500000].map(function(v){
+            [500000,700000,850000,1000000,1200000].map(function(v){
               return '<button type="button" class="pchip" data-act="priceChip" data-v="' + v + '">' + (v/10000) + '만</button>';
             }).join('') +
             '<button type="button" class="pchip" data-act="priceChip" data-v="0">미정</button>' +
@@ -1192,7 +1192,7 @@
         '<div class="field"><label>원가 (원)</label>' +
           '<input class="txt" id="fCost" inputmode="numeric" value="' + (d.cost ? String(d.cost) : '') + '" placeholder="450000">' +
           '<div class="pricechips">' +
-            [300000,400000,450000,500000,650000,700000].map(function(v){
+            [300000,400000,450000,500000,650000].map(function(v){
               return '<button type="button" class="pchip" data-act="costChip" data-v="' + v + '">' + (v/10000) + '만</button>';
             }).join('') +
             '<button type="button" class="pchip" data-act="costChip" data-v="0">미입력</button>' +
