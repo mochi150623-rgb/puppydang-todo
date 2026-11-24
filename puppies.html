@@ -226,7 +226,7 @@
 
   /* ---------- buttons ---------- */
   .btn{height:44px;padding:0 14px;border-radius:13px;background:#fff;border:1.5px solid var(--line);font-size:13px;font-weight:800;
-    color:var(--ink-2);letter-spacing:-.02em;display:inline-flex;align-items:center;justify-content:center;gap:5px;transition:.15s}
+    color:var(--ink-2);letter-spacing:-.02em;display:inline-flex;align-items:center;justify-content:center;gap:5px;transition:.15s;white-space:nowrap}
   .btn:active{transform:scale(.98)}
   .btn.primary{background:linear-gradient(140deg,#8C5C2E,#5A381E);border-color:transparent;color:#fff;box-shadow:0 6px 16px rgba(107,68,35,.22)}
   .btn.sm{height:38px;padding:0 12px;border-radius:11px;font-size:12.5px}
@@ -1038,7 +1038,7 @@
       '<p class="sp">' + syncDesc() + '</p>' +
       (sync.lastAt ? '<p class="sp small">마지막 확인 ' + timeText(sync.lastAt) + '</p>' : '') +
       '<div class="btnrow"><button class="btn primary" data-act="syncNow">지금 새로고침</button>' +
-      (onlyN ? '<button class="btn" data-act="uploadLocal">이 기기 노트 ' + onlyN + '마리 올리기</button>' : '') + '</div>' +
+      (onlyN ? '<button class="btn" data-act="uploadLocal">이 기기 노트 올리기</button>' : '') + '</div>' +
       '</section>';
     if(sync.mode === 'waiting' || sync.mode === 'error' || sync.mode === 'perm'){
       html += '<section class="scard"><h3 class="sh3">' + (sync.mode === 'waiting' ? '🛠 공유 테이블 만들기 (한 번만)' : '🛠 공유 설정 SQL (한 번만)') + '</h3>' +
