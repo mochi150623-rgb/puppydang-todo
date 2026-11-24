@@ -707,7 +707,9 @@
     if(!data || typeof data !== 'object' || !Array.isArray(data.puppies)){
       return blankState();
     }
-    var staff = Array.isArray(data.staff) ? data.staff.filter(function(s){ return typeof s === 'string' && s.trim(); }).map(function(s){ return s.trim().slice(0,12); }) : [];
+    var staff = Array.isArray(data.staff) && data.staff.length
+      ? data.staff.filter(function(s){ return typeof s === 'string' && s.trim(); }).map(function(s){ return s.trim().slice(0,12); })
+      : ['대표님','직원1','직원2','직원3'];
     staff = staff.filter(function(s, i){ return staff.indexOf(s) === i; }).slice(0, 12);
     if(staff.indexOf('대표님') < 0) staff.unshift('대표님');
     if(!staff.length) staff = ['대표님'];
