@@ -1697,7 +1697,7 @@
       '</section>' +
 
       '<section class="scard"><div class="shead"><h3>🩺 건강 · 특이사항</h3>' +
-        ((p.healthFlags && p.healthFlags.length) ? '<span class="sbadge warn">' + p.healthFlags.length + '개 체크</span>' : '') + '</div>' +
+        '<span class="sbadge warn" id="healthCount"' + ((p.healthFlags && p.healthFlags.length) ? '' : ' style="display:none"') + '>' + ((p.healthFlags && p.healthFlags.length) ? p.healthFlags.length + '개 체크' : '0개 체크') + '</span></div>' +
         '<p class="sp small" style="margin:0 0 9px">해당되는 항목을 누르면 체크되고, 목록 카드 사진 아래에 표시돼요.</p>' +
         healthChipsHTML(p.healthFlags, true) +
       '</section>' +
@@ -2408,6 +2408,8 @@
           var on = arr.indexOf(f) >= 0;
           el.classList.toggle('on', on);
           el.setAttribute('aria-pressed', on ? 'true' : 'false');
+          var cnt = $('#healthCount');
+          if(cnt){ cnt.textContent = arr.length + '개 체크'; cnt.style.display = arr.length ? '' : 'none'; }
           commitHealth(false);
         })();
         break;
