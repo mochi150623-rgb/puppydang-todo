@@ -598,6 +598,14 @@
     return { text:'D+' + Math.abs(d) + ' 지남', cls:'alert', diff:d };
   }
   function isValidDate(s){ return parseYmd(s) !== null; }
+  function isoYmd(iso){
+    if(!iso) return '';
+    try {
+      var d = new Date(iso);
+      if(isNaN(d.getTime())) return String(iso).slice(0,10);
+      return ymd(d);
+    } catch(e){ return String(iso).slice(0,10); }
+  }
   function breedEmoji(b){
     var t = String(b || '');
     if(/비숑|푸들|말티즈|말티푸/.test(t)) return '🐩';
@@ -1425,7 +1433,7 @@
         '<textarea class="memo" id="memoBox" placeholder="식욕, 배변, 성격, 손님 반응 등 자유롭게 적어두세요">' + esc(p.memo || '') + '</textarea>' +
       '</section>' +
 
-      '<div class="dmeta">등록 ' + fmtFull(String(p.createdAt).slice(0,10)) + ' · 수정 ' + fmtFull(String(p.updatedAt).slice(0,10)) + '</div>' +
+      '<div class="dmeta">등록 ' + fmtFull(isoYmd(p.createdAt)) + ' · 수정 ' + fmtFull(isoYmd(p.updatedAt)) + '</div>' +
       '<div class="btnrow" style="margin-top:10px"><button class="btn wide" data-act="editDog">✏️ 정보 수정</button>' +
         '<button class="btn wide danger" data-act="deleteDog">이 아이 삭제</button></div>' +
       '</div>';
