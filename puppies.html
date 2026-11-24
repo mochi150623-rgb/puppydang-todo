@@ -169,18 +169,13 @@
   .stchip.available{color:#4F7A4A}
   .stchip.reserved{color:#A96A22}
   .stchip.sold{color:#8B7A68}
-  .photobtn{position:absolute;right:10px;bottom:10px;height:26px;padding:0 10px;border-radius:9px;background:rgba(255,255,255,.95);
-    color:var(--brown-d);font-size:11px;font-weight:800;display:inline-flex;align-items:center;gap:3px;
-    box-shadow:0 2px 8px rgba(46,33,22,.14);letter-spacing:-.02em}
-  .photobtn:active{transform:scale(.96)}
-  .pdots{position:absolute;right:12px;top:12px;display:flex;gap:4px}
-  .pdots i{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.5);
-    box-shadow:0 0 0 1px rgba(46,33,22,.22), 0 1px 3px rgba(46,33,22,.3)}
-  .pdots i.on{background:#fff}
+  .chealth{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+  .hbadge{height:23px;padding:0 8px;border-radius:8px;background:#FDECE1;border:1px solid #F3C9A9;
+    color:#A9470E;font-size:11.5px;font-weight:800;display:inline-flex;align-items:center;gap:3px;letter-spacing:-.02em}
   .cbody{padding:12px 14px 13px}
   .crow{display:flex;align-items:baseline;gap:8px}
   .cname{font-size:17.5px;font-weight:800;letter-spacing:-.04em;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .cprice{font-size:13.5px;font-weight:800;color:var(--brown-d);letter-spacing:-.02em;white-space:nowrap}
+  .cprice{font-size:14px;font-weight:800;color:var(--brown-d);letter-spacing:-.02em;white-space:nowrap}
   .cprice.muted{color:var(--muted-2);font-weight:700;font-size:12.5px}
   .csub{margin-top:2px;font-size:12.5px;color:var(--muted);font-weight:700;letter-spacing:-.02em;
     display:flex;gap:5px;flex-wrap:wrap;align-items:center}
@@ -198,6 +193,7 @@
   .bathbtn{flex:none;height:34px;padding:0 12px;border-radius:11px;background:linear-gradient(140deg,#8C5C2E,#5A381E);
     color:#fff;font-size:12.5px;font-weight:800;letter-spacing:-.02em;box-shadow:0 5px 14px rgba(107,68,35,.24);white-space:nowrap}
   .bathbtn:active{transform:scale(.96)}
+  .bathbtn.done{background:#F3ECE3;color:var(--muted-2);box-shadow:none;cursor:default}
   .ctail{margin-top:8px;font-size:11.5px;font-weight:800;color:var(--amber);display:flex;align-items:center;gap:4px;letter-spacing:-.02em}
   .ctail.over{color:var(--red-d)}
   .ctail .arr{margin-left:auto;color:var(--muted-2);font-weight:700}
@@ -255,22 +251,10 @@
 
   /* ---------- detail ---------- */
   .dphoto{border-radius:18px;background:#F7F0E7;padding:8px;border:1.5px solid var(--line)}
-  .dphotobar{display:flex;align-items:center;gap:6px}
-  .ptab{height:32px;padding:0 12px;border-radius:10px;font-size:12.5px;font-weight:800;color:var(--muted);background:#fff;
-    border:1.5px solid var(--line);letter-spacing:-.02em}
-  .ptab.on{background:var(--tint);border-color:var(--tint-3);color:var(--brown-d)}
-  .cmpbtn{margin-left:auto;height:32px;padding:0 10px;border-radius:10px;background:#fff;border:1.5px solid var(--line);
-    font-size:11.5px;font-weight:800;color:var(--ink-2);letter-spacing:-.02em}
-  .cmpbtn.on{background:var(--tint);border-color:var(--tint-3);color:var(--brown-d)}
-  .dphmain{position:relative;aspect-ratio:4/3;margin-top:8px;border-radius:14px;overflow:hidden;background:#EFE5DA}
+  .dphmain{position:relative;aspect-ratio:4/3;border-radius:14px;overflow:hidden;background:#EFE5DA}
   .dphmain img{width:100%;height:100%;object-fit:cover;object-position:center 38%;display:block}
-  .dcmpgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
-  .dcmpcell{position:relative;aspect-ratio:1;border-radius:14px;overflow:hidden;background:#EFE5DA}
-  .dcmpcell img{width:100%;height:100%;object-fit:cover;object-position:center 38%;display:block}
-  .dcmpcell .clab{position:absolute;left:6px;top:6px;height:22px;padding:0 7px;border-radius:7px;background:rgba(255,255,255,.94);
-    color:var(--brown-d);font-size:10.5px;font-weight:800;display:inline-flex;align-items:center;letter-spacing:-.02em}
-  .dphmain .bigph .phemo,.dcmpcell .ph .phemo{font-size:38px}
-  .dphmain .bigph .phlab{font-size:12px}
+  .dphmain .ph .phemo{font-size:38px}
+  .dphmain .ph .phlab{font-size:12px}
 
   .dhead{margin-top:14px}
   .dnamerow{display:flex;align-items:center;gap:8px}
@@ -369,8 +353,8 @@
   .pricechips{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
   .pchip{height:29px;padding:0 9px;border-radius:9px;border:1.5px solid var(--line);background:#fff;font-size:11px;font-weight:800;color:var(--ink-2)}
 
-  .photogrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-  .ptile{position:relative;aspect-ratio:1;border-radius:14px;overflow:hidden;border:1.5px dashed #DCC9B2;background:#FBF5EC;
+  .photogrid{display:grid;grid-template-columns:1fr;gap:9px}
+  .ptile{position:relative;aspect-ratio:16/9;border-radius:14px;overflow:hidden;border:1.5px dashed #DCC9B2;background:#FBF5EC;
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;padding:6px}
   .ptile.filled{border-style:solid;border-color:var(--tint-2);background:#EFE5DA;padding:0}
   .ptile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
@@ -383,6 +367,17 @@
     background:linear-gradient(to top,rgba(46,33,22,.6),rgba(46,33,22,0));font-size:10.5px;font-weight:800;color:#fff;letter-spacing:-.02em}
   .formerr{margin:0 0 12px;padding:10px 12px;border-radius:12px;background:var(--red-t);border:1.5px solid #F0D0CA;
     color:var(--red-d);font-size:12px;font-weight:800;letter-spacing:-.02em}
+  .hchips{display:flex;gap:6px;flex-wrap:wrap}
+  .hchip{height:33px;padding:0 11px;border-radius:10px;border:1.5px solid var(--line);background:#fff;
+    font-size:12px;font-weight:800;color:var(--ink-2);letter-spacing:-.02em;display:inline-flex;align-items:center;gap:4px}
+  .hchip.on{background:#FDECE1;border-color:#F0B98F;color:#A9470E}
+  .hchip .hx{width:16px;height:16px;border-radius:50%;background:rgba(169,71,14,.14);font-size:9px;font-weight:800;
+    display:inline-flex;align-items:center;justify-content:center;color:#A9470E}
+  .hchip .hmark{display:none;font-size:10px}
+  .hchip.on .hmark{display:inline}
+  .hchip:not(.on) .hx{display:none}
+  .hadd{display:flex;gap:6px;margin-top:8px}
+  .hadd .txt{height:38px;font-size:12.5px;width:auto;flex:1;min-width:0}
 
   /* ---------- settings ---------- */
   .sp{font-size:12.5px;font-weight:600;color:var(--ink-2);line-height:1.65;letter-spacing:-.01em}
@@ -419,9 +414,62 @@
     .sheet{border-radius:26px;max-height:88vh}
     .sheetwrap{background:rgba(46,33,22,.12)}
   }
+
+  /* ---------- 직원 로그인 잠금 화면 ---------- */
+  body.locked .app, body.locked .bottombar, body.locked .sheetwrap{display:none}
+  .lockwrap{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;padding:22px;
+    background:radial-gradient(900px 520px at 50% -10%,#F3E2CB 0%,#FAF6F1 58%,#F7EEE3 100%)}
+  .lockwrap.on{display:flex}
+  .lockwrap [hidden]{display:none!important}
+  .lockcard{width:100%;max-width:360px;background:#FFFDFB;border:1.5px solid var(--line);border-radius:22px;
+    padding:24px 22px 20px;box-shadow:0 18px 50px rgba(90,56,30,.14);text-align:center}
+  .locklogo{width:56px;height:56px;margin:0 auto 12px;border-radius:19px;display:grid;place-items:center;font-size:26px;
+    background:linear-gradient(140deg,#A9743F,#6B4423);box-shadow:0 8px 20px rgba(107,68,35,.28)}
+  .lockbrand{font-size:12px;font-weight:800;color:var(--brown-l);letter-spacing:.02em}
+  .locktitle{font-size:21px;font-weight:800;letter-spacing:-.04em;color:var(--ink);margin-top:4px}
+  .lockdesc{margin-top:6px;font-size:12.5px;font-weight:700;color:var(--muted);letter-spacing:-.02em;line-height:1.55}
+  .lockcheck{margin:24px 0 6px;font-size:12.5px;font-weight:800;color:var(--muted-2)}
+  .lockform{display:flex;flex-direction:column;text-align:left;margin-top:18px}
+  .locklab{font-size:11px;font-weight:800;color:var(--muted-2);letter-spacing:-.02em;margin:10px 2px 5px}
+  .lockinput{width:100%;height:48px;border-radius:13px;border:1.5px solid var(--line);background:#fff;padding:0 13px;
+    font-size:14.5px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
+  .lockinput:focus{outline:none;border-color:var(--brown-l);box-shadow:0 0 0 3px rgba(184,132,86,.16)}
+  .lockerr{margin:10px 0 0;padding:9px 11px;border-radius:11px;background:var(--red-t);border:1px solid #F0D0CA;
+    color:var(--red-d);font-size:11.5px;font-weight:800;letter-spacing:-.02em;line-height:1.45}
+  .lockbtn{height:50px;margin-top:16px;border-radius:14px;background:linear-gradient(140deg,#8C5C2E,#5A381E);color:#fff;
+    font-size:15px;font-weight:800;letter-spacing:-.02em;box-shadow:0 8px 20px rgba(107,68,35,.24)}
+  .lockbtn:active{transform:scale(.985)}
+  .lockbtn:disabled{opacity:.65}
+  .lockhint{margin-top:10px;font-size:11px;font-weight:700;color:var(--muted-2);text-align:center;letter-spacing:-.02em}
+  .lockhint b{color:var(--brown-d)}
+  .lockalt{margin-top:10px;height:44px;border-radius:12px;border:1.5px solid var(--line);background:#FBF6EF;
+    font-size:12.5px;font-weight:800;color:var(--ink-2);letter-spacing:-.02em}
+  .lockfoot{margin-top:16px;font-size:10.5px;font-weight:700;color:var(--muted-2);letter-spacing:-.02em;line-height:1.5}
+  .lockdet{margin-top:10px}
+  .lockdet summary{font-size:12px;font-weight:800;color:var(--brown-d);cursor:pointer;padding:6px 0}
 </style>
 </head>
-<body>
+<body class="locked">
+<div class="lockwrap on" id="lock">
+  <div class="lockcard">
+    <div class="locklogo">🐾</div>
+    <div class="lockbrand">퍼피댕 · 디데이펫</div>
+    <h2 class="locktitle">직원 로그인</h2>
+    <p class="lockdesc">로그인하면 강아지 목록과 분양가, 사진이 열려요.</p>
+    <div class="lockcheck" id="lockChecking">로그인 상태를 확인하는 중이에요…</div>
+    <form class="lockform" id="lockForm" hidden>
+      <label class="locklab" for="lockId">아이디</label>
+      <input class="lockinput" id="lockId" type="text" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="owner 또는 staff1">
+      <label class="locklab" for="lockPw">비밀번호</label>
+      <input class="lockinput" id="lockPw" type="password" autocomplete="current-password" placeholder="비밀번호">
+      <div class="lockerr" id="lockErr" hidden></div>
+      <button class="lockbtn" id="lockBtn" type="submit">로그인</button>
+      <p class="lockhint">아이디만 적으면 <b>@puppydaeng.app</b>이 자동으로 붙어요.</p>
+      <button class="lockalt" id="lockOfflineBtn" type="button" hidden>이 기기 기록으로 계속 보기</button>
+    </form>
+    <p class="lockfoot" id="lockFoot">직원 계정은 대표님이 Supabase에서 만들어 드려요.</p>
+  </div>
+</div>
 <div class="app" id="app">
   <header>
     <div class="topline">
@@ -488,6 +536,7 @@
   };
   var STATUS_KEYS = ['available','reserved','sold'];
   var VAC_PRESETS = ['1차 종합백신','2차 종합백신','3차 종합백신','4차 종합백신','5차 종합백신','심장사상충','구충','켄넬코프','광견병'];
+  var HEALTH_FLAGS = ['귀진드기','감기','피부','탈장','부정교합'];
 
   var errs = [];
   window.__errors = errs;
@@ -634,7 +683,17 @@
       intakeDate: isValidDate(p.intakeDate) ? p.intakeDate : todayStr(),
       birthDate: isValidDate(p.birthDate) ? p.birthDate : '',
       photoProfile: typeof p.photoProfile === 'string' ? p.photoProfile : '',
+      /* 예전 기록에 남아 있는 분양장 사진 값 — 화면에는 쓰지 않고, 저장 시 지워지지 않도록만 보존함 */
       photoStore: typeof p.photoStore === 'string' ? p.photoStore : '',
+      healthFlags: (function(){
+        if(!Array.isArray(p.healthFlags)) return [];
+        var out = [];
+        p.healthFlags.forEach(function(f){
+          var s = String(f == null ? '' : f).trim().slice(0, 10);
+          if(s && out.indexOf(s) < 0) out.push(s);
+        });
+        return out.slice(0, 12);
+      })(),
       baths: Array.isArray(p.baths) ? p.baths.filter(function(b){ return b && isValidDate(b.date); }).map(function(b){
         return { id: b.id || uid(), date: b.date, by: String(b.by || '').slice(0, 12), memo: String(b.memo || '') };
       }) : [],
@@ -746,7 +805,7 @@
   var state = loadState();
   var ui = {
     branch:'전체', status:'전체', q:'', sort:'cage',
-    photo:{}, detailId:null, detailTab:'profile', compare:false,
+    detailId:null,
     vacType: VAC_PRESETS[0], formEdit:false, formId:null, sheet:null
   };
   var draft = null;
@@ -771,7 +830,14 @@
     'exception when duplicate_object then null;\n' +
     'end $$;';
 
+  var SB_LOCK_SQL = 'revoke all on table public.puppies from anon;\n' +
+    'drop policy if exists "allow_all_puppies" on public.puppies;\n' +
+    'drop policy if exists "puppies all" on public.puppies;\n' +
+    'create policy "auth_only_puppies" on public.puppies\n' +
+    '  for all to authenticated using (true) with check (true);';
+
   var sync = { mode:'local', client:null, channel:null, lastAt:null, err:null, busy:false };
+  var auth = { user:null, offline:false, staffDirty:false, meName:'', workerSet:false };
   var pushed = {};      // id -> 마지막으로 DB에 있는 것으로 확인된 스냅샷
   var localOnly = {};   // 이 기기에만 있는(아직 공유 목록에 없는) id
 
@@ -815,21 +881,184 @@
   function setSync(mode, err){
     sync.mode = mode;
     if(err) sync.err = String(err);
-    if(mode === 'live') sync.err = null;
+    if(mode === 'live'){
+      sync.err = null;
+      if(auth.staffDirty){ auth.staffDirty = false; pushMeta(); }
+    }
     renderSyncBadge();
     if(ui.sheet === 'sync') setSheet(syncHTML(), true);
   }
 
-  function initSync(){
-    if(!window.supabase || typeof window.supabase.createClient !== 'function'){
-      setSync('local');
+  /* ================= 직원 로그인 (Supabase Auth) ================= */
+  function accountName(user){
+    if(!user) return '';
+    var md = user.user_metadata || {};
+    var nm = String(md.name || md.full_name || md.display_name || '').trim();
+    if(!nm && user.email) nm = String(user.email).split('@')[0];
+    return nm.slice(0, 12);
+  }
+  function lockError(msg){
+    var e = $('#lockErr');
+    if(!e){ return; }
+    e.textContent = msg;
+    e.hidden = false;
+  }
+  function showLock(mode, msg){
+    var w = $('#lock');
+    if(!w){ return; }
+    w.classList.add('on');
+    document.body.classList.add('locked');
+    var chk = $('#lockChecking'), form = $('#lockForm'), alt = $('#lockOfflineBtn'), foot = $('#lockFoot'), err = $('#lockErr');
+    if(chk) chk.hidden = mode !== 'checking';
+    if(form) form.hidden = (mode === 'checking');
+    if(err){ err.hidden = true; err.textContent = ''; }
+    if(alt) alt.hidden = mode !== 'offline';
+    if(foot) foot.textContent = mode === 'offline'
+      ? '로그인 서버에 연결하지 못했어요. 이 기기에 저장된 기록만 열 수 있어요.'
+      : '직원 계정은 대표님이 Supabase에서 만들어 드려요.';
+    if(msg) lockError(msg);
+    if(mode !== 'checking'){
+      var idEl = $('#lockId');
+      if(idEl && !idEl.value) setTimeout(function(){ try { idEl.focus(); } catch(e){} }, 80);
+    }
+  }
+  function clearAppDOM(){
+    ['#list','#statRow','#branchBar','#statusChips','#alertWrap','#noticeWrap','#resultCount'].forEach(function(sel){
+      var el = $(sel);
+      if(el) el.innerHTML = '';
+    });
+    var w = $('#workerName'); if(w) w.textContent = '—';
+    var t = $('#todayLine'); if(t) t.textContent = '—';
+    var fn = $('#footNote'); if(fn) fn.textContent = '';
+  }
+  function applyMe(){
+    if(!auth.meName) return;
+    if(state.staff.indexOf(auth.meName) < 0){
+      state.staff = state.staff.concat([auth.meName]).slice(0, 12);
+      auth.staffDirty = true;
+    }
+    if(!auth.workerSet){
+      state.worker = auth.meName;
+      auth.workerSet = true;
+    }
+  }
+  function lockApp(){
+    auth.user = null; auth.meName = ''; auth.workerSet = false;
+    ui.sheet = null; ui.detailId = null; ui.formId = null; draft = null;
+    var sw = $('#sheetWrap'); if(sw) sw.hidden = true;
+    document.body.classList.remove('lock');
+    if(sync.client && sync.channel){ try { sync.client.removeChannel(sync.channel); } catch(e){} }
+    sync.channel = null;
+    clearAppDOM();
+    setSync('local');
+    document.body.classList.add('locked');
+    showLock('login');
+  }
+  function unlock(user, offline){
+    auth.user = user || null;
+    auth.offline = !!offline;
+    var w = $('#lock'); if(w) w.classList.remove('on');
+    document.body.classList.remove('locked');
+    document.body.classList.remove('lock');
+    if(user){
+      auth.meName = accountName(user);
+      auth.workerSet = false;
+      applyMe();
+      try { saveLocal(); } catch(e){}
+    }
+    renderAll();
+    if(auth.offline || !sync.client){ setSync('local'); return; }
+    setSync('connecting');
+    pullRemote(true);
+  }
+  function loginErrorText(err){
+    var msg = (err && (err.message || err.error_description || err.msg)) || String(err || '');
+    if(/Invalid login credentials|invalid_grant|Invalid email or password|invalid_credentials/i.test(msg)) return '아이디 또는 비밀번호가 맞지 않아요.';
+    if(/Email not confirmed/i.test(msg)) return '이메일 확인이 아직 안 됐어요. 대표님께 계정 확인을 부탁해 주세요.';
+    if(/Failed to fetch|NetworkError|network|fetch|timeout/i.test(msg) || navigator.onLine === false) return '인터넷 연결을 확인해 주세요. 연결되면 다시 로그인해 주세요.';
+    return '로그인하지 못했어요. ' + String(msg).slice(0, 90);
+  }
+  function submitLogin(e){
+    if(e) e.preventDefault();
+    var idEl = $('#lockId'), pwEl = $('#lockPw'), btn = $('#lockBtn'), alt = $('#lockOfflineBtn');
+    if(!sync.client){
+      lockError('로그인 서버에 연결할 수 없어요. 잠시 후 다시 열어 주세요.');
+      if(alt) alt.hidden = false;
       return;
     }
+    var id = String((idEl && idEl.value) || '').trim();
+    var pw = String((pwEl && pwEl.value) || '');
+    if(!id){ lockError('아이디를 적어주세요.'); if(idEl) idEl.focus(); return; }
+    if(!pw){ lockError('비밀번호를 적어주세요.'); if(pwEl) pwEl.focus(); return; }
+    var email = id.indexOf('@') >= 0 ? id : id + '@puppydaeng.app';
+    var errEl = $('#lockErr'); if(errEl){ errEl.hidden = true; }
+    if(btn){ btn.disabled = true; btn.textContent = '로그인 중…'; }
+    sync.client.auth.signInWithPassword({ email: email, password: pw }).then(function(res){
+      if(btn){ btn.disabled = false; btn.textContent = '로그인'; }
+      if(res && res.error){
+        lockError(loginErrorText(res.error));
+        if(alt && /인터넷|연결/.test(loginErrorText(res.error))) alt.hidden = false;
+        if(pwEl){ pwEl.value = ''; pwEl.focus(); }
+        return;
+      }
+      var u = res && res.data && res.data.user;
+      if(u) unlock(u);
+      else lockError('로그인하지 못했어요. 다시 시도해 주세요.');
+    }, function(err){
+      if(btn){ btn.disabled = false; btn.textContent = '로그인'; }
+      lockError(loginErrorText(err));
+      if(alt) alt.hidden = false;
+    });
+  }
+  function doLogout(){
+    if(!window.confirm('로그아웃할까요?\n목록이 닫히고 다시 로그인해야 열려요.')) return;
+    var c = sync.client;
+    lockApp();
+    if(c && c.auth){ try { c.auth.signOut(); } catch(e){} }
+    toast('로그아웃했어요');
+  }
+  function verifyAccount(){
+    if(!auth.user || !sync.client) return;
+    sync.client.auth.getUser().then(function(res){
+      var err = res && res.error;
+      if(!err) return;
+      var st = err.status || err.code;
+      if(st === 401 || st === 403 || /JWT|user not found|invalid claim|invalid token|User from sub claim/i.test(err.message || '')){
+        lockApp();
+        lockError('계정이 더 이상 사용할 수 없어요. 대표님께 문의해 주세요.');
+      }
+    }, function(){});
+  }
+  function initClient(){
+    if(sync.client) return true;
+    if(!window.supabase || typeof window.supabase.createClient !== 'function') return false;
     try {
       sync.client = window.supabase.createClient(SB_URL, SB_KEY, {
-        auth: { persistSession:false, autoRefreshToken:false, detectSessionInUrl:false }
+        auth: { persistSession:true, autoRefreshToken:true, detectSessionInUrl:true, storageKey:'puppydang-auth' }
       });
-    } catch(e){ setSync('local', e); return; }
+    } catch(e){ sync.err = e; return false; }
+    return true;
+  }
+  function bootAuth(){
+    showLock('checking');
+    if(!initClient()){ showLock('offline'); return; }
+    try {
+      sync.client.auth.onAuthStateChange(function(evt){
+        if(evt === 'SIGNED_OUT' && (auth.user || !document.body.classList.contains('locked'))) lockApp();
+      });
+    } catch(e){}
+    try {
+      sync.client.auth.getSession().then(function(res){
+        var s = res && res.data && res.data.session;
+        if(s && s.user) unlock(s.user);
+        else showLock('login');
+      }, function(){ showLock('offline'); });
+    } catch(e){ showLock('login'); }
+  }
+
+  function initSync(){
+    if(!initClient()){ setSync('local'); return; }
+    if(!auth.user){ showLock('login'); return; }
     setSync('connecting');
     pullRemote(true);
   }
@@ -922,6 +1151,7 @@
     pushed = snap;
     localOnly = {};
     keep.forEach(function(p){ localOnly[p.id] = 1; });
+    applyMe();
     saveLocal();
     renderAll();
     pushAfter.forEach(function(p){ pushed[p.id] = JSON.stringify(p); upsertPuppy(p); });
@@ -1198,46 +1428,44 @@
     $('#noticeWrap').innerHTML = notice;
   }
 
-  function photoBlock(p, mode, opts){
-    opts = opts || {};
-    var src = mode === 'store' ? p.photoStore : p.photoProfile;
+  function photoBlock(p){
+    var src = p.photoProfile;
     if(src){
-      return '<img src="' + src + '" alt="' + esc(p.name) + ' ' + (mode==='store'?'분양장':'대표') + ' 사진">';
+      return '<img src="' + src + '" alt="' + esc(p.name) + ' 사진">';
     }
-    var lab = mode === 'store' ? '분양장 사진 준비 중' : '예쁜 사진 준비 중';
     return '<div class="ph ' + (p.branch==='디데이펫'?'b2':'') + '">' +
       '<span class="phemo">' + breedEmoji(p.breed) + '</span>' +
-      '<span class="phlab">' + lab + '</span></div>';
+      '<span class="phlab">사진 준비 중</span></div>';
   }
 
   function cardHTML(p){
-    var mode = ui.photo[p.id] === 'store' ? 'store' : 'profile';
-    var hasStore = !!p.photoStore, hasProfile = !!p.photoProfile;
     var st = STATUS[p.status] || STATUS.available;
     var bl = bathLabel(p);
     var inDays = intakeDays(p);
     var age = ageInfo(p.birthDate);
     var vac = p.nextVaccine ? dday(p.nextVaccine) : null;
     var priceHTML = '<span class="cprice">' + (p.price ? manwon(p.price) : '분양가 미정') + '</span>';
-    var toggleLabel = mode === 'store' ? '대표 사진 ›' : '분양장 사진 ›';
     var meta = [];
     if(inDays !== null) meta.push('<span class="mchip">🏠 입소 ' + Math.max(1, inDays) + '일차</span>');
     if(age) meta.push('<span class="mchip age">🎂 ' + age.main + '</span>');
     return '<article class="card" data-id="' + p.id + '" tabindex="0" aria-label="' + esc(p.name) + ' 상세 보기">' +
-      '<div class="cphoto" data-act="openCard">' + photoBlock(p, mode) +
+      '<div class="cphoto" data-act="openCard">' + photoBlock(p) +
         '<div class="cbadges"><span class="btag ' + (p.branch==='디데이펫'?'b2':'') + '">🐾 ' + p.branch + '</span>' +
         (p.cage ? '<span class="btag cage">' + esc(p.cage) + '</span>' : '') + '</div>' +
         '<span class="stchip ' + st.cls + '">' + st.label + '</span>' +
-        ((hasProfile || hasStore) ? '<button class="photobtn" data-act="togglePhoto" aria-label="사진 전환">📷 ' + toggleLabel + '</button>' : '') +
-        '<div class="pdots" aria-hidden="true"><i class="' + (mode==='profile'?'on':'') + '"></i><i class="' + (mode==='store'?'on':'') + '"></i></div>' +
       '</div>' +
       '<div class="cbody" data-act="openCard">' +
         '<div class="crow"><h3 class="cname">' + esc(p.name || '이름 없음') + '</h3>' + priceHTML + '</div>' +
+        ((p.healthFlags && p.healthFlags.length) ? '<div class="chealth">' + p.healthFlags.map(function(f){
+          return '<span class="hbadge">🩺 ' + esc(f) + '</span>';
+        }).join('') + '</div>' : '') +
         '<div class="csub">' + esc(p.breed || '품종 미정') + '<span class="sep">·</span>' + (p.sex === 'female' ? '여아' : '남아') +
           (p.color ? '<span class="sep">·</span>' + esc(p.color) : '') + '</div>' +
         '<div class="cmeta">' + meta.join('') + '</div>' +
         '<div class="cbathrow"><span class="bathbadge ' + bl.cls + '">🛁 ' + bl.text + '</span>' +
-          '<button class="bathbtn" data-act="bathToday">오늘 목욕</button></div>' +
+          (bl.cls === 'ok'
+            ? '<button class="bathbtn done" disabled aria-disabled="true">✓ 오늘 완료</button></div>'
+            : '<button class="bathbtn" data-act="bathToday">＋ 목욕 완료</button></div>') +
         (vac ? '<div class="ctail ' + (vac.cls === 'alert' ? 'over' : '') + '">💉 다음 접종 ' + vac.text +
           (p.nextVaccine ? ' <span style="font-weight:700;color:var(--muted-2)">(' + fmtMD(p.nextVaccine) + ')</span>' : '') + '</div>' : '') +
       '</div></article>';
@@ -1318,6 +1546,59 @@
   }
 
   /* ================= 상세 ================= */
+  /* ================= 건강 · 특이사항 ================= */
+  function healthChipsHTML(flags, withInput){
+    flags = Array.isArray(flags) ? flags : [];
+    var list = HEALTH_FLAGS.slice();
+    flags.forEach(function(f){ if(list.indexOf(f) < 0) list.push(f); });
+    var html = list.map(function(f){
+      var on = flags.indexOf(f) >= 0;
+      var own = HEALTH_FLAGS.indexOf(f) < 0;
+      return '<button type="button" class="hchip ' + (on ? 'on' : '') + '" data-act="healthFlag" data-flag="' + esc(f) + '" aria-pressed="' + (on ? 'true' : 'false') + '">' +
+        '<span class="hmark">✓</span>' + esc(f) +
+        (own ? '<span class="hx" data-act="healthFlagDel" data-flag="' + esc(f) + '" role="button" aria-label="' + esc(f) + ' 빼기">✕</span>' : '') +
+        '</button>';
+    }).join('');
+    if(withInput){
+      html += '<div class="hadd"><input class="txt grow" id="healthCustom" maxlength="10" placeholder="직접 입력 (예: 슬개골)" autocomplete="off" aria-label="특이사항 직접 입력">' +
+        '<button type="button" class="btn sm" data-act="healthAdd">추가</button></div>';
+    }
+    return '<div class="hchips">' + html + '</div>';
+  }
+  function healthTarget(){
+    if(ui.sheet === 'form' && draft){
+      if(!Array.isArray(draft.healthFlags)) draft.healthFlags = [];
+      return draft;
+    }
+    if(ui.detailId){
+      var p = get(ui.detailId);
+      if(p){ if(!Array.isArray(p.healthFlags)) p.healthFlags = []; return p; }
+    }
+    return null;
+  }
+  function grabMemo(){
+    var mb = $('#memoBox');
+    if(!mb || !ui.detailId) return;
+    var p = get(ui.detailId);
+    if(p) p.memo = mb.value;
+    if(window.__memoT){ clearTimeout(window.__memoT); window.__memoT = null; }
+    var sv = $('#memoSaved');
+    if(sv){ sv.textContent = '저장됨 ✓'; sv.classList.add('on'); }
+  }
+  function commitHealth(render){
+    var t = healthTarget();
+    if(!t) return;
+    if(t === draft){
+      if(render){ readForm(); setSheet(formHTML(), true); }
+      return;
+    }
+    grabMemo();
+    t.updatedAt = new Date().toISOString();
+    save();
+    renderList();
+    if(render) refreshDetail();
+  }
+
   function detailHTML(id){
     var p = get(id);
     if(!p) return '<div class="sheetbody"><p class="sp">아이 정보를 찾을 수 없어요.</p></div>';
@@ -1329,15 +1610,7 @@
     var vac = p.nextVaccine ? dday(p.nextVaccine) : null;
     var priceTxt = p.price ? manwon(p.price) : '분양가 미정';
 
-    var photoArea;
-    if(ui.compare){
-      photoArea = '<div class="dcmpgrid">' +
-        '<div class="dcmpcell"><span class="clab">대표 사진</span>' + photoBlock(p, 'profile') + '</div>' +
-        '<div class="dcmpcell"><span class="clab">분양장 사진</span>' + photoBlock(p, 'store') + '</div>' +
-      '</div>';
-    } else {
-      photoArea = '<div class="dphmain">' + photoBlock(p, ui.detailTab === 'store' ? 'store' : 'profile') + '</div>';
-    }
+    var photoArea = '<div class="dphmain">' + photoBlock(p) + '</div>';
 
     var bathHistory = (p.baths || []).slice().sort(function(a,b){ return String(b.date).localeCompare(String(a.date)); }).map(function(b){
       return '<li class="hrow"><span class="htype">🛁 목욕 <em>' + agoText(b.date) + '</em>' +
@@ -1368,13 +1641,7 @@
     return sheetbar(esc(p.name || '이름 없음'), esc(p.cage || '장 번호 없음') + ' · ' + p.branch,
         '<button class="ibtn" data-act="editDog" aria-label="수정">✏️</button>', 'back') +
       '<div class="sheetbody">' +
-      '<div class="dphoto">' +
-        '<div class="dphotobar">' +
-          '<button class="ptab ' + (!ui.compare && ui.detailTab !== 'store' ? 'on' : '') + '" data-act="photoTab" data-tab="profile">대표 사진</button>' +
-          '<button class="ptab ' + (!ui.compare && ui.detailTab === 'store' ? 'on' : '') + '" data-act="photoTab" data-tab="store">분양장 사진</button>' +
-          '<button class="cmpbtn ' + (ui.compare ? 'on' : '') + '" data-act="compare">' + (ui.compare ? '한 장씩' : '⧉ 나란히') + '</button>' +
-        '</div>' + photoArea +
-      '</div>' +
+      '<div class="dphoto">' + photoArea + '</div>' +
 
       '<div class="dhead">' +
         '<div class="dnamerow"><h2 class="dname">' + esc(p.name || '이름 없음') + '</h2>' +
@@ -1405,7 +1672,7 @@
         '<div class="bathnow"><div class="bathlast">마지막 목욕' +
           '<b>' + (last ? fmtMD(last.date) : '기록 없음') + '</b>' +
           (last ? '<span class="sub">' + agoText(last.date) + (last.by ? ' · ' + esc(last.by) : '') + '</span>' : '<span class="sub">아래 버튼으로 오늘 목욕을 기록해 보세요</span>') +
-        '</div><button class="btn primary sm" data-act="bathToday">오늘 목욕 완료</button></div>' +
+        '</div><button class="btn primary sm" data-act="bathToday">＋ 목욕 완료</button></div>' +
         '<div class="bathadd"><label class="mini">다른 날짜로 기록 / 수정</label>' +
           '<div class="row"><input type="date" class="fdate grow" id="bathNewDate" value="' + todayStr() + '" aria-label="목욕 날짜 지정">' +
           '<button class="btn sm" data-act="bathAdd">이 날짜로 기록</button></div>' +
@@ -1429,6 +1696,12 @@
         '<ul class="hlist">' + vacHistory + '</ul>' +
       '</section>' +
 
+      '<section class="scard"><div class="shead"><h3>🩺 건강 · 특이사항</h3>' +
+        ((p.healthFlags && p.healthFlags.length) ? '<span class="sbadge warn">' + p.healthFlags.length + '개 체크</span>' : '') + '</div>' +
+        '<p class="sp small" style="margin:0 0 9px">해당되는 항목을 누르면 체크되고, 목록 카드 사진 아래에 표시돼요.</p>' +
+        healthChipsHTML(p.healthFlags, true) +
+      '</section>' +
+
       '<section class="scard"><div class="shead"><h3>📝 특이사항 · 건강 메모</h3><span class="saved" id="memoSaved">자동 저장</span></div>' +
         '<textarea class="memo" id="memoBox" placeholder="식욕, 배변, 성격, 손님 반응 등 자유롭게 적어두세요">' + esc(p.memo || '') + '</textarea>' +
       '</section>' +
@@ -1442,8 +1715,6 @@
   function openDetail(id){
     if(!get(id)) return;
     ui.detailId = id;
-    ui.detailTab = 'profile';
-    ui.compare = false;
     ui.vacType = VAC_PRESETS[0];
     ui.sheet = 'detail';
     setSheet(detailHTML(id));
@@ -1466,15 +1737,15 @@
     var isEdit = ui.formEdit;
     var intakeN = d.intakeDate ? daysBetween(d.intakeDate, todayStr()) : null;
     var age = ageInfo(d.birthDate);
-    var photoTile = function(kind, label, sub){
-      var src = kind === 'profile' ? d.photoProfile : d.photoStore;
+    var photoTile = function(label, sub){
+      var src = d.photoProfile;
       if(src){
-        return '<div class="ptile filled" data-tile="' + kind + '">' +
+        return '<div class="ptile filled">' +
           '<img src="' + src + '" alt="' + label + ' 미리보기">' +
-          '<button type="button" class="ptdel" data-act="photoRemove" data-kind="' + kind + '" aria-label="' + label + ' 삭제">✕</button>' +
-          '<button type="button" class="ptbottom" data-act="photoPick" data-kind="' + kind + '">' + label + ' · 변경</button></div>';
+          '<button type="button" class="ptdel" data-act="photoRemove" aria-label="' + label + ' 삭제">✕</button>' +
+          '<button type="button" class="ptbottom" data-act="photoPick">' + label + ' · 변경</button></div>';
       }
-      return '<button type="button" class="ptile" data-act="photoPick" data-kind="' + kind + '" aria-label="' + label + ' 올리기">' +
+      return '<button type="button" class="ptile" data-act="photoPick" aria-label="' + label + ' 올리기">' +
         '<span class="ptplus">＋</span><span class="ptlab">' + label + '</span><span class="ptsub">' + sub + '</span></button>';
     };
     return sheetbar(isEdit ? '정보 수정' : '새 아이 등록', isEdit ? '수정하면 바로 저장돼요' : '사진은 자동으로 압축해서 저장해요',
@@ -1536,24 +1807,24 @@
         '</div>' +
       '</div>' +
 
-      '<div class="fsec"><h3>사진 2종류</h3>' +
+      '<div class="fsec"><h3>강아지 사진</h3>' +
         '<div class="photogrid">' +
-          photoTile('profile', '예쁜 사진', '대표 프로필') +
-          photoTile('store', '분양장 사진', '매장 케이지') +
+          photoTile('강아지 사진', '앨범에서 고르기') +
         '</div>' +
-        '<p class="hint">긴 쪽 1080px · JPEG로 자동 압축해 저장해요. 사진은 노트와 함께 저장됩니다.</p>' +
+        '<p class="hint">한 장만 올리면 돼요. 긴 쪽 1080px · JPEG로 자동 압축해 저장해요.</p>' +
       '</div>' +
 
       '<div class="fsec"><h3>특이사항 · 건강 메모</h3>' +
-        '<textarea class="memo" id="fMemo" placeholder="식욕, 배변, 성격, 손님 반응 등">' + esc(d.memo || '') + '</textarea>' +
+        '<label class="mini">건강 · 특이사항 체크 (해당되는 항목을 누르기)</label>' +
+        healthChipsHTML(d.healthFlags, true) +
+        '<textarea class="memo" id="fMemo" style="margin-top:10px" placeholder="식욕, 배변, 성격, 손님 반응 등">' + esc(d.memo || '') + '</textarea>' +
       '</div>' +
 
       '<button class="btn primary wide" data-act="saveForm" style="height:50px;border-radius:15px;font-size:15px">' +
         (isEdit ? '수정 내용 저장' : '아이 등록하기') + '</button>' +
       (isEdit ? '<button class="btn wide danger" data-act="deleteDog" style="margin-top:8px">이 아이 삭제</button>' : '') +
       '</div>' +
-      '<input type="file" id="fileProfile" accept="image/*" hidden>' +
-      '<input type="file" id="fileStore" accept="image/*" hidden>';
+      '<input type="file" id="fileProfile" accept="image/*" hidden>';
   }
 
   function openForm(id){
@@ -1629,8 +1900,6 @@
     ui.formEdit = false;
     ui.formId = null;
     ui.detailId = saved.id;
-    ui.detailTab = 'profile';
-    ui.compare = false;
     ui.sheet = 'detail';
     setSheet(detailHTML(saved.id));
     toast(wasEdit ? saved.name +' 정보를 저장했어요' : saved.name + ' 등록 완료!');
@@ -1674,13 +1943,13 @@
     reader.readAsDataURL(file);
   }
 
-  function handlePhoto(file, kind){
+  function handlePhoto(file){
     if(!file) return;
     if(!/^image\//.test(file.type)){ toast('이미지 파일만 올릴 수 있어요.'); return; }
     compressImage(file, function(dataURL){
       if(!draft) return;
       readForm();
-      if(kind === 'store') draft.photoStore = dataURL; else draft.photoProfile = dataURL;
+      draft.photoProfile = dataURL;
       setSheet(formHTML(), true);
       toast('사진을 추가했어요 (약 ' + Math.round(dataURL.length/1024) + 'KB)');
     });
@@ -1749,7 +2018,21 @@
           '<span>' + (sync.mode === 'live' ? '변경이 직원 폰에 바로 반영돼요' : '이 기기에도 안전하게 저장되고 있어요') + '</span></div>' +
           '<button class="btn sm" data-act="openSync">상태</button></div>' +
         (sync.lastAt ? '<p class="sp small">마지막 확인 ' + timeText(sync.lastAt) + ' · 같은 목록을 직원 폰과 함께 봐요</p>' : '') +
-        '<p class="sp small">공개 페이지라 링크를 아는 사람은 목록을 볼 수 있어요. 손님께는 주소를 공유하지 마세요.</p>' +
+        '<p class="sp small">로그인한 직원만 목록을 열 수 있어요. 아래 보안 SQL을 실행하면 서버에서도 잠겨요.</p>' +
+      '</section>' +
+      '<section class="scard">' +
+        '<h3 class="sh3">🔐 로그인 · 보안</h3>' +
+        '<div class="settingrow"><div><b>' +
+          (auth.user ? '로그인: ' + esc(auth.user.email || accountName(auth.user)) : (auth.offline ? '이 기기 기록만 보는 중' : '로그인하지 않음')) + '</b>' +
+          '<span>' + (auth.offline ? '오프라인 모드 · 서버 잠금이 걸려 있지 않아요' : (auth.user ? '다시 열 때도 이 계정으로 들어와요' : '로그인하면 목록이 열려요')) + '</span></div>' +
+          (auth.user ? '<button class="btn sm" data-act="logout">로그아웃</button>' : '') + '</div>' +
+        '<p class="sp small">직원이 그만두면 Supabase 대시보드 → Authentication → Users 에서 그 계정을 <b>삭제</b>하거나 <b>Ban</b> 하면 바로 들어오지 못해요. 앱은 화면을 다시 열 때마다 계정 상태를 확인해요.</p>' +
+        '<details class="lockdet"><summary>서버 잠금 SQL (대표님이 한 번만)</summary>' +
+          '<p class="sp small" style="margin-top:6px">Supabase → Authentication → Users → <b>Add user</b> 로 직원 계정을 먼저 만들고(예: owner@puppydaeng.app, Auto Confirm 켜기), 아래 SQL을 SQL Editor에서 실행하세요. 그러면 로그인하지 않은 사람은 서버에서도 목록을 읽지 못해요.</p>' +
+          '<pre class="sqlbox">' + esc(SB_LOCK_SQL) + '</pre>' +
+          '<div class="btnrow"><button class="btn primary" data-act="copyLockSQL">잠금 SQL 복사</button>' +
+            '<button class="btn" data-act="openSupabase">Supabase 열기</button></div>' +
+        '</details>' +
       '</section>' +
       '<section class="scard">' +
         '<h3 class="sh3">👤 작업자 · 안내</h3>' +
@@ -1956,13 +2239,7 @@
         })();
         break;
       case 'openCard':
-        if(el.closest('[data-act="togglePhoto"]')) break;
         openDetail(el.closest('.card').getAttribute('data-id'));
-        break;
-      case 'togglePhoto':
-        var cid = el.closest('.card').getAttribute('data-id');
-        ui.photo[cid] = (ui.photo[cid] === 'store') ? 'profile' : 'store';
-        renderList();
         break;
       case 'bathToday':
         bathToday(id);
@@ -2015,15 +2292,6 @@
         break;
       case 'setStatus':
         setStatus(ui.detailId, el.getAttribute('data-status'));
-        break;
-      case 'photoTab':
-        ui.detailTab = el.getAttribute('data-tab');
-        ui.compare = false;
-        refreshDetail();
-        break;
-      case 'compare':
-        ui.compare = !ui.compare;
-        refreshDetail();
         break;
       case 'bathAdd':
         (function(){
@@ -2119,23 +2387,66 @@
         })();
         break;
       case 'photoPick':
-        (function(){
-          var kind = el.getAttribute('data-kind');
-          var input = kind === 'store' ? $('#fileStore') : $('#fileProfile');
-          if(input) input.click();
-        })();
+        (function(){ var input = $('#fileProfile'); if(input) input.click(); })();
         break;
       case 'photoRemove':
         (function(){
-          var kind = el.getAttribute('data-kind');
           readForm();
-          if(kind === 'store') draft.photoStore = ''; else draft.photoProfile = '';
+          draft.photoProfile = '';
           setSheet(formHTML(), true);
           toast('사진을 뺐어요');
         })();
         break;
+      case 'healthFlag':
+        (function(){
+          var f = el.getAttribute('data-flag');
+          var t = healthTarget();
+          if(!f || !t) return;
+          var arr = t.healthFlags;
+          var i = arr.indexOf(f);
+          if(i >= 0) arr.splice(i, 1); else arr.push(f);
+          var on = arr.indexOf(f) >= 0;
+          el.classList.toggle('on', on);
+          el.setAttribute('aria-pressed', on ? 'true' : 'false');
+          commitHealth(false);
+        })();
+        break;
+      case 'healthFlagDel':
+        (function(){
+          var f = el.getAttribute('data-flag');
+          var t = healthTarget();
+          if(!f || !t) return;
+          t.healthFlags = t.healthFlags.filter(function(x){ return x !== f; });
+          commitHealth(true);
+        })();
+        break;
+      case 'healthAdd':
+        (function(){
+          var inp = $('#healthCustom');
+          var t = healthTarget();
+          if(!inp || !t) return;
+          var v = String(inp.value || '').trim().slice(0, 10);
+          if(!v){ inp.focus(); return; }
+          if(t.healthFlags.indexOf(v) >= 0){ toast('이미 체크된 항목이에요'); inp.value = ''; return; }
+          t.healthFlags.push(v);
+          inp.value = '';
+          commitHealth(true);
+          toast('‘' + v + '’ 체크했어요');
+        })();
+        break;
       case 'saveForm':
         saveForm();
+        break;
+      case 'logout':
+        doLogout();
+        break;
+      case 'copyLockSQL':
+        (function(){
+          try {
+            navigator.clipboard.writeText(SB_LOCK_SQL).then(function(){ toast('잠금 SQL을 복사했어요 · SQL Editor에 붙여넣으세요'); },
+              function(){ toast('복사가 안 되면 코드를 길게 눌러 직접 복사해 주세요'); });
+          } catch(e){ toast('복사가 안 되면 코드를 길게 눌러 직접 복사해 주세요'); }
+        })();
         break;
       case 'expJSON':
         exportJSON();
@@ -2180,11 +2491,11 @@
     setSheet(sheetbar('사용 안내', '1분이면 익혀요') +
       '<div class="sheetbody">' +
       '<section class="scard" style="margin-top:0"><h3 class="sh3">🐾 카드에서 바로</h3>' +
-        '<p class="sp">· 사진을 누르거나 <b>📷 분양장 사진</b>을 누르면 대표/분양장 사진이 바뀝니다.<br>· <b>오늘 목욕</b>을 누르면 오늘 날짜로 바로 기록됩니다.<br>· 카드를 누르면 상세에서 접종·메모·날짜 수정까지 할 수 있어요.</p></section>' +
+        '<p class="sp">· <b>＋ 목욕 완료</b>를 누르면 오늘 날짜로 바로 기록됩니다.<br>· 상세에서 <b>🩺 특이사항</b>을 체크하면 카드 사진 아래에 표시됩니다.<br>· 카드를 누르면 상세에서 접종·메모·날짜 수정까지 할 수 있어요.</p></section>' +
       '<section class="scard"><h3 class="sh3">🔎 찾기</h3>' +
         '<p class="sp">지점(전체/퍼피댕/디데이펫)과 분양 상태로 거르고, <b>장 번호·품종·이름</b>으로 검색하세요. 정렬은 장 번호순·최근 입소순·<b>목욕 오래된 순</b>이 있어요.</p></section>' +
-      '<section class="scard"><h3 class="sh3">📷 사진 두 장</h3>' +
-        '<p class="sp"><b>예쁜 사진</b>(대표)과 <b>분양장 사진</b>(케이지 현장)을 따로 올려 두고, 상세에서 <b>⧉ 나란히</b>로 크게 비교할 수 있어요. 올릴 때 자동으로 압축됩니다.</p></section>' +
+      '<section class="scard"><h3 class="sh3">📷 사진</h3>' +
+        '<p class="sp"><b>강아지 사진</b> 한 장을 올려두면 목록 카드와 상세에서 크게 보여요. 올릴 때 자동으로 압축됩니다.</p></section>' +
       '<section class="scard"><h3 class="sh3">👤 작업자 · 원가</h3>' +
         '<p class="sp">상단 <b>대표님 ▾</b>에서 작업자를 고르면, 그 뒤 목욕·접종 기록에 <b>누가 했는지</b>가 함께 남아요. 등록·수정 화면에서 <b>원가</b>를 적어두면 상세에서 분양가와 나란히 보여드려요.</p></section>' +
       '<section class="scard"><h3 class="sh3">🔄 직원 공유 · 백업</h3>' +
@@ -2263,9 +2574,8 @@
   document.addEventListener('change', function(e){
     var t = e.target;
     if(t.id === 'qClear') return;
-    if(t.id === 'fileProfile' || t.id === 'fileStore'){
-      var kind = t.id === 'fileStore' ? 'store' : 'profile';
-      if(t.files && t.files[0]) handlePhoto(t.files[0], kind);
+    if(t.id === 'fileProfile'){
+      if(t.files && t.files[0]) handlePhoto(t.files[0]);
       t.value = '';
       return;
     }
@@ -2334,9 +2644,14 @@
   });
 
   /* ================= 시작 ================= */
-  renderAll();
-  initSync();
-  window.addEventListener('online', function(){ if(sync.mode !== 'live') pullRemote(!sync.channel); });
+  var lockFormEl = $('#lockForm');
+  if(lockFormEl) lockFormEl.addEventListener('submit', submitLogin);
+  var lockAltEl = $('#lockOfflineBtn');
+  if(lockAltEl) lockAltEl.addEventListener('click', function(){ unlock(null, true); });
+  document.addEventListener('visibilitychange', function(){ if(!document.hidden) verifyAccount(); });
+
+  bootAuth();
+  window.addEventListener('online', function(){ if(auth.user && sync.mode !== 'live') pullRemote(!sync.channel); });
   if(window.__errors.length){
     // 개발 중 조용한 확인용
     console.warn('init errors', window.__errors);
