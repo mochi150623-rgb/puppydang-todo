@@ -474,7 +474,7 @@
     <div class="topline">
       <div class="brand"><span class="logo">🐾</span> 퍼피댕 · 디데이펫</div>
       <div class="topact">
-        <button class="wpill" data-act="openWorker" aria-label="작업자 선택">👤 <b id="workerName">대표님</b><span class="chev">▾</span></button>
+        <button class="wpill" data-act="openWorker" aria-label="작업자 선택">👤 <b id="workerName">—</b><span class="chev">▾</span></button>
         <button class="gbtn" data-act="openGuide" aria-label="사용 안내">?</button>
         <button class="gbtn" data-act="openSettings" aria-label="설정">⚙️</button>
       </div>
@@ -526,6 +526,8 @@
 
   /* ================= 기본 상수 ================= */
   var KEY = 'puppydang_puppies_v1';
+  var DEFAULT_STAFF = ['직원1','직원2','직원3'];
+  var RETIRED_STAFF = '대표님';   // 작업자 목록에서 제외 (지난 기록의 이름은 유지)
   var BRANCHES = ['퍼피댕','디데이펫'];
   var STATUS = {
     available:{label:'분양중', cls:'available'},
@@ -765,8 +767,18 @@
   }
 
   function blankState(){
-    return { v:2, worker:'대표님', staff:['대표님','직원1','직원2','직원3'], hintDismissed:false,
+    return { v:2, worker:DEFAULT_STAFF[0], staff:DEFAULT_STAFF.slice(), hintDismissed:false,
       puppies: [], seeded:false, createdAt:new Date().toISOString() };
+  }
+
+  // 작업자 목록 정규화: 공백/중복/길이 정리 + '대표님' 제외 + 비면 기본 목록
+  function cleanStaff(list){
+    var arr = Array.isArray(list) ? list : [];
+    var out = arr.filter(function(s){ return typeof s === 'string' && s.trim(); })
+      .map(function(s){ return s.trim().slice(0,12); })
+      .filter(function(s){ return s !== RETIRED_STAFF; });
+    out = out.filter(function(s, i){ return out.indexOf(s) === i; }).slice(0, 12);
+    return out.length ? out : DEFAULT_STAFF.slice();
   }
 
   function loadState(){
@@ -782,12 +794,7 @@
     if(!data || typeof data !== 'object' || !Array.isArray(data.puppies)){
       return blankState();
     }
-    var staff = Array.isArray(data.staff) && data.staff.length
-      ? data.staff.filter(function(s){ return typeof s === 'string' && s.trim(); }).map(function(s){ return s.trim().slice(0,12); })
-      : ['대표님','직원1','직원2','직원3'];
-    staff = staff.filter(function(s, i){ return staff.indexOf(s) === i; }).slice(0, 12);
-    if(staff.indexOf('대표님') < 0) staff.unshift('대표님');
-    if(!staff.length) staff = ['대표님'];
+    var staff = cleanStaff(data.staff);
     var worker = staff.indexOf(data.worker) >= 0 ? data.worker : staff[0];
     return {
       v: 1,
@@ -931,12 +938,13 @@
   }
   function applyMe(){
     if(!auth.meName) return;
-    if(state.staff.indexOf(auth.meName) < 0){
+    var mine = auth.meName !== RETIRED_STAFF;
+    if(mine && state.staff.indexOf(auth.meName) < 0){
       state.staff = state.staff.concat([auth.meName]).slice(0, 12);
       auth.staffDirty = true;
     }
     if(!auth.workerSet){
-      state.worker = auth.meName;
+      state.worker = (mine && state.staff.indexOf(auth.meName) >= 0) ? auth.meName : state.staff[0];
       auth.workerSet = true;
     }
   }
@@ -1110,11 +1118,7 @@
 
   function applyStaff(data){
     if(!data || !Array.isArray(data.names)) return;
-    var names = data.names.filter(function(s){ return typeof s === 'string' && s.trim(); })
-      .map(function(s){ return s.trim().slice(0,12); });
-    names = names.filter(function(s, i){ return names.indexOf(s) === i; }).slice(0,12);
-    if(names.indexOf('대표님') < 0) names.unshift('대표님');
-    if(!names.length) return;
+    var names = cleanStaff(data.names);
     var changed = JSON.stringify(names) !== JSON.stringify(state.staff);
     state.staff = names;
     if(state.staff.indexOf(state.worker) < 0) state.worker = state.staff[0];
@@ -1417,7 +1421,7 @@
 
   function renderWorker(){
     var el = $('#workerName');
-    if(el) el.textContent = state.worker || '대표님';
+    if(el) el.textContent = state.worker || state.staff[0] || '작업자';
   }
 
   function renderNotice(){
@@ -1995,7 +1999,7 @@
   function workerHTML(){
     var list = state.staff.map(function(n){
       var on = state.worker === n;
-      var del = (n === '대표님') ? '' : '<span class="wdel" data-act="delWorker" data-name="' + esc(n) + '" role="button" aria-label="' + esc(n) + ' 삭제">✕</span>';
+      var del = '<span class="wdel" data-act="delWorker" data-name="' + esc(n) + '" role="button" aria-label="' + esc(n) + ' 삭제">✕</span>';
       return '<div class="wopt ' + (on ? 'on' : '') + '" data-act="pickWorker" data-name="' + esc(n) + '" role="button" tabindex="0" aria-pressed="' + on + '">' + esc(n) + del + '</div>';
     }).join('');
     return sheetbar('작업자 선택', '지금 누구 차례인가요?') +
@@ -2131,11 +2135,10 @@
       state.puppies = list.map(norm);
       localOnly = {};
       if(Array.isArray(data.staff)){
-        var st = data.staff.filter(function(s){ return typeof s === 'string' && s.trim(); }).map(function(s){ return s.trim().slice(0,12); });
-        if(st.indexOf('대표님') < 0) st.unshift('대표님');
-        if(st.length) state.staff = st;
+        state.staff = cleanStaff(data.staff);
       }
       if(typeof data.worker === 'string' && state.staff.indexOf(data.worker) >= 0) state.worker = data.worker;
+      if(state.staff.indexOf(state.worker) < 0) state.worker = state.staff[0];
       save();
       renderAll();
       setSheet(settingsHTML(), true);
@@ -2246,6 +2249,7 @@
           var inp = $('#newWorker');
           var n = inp ? inp.value.trim().slice(0, 12) : '';
           if(!n){ toast('직원 이름을 적어주세요'); if(inp) inp.focus(); return; }
+          if(n === RETIRED_STAFF){ toast('그 이름은 작업자로 쓸 수 없어요'); return; }
           if(state.staff.indexOf(n) >= 0){ toast('이미 있는 이름이에요'); return; }
           if(state.staff.length >= 12){ toast('작업자는 12명까지예요'); return; }
           state.staff.push(n);
@@ -2260,8 +2264,8 @@
       case 'delWorker':
         (function(){
           var n = el.getAttribute('data-name');
-          if(!n || n === '대표님'){ toast('대표님은 지울 수 없어요'); return; }
-          if(state.staff.length <= 1) return;
+          if(!n) return;
+          if(state.staff.length <= 1){ toast('작업자는 한 명 이상 있어야 해요'); return; }
           if(!window.confirm('작업자 “‘' + n + '”을(를) 목록에서 지울까요?\n지난 기록에 남은 이름은 그대로 남아요.')) return;
           state.staff = state.staff.filter(function(s){ return s !== n; });
           if(state.worker === n) state.worker = state.staff[0];
@@ -2533,7 +2537,7 @@
       '<section class="scard"><h3 class="sh3">📷 사진</h3>' +
         '<p class="sp"><b>강아지 사진</b> 한 장을 올려두면 목록 카드와 상세에서 크게 보여요. 올릴 때 자동으로 압축됩니다.</p></section>' +
       '<section class="scard"><h3 class="sh3">👤 작업자 · 원가</h3>' +
-        '<p class="sp">상단 <b>대표님 ▾</b>에서 작업자를 고르면, 그 뒤 목욕·접종 기록에 <b>누가 했는지</b>가 함께 남아요. 등록·수정 화면에서 <b>원가</b>를 적어두면 상세에서 분양가와 나란히 보여드려요.</p></section>' +
+        '<p class="sp">상단 <b>👤 이름 ▾</b>에서 작업자를 고르면, 그 뒤 목욕·접종 기록에 <b>누가 했는지</b>가 함께 남아요. 등록·수정 화면에서 <b>원가</b>를 적어두면 상세에서 분양가와 나란히 보여드려요.</p></section>' +
       '<section class="scard"><h3 class="sh3">🔄 직원 공유 · 백업</h3>' +
         '<p class="sp">상단 날짜 옆 <b>동기화 배지</b>를 누르면 연결 상태를 볼 수 있어요. 연결되면 직원 폰과 같은 목록을 실시간으로 함께 쓰고, ⚙️ 설정에서 JSON 백업도 받아둘 수 있어요.</p></section>' +
       '<button class="btn primary wide" data-act="closeSheet" style="margin-top:4px">알겠어요</button>' +
