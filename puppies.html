@@ -68,7 +68,7 @@
   .syncbadge.off{background:#FCEFEC;color:#B8432F;border-color:#F2D6CF}
   .syncbadge:active{transform:scale(.97)}
   .sqlbox{margin-top:10px;background:#2E2116;color:#F6EEE3;border-radius:12px;padding:11px 12px;font-size:11px;line-height:1.55;
-    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;overflow-x:auto;max-height:230px}
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;overflow-x:auto}
 
   /* ---------- stats ---------- */
   .statrow{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:15px}
@@ -458,7 +458,7 @@
     <div id="noticeWrap"></div>
   </header>
   <main class="list" id="list"></main>
-  <p class="footnote">이 노트는 이 기기 브라우저에만 저장돼요 · 직원 공유·백업은 ⚙️ 설정에서</p>
+  <p class="footnote" id="footNote">이 기기 브라우저에도 저장돼요 · 공유 상태는 상단 배지에서</p>
 </div>
 
 <div class="bottombar">
@@ -796,10 +796,15 @@
     var m = SYNC_META[sync.mode] || SYNC_META.local;
     b.textContent = m.text;
     b.className = 'syncbadge ' + m.cls;
+    var fn = $('#footNote');
+    if(fn) fn.textContent = isLive()
+      ? '직원 폰과 실시간으로 함께 쓰는 노트예요 · 백업은 ⚙️ 설정에서'
+      : '이 기기 브라우저에도 저장돼요 · 공유 상태는 상단 배지에서';
   }
   function setSync(mode, err){
     sync.mode = mode;
     if(err) sync.err = String(err);
+    if(mode === 'live') sync.err = null;
     renderSyncBadge();
     if(ui.sheet === 'sync') setSheet(syncHTML(), true);
   }
@@ -853,8 +858,11 @@
       sync.channel = sync.client.channel('puppies-live')
         .on('postgres_changes', { event:'*', schema:'public', table:'puppies' }, onRealtime)
         .subscribe(function(status){
-          if(status === 'SUBSCRIBED') setSync('live');
-          else if(status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') setSync('error', 'realtime ' + status);
+          if(status === 'SUBSCRIBED'){
+            if(sync.mode !== 'waiting' && sync.mode !== 'error') setSync('live');
+          } else if(status === 'CHANNEL_ERROR' || status === 'TIMED_OUT'){
+            setSync('error', 'realtime ' + status);
+          }
         });
     } catch(e){ setSync('error', e); }
   }
