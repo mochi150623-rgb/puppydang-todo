@@ -752,6 +752,8 @@
     '  data jsonb not null,\n' +
     '  updated_at timestamptz not null default now()\n' +
     ');\n\n' +
+    'grant usage on schema public to anon;\n' +
+    'grant select, insert, update, delete on public.puppies to anon;\n\n' +
     'alter table public.puppies enable row level security;\n\n' +
     'drop policy if exists "puppies all" on public.puppies;\n' +
     'create policy "puppies all" on public.puppies\n' +
@@ -769,6 +771,7 @@
     live:      { text:'🟢 실시간 동기화', cls:'live' },
     connecting:{ text:'🟠 연결 중', cls:'wait' },
     waiting:   { text:'🟡 테이블 대기', cls:'wait' },
+    perm:      { text:'🔴 권한 필요', cls:'off' },
     error:     { text:'🔴 동기화 오류', cls:'off' },
     offline:   { text:'⚪ 오프라인', cls:'off' },
     local:     { text:'🟡 이 기기 저장', cls:'off' }
@@ -832,6 +835,9 @@
     if(code === 'PGRST205' || code === '42P01' || /schema cache|does not exist/i.test(msg)){
       setSync('waiting', msg); return;
     }
+    if(code === '42501' || /permission denied|row-level security|JWT|apikey/i.test(msg)){
+      setSync('perm', msg); return;
+    }
     setSync('error', msg);
   }
 
@@ -859,7 +865,7 @@
         .on('postgres_changes', { event:'*', schema:'public', table:'puppies' }, onRealtime)
         .subscribe(function(status){
           if(status === 'SUBSCRIBED'){
-            if(sync.mode !== 'waiting' && sync.mode !== 'error') setSync('live');
+            if(sync.mode !== 'waiting' && sync.mode !== 'error' && sync.mode !== 'perm') setSync('live');
           } else if(status === 'CHANNEL_ERROR' || status === 'TIMED_OUT'){
             setSync('error', 'realtime ' + status);
           }
@@ -1009,6 +1015,7 @@
       case 'live': return '직원 폰과 같은 목록을 보고 있어요. 한쪽에서 고치면 다른 폰에 <b>바로</b> 반영됩니다.';
       case 'connecting': return '공유 목록에 연결하는 중이에요. 잠시만 기다려 주세요.';
       case 'waiting': return '공유 테이블이 아직 없어서 <b>이 기기에만</b> 저장하고 있어요. 아래 SQL을 한 번 실행하면 바로 연결돼요.';
+      case 'perm': return '공유 테이블에 <b>접근 권한</b>이 아직 없어요. 아래 SQL을 한 번 실행해 주세요(권한·정책·실시간 설정).';
       case 'error': return '동기화에 문제가 있어 <b>이 기기에만</b> 저장하고 있어요. 잠시 후 새로고침해 보세요.';
       case 'offline': return '인터넷이 끊겨 이 기기에서만 저장 중이에요. 연결되면 자동으로 맞춰요.';
       default: return '지금은 이 기기 브라우저에만 저장하고 있어요.';
@@ -1025,9 +1032,10 @@
       '<div class="btnrow"><button class="btn primary" data-act="syncNow">지금 새로고침</button>' +
       (onlyN ? '<button class="btn" data-act="uploadLocal">이 기기 노트 ' + onlyN + '마리 올리기</button>' : '') + '</div>' +
       '</section>';
-    if(sync.mode === 'waiting' || sync.mode === 'error'){
-      html += '<section class="scard"><h3 class="sh3">🛠 공유 테이블 만들기 (한 번만)</h3>' +
-        '<p class="sp">Supabase 대시보드 → <b>SQL Editor</b>에 아래를 붙여 넣고 Run 하세요. 표가 생기면 새로고침만 하면 연결됩니다.</p>' +
+    if(sync.mode === 'waiting' || sync.mode === 'error' || sync.mode === 'perm'){
+      html += '<section class="scard"><h3 class="sh3">' + (sync.mode === 'waiting' ? '🛠 공유 테이블 만들기 (한 번만)' : '🛠 공유 설정 SQL (한 번만)') + '</h3>' +
+        '<p class="sp">Supabase 대시보드 → <b>SQL Editor</b>에 아래를 붙여 넣고 Run 하세요. ' +
+          (sync.mode === 'waiting' ? '표가 생기면 새로고침만 하면 연결됩니다.' : '권한이 열리면 새로고침만 하면 연결됩니다.') + '</p>' +
         '<pre class="sqlbox">' + esc(SB_SQL) + '</pre>' +
         '<div class="btnrow"><button class="btn primary" data-act="copySQL">SQL 복사</button>' +
         '<button class="btn" data-act="openSupabase">Supabase 열기</button></div>' +
