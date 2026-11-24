@@ -905,16 +905,17 @@
     var list = $('#list');
     if(!arr.length){
       var any = state.puppies.length;
-      var msg, sub;
+      var msg, sub, cta;
       if(!any){
         msg = '아직 등록된 아이가 없어요';
         sub = '아래 <b>＋ 새 아이 등록</b>을 눌러 첫 아이를 추가해 보세요.<br>샘플 4마리는 ⚙️ 설정에서 다시 넣을 수 있어요.';
+        cta = '<button class="btn primary" data-act="openForm">＋ 첫 아이 등록하기</button>';
       } else {
         msg = '조건에 맞는 아이가 없어요';
         sub = '지점·상태 필터를 <b>전체</b>로 바꾸거나 검색어를 지워 보세요.';
+        cta = '<button class="btn primary" data-act="resetFilters">필터 초기화</button>';
       }
-      list.innerHTML = '<div class="empty"><div class="ee">🐾</div><h3>' + msg + '</h3><p>' + sub + '</p>' +
-        '<button class="btn primary" data-act="resetFilters">필터 초기화</button></div>';
+      list.innerHTML = '<div class="empty"><div class="ee">🐾</div><h3>' + msg + '</h3><p>' + sub + '</p>' + cta + '</div>';
       return;
     }
     var html = '';
