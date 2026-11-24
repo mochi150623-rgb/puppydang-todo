@@ -1163,7 +1163,9 @@
       notice = '<div class="notice"><span>이 기기의 노트 ' + onlyN + '마리가 아직 공유 목록에 없어요.</span>' +
         '<button class="nx" data-act="uploadLocal" style="width:auto;padding:0 9px;font-size:11px;font-weight:800">공유하기</button></div>';
     } else if(!state.hintDismissed && !state.puppies.length){
-      notice = '<div class="notice"><span>직원 폰과 <b>같은 목록</b>을 실시간으로 써요. 날짜 옆 배지를 누르면 연결 상태를 볼 수 있어요.</span>' +
+      notice = '<div class="notice"><span>' + (isLive()
+        ? '직원 폰과 <b>같은 목록</b>을 실시간으로 써요. 날짜 옆 배지를 누르면 연결 상태를 볼 수 있어요.'
+        : '공유 테이블을 만들면 직원 폰과 함께 써요. 날짜 옆 배지를 눌러 안내를 확인하세요.') + '</span>' +
         '<button class="nx" data-act="dismissHint" aria-label="안내 닫기">✕</button></div>';
     }
     $('#noticeWrap').innerHTML = notice;
@@ -1669,7 +1671,7 @@
       '<div class="wgrid">' + list + '</div>' +
       '<div class="wadd"><input class="txt grow" id="newWorker" placeholder="직원 이름 추가 (예: 김실장)" maxlength="12" autocomplete="off" aria-label="새 직원 이름">' +
         '<button class="btn primary" data-act="addWorker">추가</button></div>' +
-      '<div class="wmem"><span>👤</span><span>여기서 고른 이름으로 목욕·접종 기록에 <b style="color:var(--brown-d)">누가 했는지</b>가 함께 남아요. 기록은 기기마다 따로 저장돼요.</span></div>' +
+      '<div class="wmem"><span>👤</span><span>여기서 고른 이름으로 목욕·접종 기록에 <b style="color:var(--brown-d)">누가 했는지</b>가 함께 남아요. ' + (isLive() ? '기록은 공유 목록에 바로 저장돼요.' : '지금은 이 기기에만 저장돼요.') + '</span></div>' +
       '<p class="sp small">직원 이름은 ✕로 정리할 수 있어요(지난 기록의 이름은 그대로 남습니다).</p>' +
       '</div>';
   }
