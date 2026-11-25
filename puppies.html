@@ -589,6 +589,12 @@
   .feedvp .fl .ft{color:var(--brown)}
   .feedvp .fl .fb{color:var(--brown-d)}
   .feedvp .fl .fd{color:var(--ink)}
+  .feedvp .fl .fm{color:var(--brown-d);font-weight:800}
+  .feedvp .fl .fml{display:block;font-size:12.5px;line-height:17px;color:var(--brown-d);margin-top:1px}
+  .feedvp .fl .fmk{font-size:11px;font-weight:800;color:var(--brown);letter-spacing:-.02em;margin-right:3px}
+  /* 메모가 있는 슬라이드만: 첫 줄에 누가·어느 장, 다음 두 줄에 메모 내용이 잘리지 않고 보이게 */
+  .feedbar.hasmemo .feedvp{height:auto;min-height:38px}
+  .feedbar.hasmemo .fl{-webkit-line-clamp:3}
   .feedvp .flin{animation:feedUp .42s cubic-bezier(.2,.9,.3,1) both}
   .feedvp .flout{position:absolute;left:0;right:0;top:0;animation:feedOut .42s cubic-bezier(.2,.9,.3,1) forwards}
   @keyframes feedUp{from{transform:translateY(100%);opacity:0}to{transform:none;opacity:1}}
@@ -603,6 +609,7 @@
   .feedrow .fbody{flex:1;min-width:0}
   .feedrow .fline{display:block;font-size:13.5px;font-weight:700;color:var(--ink-2);line-height:1.55;letter-spacing:-.02em;word-break:keep-all}
   .feedrow .fline b{font-weight:800}
+  .feedrow .fline .fm{color:var(--brown-d);font-weight:800}
   .feedrow .ftm{display:block;font-size:12px;font-weight:800;color:var(--muted-2);letter-spacing:-.02em;margin-top:2px}
 
   /* ---------- 목욕 · 약욕 캘린더 ---------- */
@@ -950,9 +957,9 @@
   var VAC_ALIAS = { '구충':'원구충' };   // 예전에 적힌 '구충'은 화면에서 '원구충'으로 보여줘요
   var VAC_INTERVAL_DAYS = 14;           // 접종 간격 — 마지막 접종일 + 2주(14일)가 다음 접종 예정일
   function vacName(t){ var s = String(t || ''); return VAC_ALIAS[s] || s; }
-  var HEALTH_FLAGS = ['귀진드기','감기','피부','설사','사료거부','탈장','부정교합'];
-  // 탈장 · 부정교합은 오래 지켜보는 항목이라 경과 일수(N일째) 없이 이름만 표시해요
-  var HEALTH_NO_DAYS = ['탈장','부정교합'];
+  var HEALTH_FLAGS = ['귀진드기','감기','피부','설사','사료거부','탈장','부정교합','숨골'];
+  // 탈장 · 부정교합 · 숨골은 오래 지켜보는 체질·구조 항목이라 경과 일수(N일째) 없이 이름만 표시해요
+  var HEALTH_NO_DAYS = ['탈장','부정교합','숨골'];
   function healthShowsDays(f){ return HEALTH_NO_DAYS.indexOf(String(f || '').trim()) < 0; }
   var BATH_KINDS = ['목욕','약욕'];
   var ACTIVITY_ID = '__activity__';    // public.puppies 의 활동 메타 행 (__staff__ 와 같은 방식)
@@ -2122,7 +2129,8 @@
       cage: String(it.cage || '').slice(0, 20),
       name: String(it.name || '').slice(0, 30),
       act: String(it.act || '').slice(0, 40),
-      tail: String(it.tail || '입력했습니다').slice(0, 20)
+      tail: String(it.tail || '입력했습니다').slice(0, 20),
+      memo: String(it.memo || '').slice(0, 60)
     };
   }
   // 3일이 지난 활동은 읽기/쓰기 때 자동으로 걸러냅니다 (최신순 정렬)
@@ -2158,6 +2166,22 @@
     var hm = timeHM(iso);
     return hm ? day + ' · ' + hm : day;
   }
+  /* 메모 내용을 활동 줄에 그대로 보여주기 위한 한 줄 미리보기 (짧은 메모는 전문이 다 보이게) */
+  var MEMO_CAP = 40;
+  function memoPreview(text){
+    var s = String(text == null ? '' : text).replace(/\s+/g, ' ').trim();
+    if(!s) return '';
+    if(s.length <= MEMO_CAP) return s;
+    var cut = s.slice(0, MEMO_CAP);
+    var sp = cut.lastIndexOf(' ');
+    if(sp > MEMO_CAP - 12) cut = cut.slice(0, sp);   // 단어 중간에서 자르지 않게
+    return cut.replace(/[\s,.;:!?·\-]+$/, '') + '…';
+  }
+  function memoHTML(memo){
+    var m = String(memo || '');
+    if(!m) return '';
+    return '<span class="fm">&quot;' + esc(m) + '&quot;</span>';
+  }
   function activityHTML(it){
     var when = timeHM(it.at);
     var by = it.by ? esc(it.by) + '님' : '직원';
@@ -2167,7 +2191,25 @@
       '<b class="fb">' + by + '</b>이 ' +
       (where ? where + ' ' : '') +
       (it.name ? '<b class="fd">' + esc(it.name) + '</b> ' : '') +
-      esc(act) + josa(act) + ' ' + esc(it.tail || '입력했습니다');
+      esc(act) + josa(act) + ' ' + esc(it.tail || '입력했습니다') +
+      (it.memo ? ' · ' + memoHTML(it.memo) : '');
+  }
+  /* 상단 실시간 배너: 메모는 둘째 줄에 따로, 잘리지 않고 읽히게 */
+  function activityBannerHTML(it){
+    if(!it || !it.memo) return activityHTML(it);
+    var when = timeHM(it.at);
+    var by = it.by ? esc(it.by) + '님' : '직원';
+    var where = [it.branch, it.cage].filter(Boolean).map(function(s){ return esc(s); }).join(' ');
+    var label = (function(){
+      var act = String(it.act || ''), tail = String(it.tail || '');
+      if(!/메모/.test(act)) return act || '메모';            // 일정 메모 등은 무슨 일이었는지 그대로
+      return /비|지웠/.test(tail) ? '메모 비움' : (/수정/.test(tail) ? '메모 수정' : '메모 입력');
+    })();
+    return (when ? '<b class="ft">' + esc(when) + '</b> ' : '') +
+      '<b class="fb">' + by + '</b> · ' +
+      (where ? where + ' ' : '') +
+      (it.name ? '<b class="fd">' + esc(it.name) + '</b> ' : '') +
+      '<span class="fml"><span class="fmk">' + esc(label) + '</span> <span class="fm">&quot;' + esc(it.memo) + '&quot;</span></span>';
   }
   function feedIcon(it){
     var a = String((it && it.act) || '');
@@ -2182,7 +2224,7 @@
     if(/분양 상태/.test(a)) return '🏷️';
     return '📝';
   }
-  function logActivity(p, act, tail){
+  function logActivity(p, act, tail, memo){
     var now = new Date();
     var item = normActivity({
       id: 'a' + now.getTime().toString(36) + Math.random().toString(36).slice(2, 6),
@@ -2193,13 +2235,35 @@
       cage: p ? p.cage : '',
       name: p ? p.name : '',
       act: act,
-      tail: tail || '입력했습니다'
+      tail: tail || '입력했습니다',
+      memo: memoPreview(memo)
     });
     state.activity = sortActivityDesc(activityFresh([item].concat(state.activity || []))).slice(0, ACTIVITY_MAX);
     saveLocal();
     activityDirty = true;
     pushActivity();
     renderFeed(true);
+    return item;
+  }
+  /* 같은 메모를 이어서 고치는 동안에는 줄을 새로 만들지 않고 방금 남긴 줄의 내용만 갱신해요 */
+  function updateActivityMemo(id, memo, tail){
+    if(!id) return false;
+    var list = state.activity || [];
+    for(var i = 0; i < list.length; i++){
+      if(list[i].id !== id) continue;
+      var next = memoPreview(memo);
+      var t2 = tail || list[i].tail;
+      if(String(list[i].memo || '') === next && String(list[i].tail || '') === String(t2 || '')) return true;
+      list[i].memo = next;
+      list[i].tail = t2;
+      state.activity = sortActivityDesc(activityFresh(list)).slice(0, ACTIVITY_MAX);
+      saveLocal();
+      activityDirty = true;
+      pushActivity();
+      renderFeed(false);
+      return true;
+    }
+    return false;
   }
   function pushActivity(){
     if(!isLive()) return;   // 연결되면 setSync('live') 에서 다시 올려요
@@ -2231,7 +2295,9 @@
   function feedShow(it, animate){
     var vp = $('#feedText');
     if(!vp || !it) return;
-    var html = activityHTML(it);
+    var bar = $('#feedBar');
+    if(bar) bar.classList.toggle('hasmemo', !!(it && it.memo));   // 메모 줄이 두 줄까지 들어가게
+    var html = activityBannerHTML(it);
     if(!animate || !feed.cur){ vp.innerHTML = '<span class="fl">' + html + '</span>'; feed.cur = html; return; }
     if(feed.cur === html) return;
     vp.innerHTML = '<span class="fl flout">' + feed.cur + '</span><span class="fl flin">' + html + '</span>';
@@ -3430,7 +3496,7 @@
     s.updatedAt = now;
     if(isNew) s.by = state.worker;
     if(idx >= 0) state.schedules[idx] = s; else state.schedules.push(s);
-    logActivity({ id:'', branch:s.branch, cage:'', name:s.name }, (s.type === 'hotel' ? '호텔링 일정' : '분양픽업 일정'), isNew ? '등록했습니다' : '수정했습니다');
+    logActivity({ id:'', branch:s.branch, cage:'', name:s.name }, (s.type === 'hotel' ? '호텔링 일정' : '분양픽업 일정'), isNew ? '등록했습니다' : '수정했습니다', s.memo);
     closeSheet();
     saveSchedLocal();
     if(s.type === 'hotel'){ hotel.sel = s.inDate; }
@@ -3563,15 +3629,32 @@
     toast(flag + ' 정상 회복 처리했어요');
   }
   /* 메모 수정도 활동 슬라이드에 한 번씩 남기기 (상세를 열 때의 메모를 기준으로 비교) */
-  var memoLog = { id:'', base:'', logged:false };
+  var memoLog = { id:'', base:'', logged:false, actId:'', preview:'', tail:'' };
   function memoLogReset(p){
-    memoLog = { id: p ? p.id : '', base: String((p && p.memo) || ''), logged:false };
+    memoLog = { id: p ? p.id : '', base: String((p && p.memo) || ''), logged:false, actId:'', preview:'', tail:'' };
   }
   function logMemoIfChanged(p){
-    if(!p || memoLog.id !== p.id || memoLog.logged) return;
-    if(String(p.memo || '') === memoLog.base) return;
-    memoLog.logged = true;
-    logActivity(p, '메모', '입력했습니다');
+    if(!p || memoLog.id !== p.id) return;
+    var cur = String(p.memo || '');
+    var preview = memoPreview(cur);
+    if(!memoLog.logged){
+      if(cur === memoLog.base) return;
+      var before = String(memoLog.base || '').trim();
+      var tail = !cur.trim() ? '비웠습니다' : (before ? '수정했습니다' : '입력했습니다');
+      memoLog.logged = true;
+      var made = logActivity(p, '메모', tail, preview);
+      memoLog.actId = made ? made.id : '';
+      memoLog.preview = preview;
+      memoLog.tail = tail;
+      return;
+    }
+    /* 상세를 보는 동안 이어서 고친 내용은 방금 남긴 줄에 그대로 반영 (내용이 비면 '비웠습니다') */
+    if(preview === memoLog.preview) return;
+    var t2 = !preview ? '비웠습니다' : (memoLog.tail === '비웠습니다' ? '입력했습니다' : memoLog.tail);
+    if(updateActivityMemo(memoLog.actId, preview, t2)){
+      memoLog.preview = preview;
+      memoLog.tail = t2;
+    }
   }
   function grabMemo(){
     var mb = $('#memoBox');
@@ -3723,7 +3806,7 @@
 
       '<section class="scard"><div class="shead"><h3>🩺 건강 · 특이사항</h3>' +
         '<span class="sbadge warn" id="healthCount"' + ((p.healthFlags && p.healthFlags.length) ? '' : ' style="display:none"') + '>' + ((p.healthFlags && p.healthFlags.length) ? p.healthFlags.length + '개 체크' : '0개 체크') + '</span></div>' +
-        '<p class="sp small" style="margin:0 0 9px">해당되는 항목을 누르면 체크되고, 사진 아래에 <b>며칠째</b>인지 표시돼요. 나으면 <b>✓ 정상</b>을 누르면 배지가 사라져요. <b>탈장 · 부정교합</b>은 며칠째 없이 이름만 표시해요.</p>' +
+        '<p class="sp small" style="margin:0 0 9px">해당되는 항목을 누르면 체크되고, 사진 아래에 <b>며칠째</b>인지 표시돼요. 나으면 <b>✓ 정상</b>을 누르면 배지가 사라져요. <b>탈장 · 부정교합 · 숨골</b>은 며칠째 없이 이름만 표시해요.</p>' +
         healthChipsHTML(p.healthFlags, true) +
         healthDateListHTML(p) +
       '</section>' +
@@ -4044,7 +4127,10 @@
       beforeFlags.forEach(function(f){
         if(afterFlags.indexOf(f) < 0) logActivity(saved, f + ' 해제', '입력했습니다');
       });
-      if(String(saved.memo || '') !== beforeMemo) logActivity(saved, '메모', '입력했습니다');
+      if(String(saved.memo || '') !== beforeMemo){
+        var memoNow = memoPreview(saved.memo), memoBefore = memoPreview(beforeMemo);
+        logActivity(saved, '메모', !memoNow ? '비웠습니다' : (memoBefore ? '수정했습니다' : '입력했습니다'), memoNow);
+      }
     }
     memoLogReset(saved);
     renderAll();
