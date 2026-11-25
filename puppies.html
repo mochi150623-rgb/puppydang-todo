@@ -1617,7 +1617,8 @@
     if(/목욕/.test(a)) return '🛁';
     if(/접종/.test(a)) return '💉';
     if(/정상 회복/.test(a)) return '✅';
-    if(/증상/.test(a)) return '🩺';
+    if(/메모/.test(a)) return '📝';
+    if(/체크|해제|증상/.test(a)) return '🩺';
     if(/노트/.test(a)) return '🗑️';
     if(/분양 상태/.test(a)) return '🏷️';
     return '📝';
@@ -2288,6 +2289,17 @@
     refreshDetail();
     toast(flag + ' 정상 회복 처리했어요');
   }
+  /* 메모 수정도 활동 슬라이드에 한 번씩 남기기 (상세를 열 때의 메모를 기준으로 비교) */
+  var memoLog = { id:'', base:'', logged:false };
+  function memoLogReset(p){
+    memoLog = { id: p ? p.id : '', base: String((p && p.memo) || ''), logged:false };
+  }
+  function logMemoIfChanged(p){
+    if(!p || memoLog.id !== p.id || memoLog.logged) return;
+    if(String(p.memo || '') === memoLog.base) return;
+    memoLog.logged = true;
+    logActivity(p, '메모', '입력했습니다');
+  }
   function grabMemo(){
     var mb = $('#memoBox');
     if(!mb || !ui.detailId) return;
@@ -2296,6 +2308,7 @@
     if(window.__memoT){ clearTimeout(window.__memoT); window.__memoT = null; }
     var sv = $('#memoSaved');
     if(sv){ sv.textContent = '저장됨 ✓'; sv.classList.add('on'); }
+    logMemoIfChanged(p);
   }
   function commitHealth(){
     var t = healthTarget();
@@ -2443,6 +2456,7 @@
     ui.detailId = id;
     ui.vacType = VAC_PRESETS[0];
     ui.sheet = 'detail';
+    memoLogReset(get(id));
     setSheet(detailHTML(id));
     openSheet();
   }
@@ -2603,9 +2617,12 @@
     if(d.birthDate && !isValidDate(d.birthDate)){ showFormError('생일을 다시 골라주세요.'); return; }
     var now = new Date().toISOString();
     var saved;
+    var beforeFlags = null, beforeMemo = '';
     if(ui.formEdit && ui.formId){
       var p = get(ui.formId);
       if(!p) return;
+      beforeFlags = (p.healthFlags || []).slice();
+      beforeMemo = String(p.memo || '');
       var keep = { id:p.id, baths:p.baths, vaccines:p.vaccines, nextVaccine:p.nextVaccine, createdAt:p.createdAt };
       var merged = norm(Object.assign({}, p, d, { updatedAt: now }));
       merged.baths = keep.baths;
@@ -2622,6 +2639,18 @@
     if(!save()) return;
     var wasEdit = ui.formEdit;
     logActivity(saved, '정보', wasEdit ? '수정했습니다' : '등록했습니다');
+    /* 수정 폼에서 바뀐 특이사항·메모는 어떤 것이 바뀌었는지 하나씩 남깁니다 */
+    if(wasEdit && beforeFlags){
+      var afterFlags = saved.healthFlags || [];
+      afterFlags.forEach(function(f){
+        if(beforeFlags.indexOf(f) < 0) logActivity(saved, f + ' 체크', '입력했습니다');
+      });
+      beforeFlags.forEach(function(f){
+        if(afterFlags.indexOf(f) < 0) logActivity(saved, f + ' 해제', '입력했습니다');
+      });
+      if(String(saved.memo || '') !== beforeMemo) logActivity(saved, '메모', '입력했습니다');
+    }
+    memoLogReset(saved);
     renderAll();
     ui.formEdit = false;
     ui.formId = null;
@@ -3213,7 +3242,6 @@
             arr.push(f);
             if(!t.healthDates) t.healthDates = {};
             t.healthDates[f] = todayStr();
-            if(t !== draft) logActivity(t, f + ' 증상', '입력했습니다');
           }
           var on = arr.indexOf(f) >= 0;
           el.classList.toggle('on', on);
@@ -3221,6 +3249,8 @@
           var cnt = $('#healthCount');
           if(cnt){ cnt.textContent = arr.length + '개 체크'; cnt.style.display = arr.length ? '' : 'none'; }
           commitHealth();
+          // 수정 폼(draft)은 저장할 때 한꺼번에 남기고, 상세 화면은 누르는 즉시 활동에 올림
+          if(t !== draft) logActivity(t, f + (on ? ' 체크' : ' 해제'), '입력했습니다');
         })();
         break;
       case 'healthCure':
@@ -3234,6 +3264,7 @@
           t.healthFlags = t.healthFlags.filter(function(x){ return x !== f; });
           if(t.healthDates) delete t.healthDates[f];
           commitHealth();
+          if(t !== draft) logActivity(t, f + ' 해제', '입력했습니다');
         })();
         break;
       case 'healthAdd':
@@ -3248,7 +3279,7 @@
           if(!t.healthDates) t.healthDates = {};
           t.healthDates[v] = todayStr();
           inp.value = '';
-          if(t !== draft) logActivity(t, v + ' 증상', '입력했습니다');
+          if(t !== draft) logActivity(t, v + ' 체크', '입력했습니다');
           commitHealth();
           toast('‘' + v + '’ 체크했어요');
         })();
@@ -3361,6 +3392,7 @@
         save();
         var s2 = $('#memoSaved');
         if(s2){ s2.textContent = '저장됨 ✓'; s2.classList.add('on'); }
+        logMemoIfChanged(p);   // 메모도 누가 썼는지 활동 슬라이드에 표시
       }, 500);
     }
   });
