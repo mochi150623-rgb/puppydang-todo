@@ -1522,6 +1522,7 @@
     return ok;
   }
   function save(){
+    store.userSaved = true;
     var ok = saveLocal();
     if(!ok) toast('저장 공간이 부족해요. 사진 수를 줄이거나 백업 후 정리해 주세요.');
     try { syncDirty(); } catch(e){}
@@ -1559,7 +1560,14 @@
           });
         }
         store.mode = 'idb';
-        store.bytes = stateBytes();
+        /* IndexedDB가 늦게 응답했고 아직 아무것도 저장하지 않았으면 불러온 기록을 그대로 씁니다 */
+        if(chosen && !store.userSaved && !state.puppies.length){
+          state = stateFromObject(chosen);
+          store.bytes = stateBytes();
+          try { renderAll(); } catch(e){}
+        } else {
+          store.bytes = stateBytes();
+        }
         return null;
       });
     }).then(function(){ finish(); }, function(err){
