@@ -604,6 +604,8 @@
   var KEY = 'puppydang_puppies_v1';
   var DEFAULT_STAFF = ['직원1','직원2','직원3'];
   var RETIRED_STAFF = '대표님';   // 작업자 목록에서 제외 (지난 기록의 이름은 유지)
+  // 로그인 계정 아이디 → 작업자 이름 자동 매핑 (계정 아이디 자체는 작업자 목록에 넣지 않아요)
+  var ACCOUNT_WORKER = { 'admin': '김혜진', '0000': '원지원', '1234': '오주연', '5678': '정수연' };
   var BRANCHES = ['퍼피댕','디데이펫'];
   var STATUS = {
     available:{label:'분양중', cls:'available'},
@@ -1081,7 +1083,34 @@
     document.body.classList.toggle('is-admin', on);
     if(!on && ui.sheet === 'settings') closeSheet();
   }
+  function accountWorker(user){
+    var lp = accountLocal(user);
+    if(!lp || !Object.prototype.hasOwnProperty.call(ACCOUNT_WORKER, lp)) return '';
+    return ACCOUNT_WORKER[lp];
+  }
+  // 매핑된 계정이면 작업자 목록에 실명을 넣고(없을 때만) 그 이름을 현재 작업자로 맞춰요.
+  // auth.workerSet 은 로그인·계정 전환 때만 false 라서, 로그인 후에 시트에서 다른 이름을
+  // 골라도 곧바로 덮어쓰지 않아요.
+  function ensureMappedWorker(){
+    var mapped = accountWorker(auth.user);
+    if(!mapped) return false;
+    var changed = false;
+    if(state.staff.indexOf(mapped) < 0){
+      var next = state.staff.concat([mapped]);
+      if(next.length > 12) next = [mapped].concat(state.staff).slice(0, 12);
+      state.staff = cleanStaff(next);
+      changed = true;
+    }
+    if(!auth.workerSet){
+      if(state.worker !== mapped) changed = true;
+      state.worker = mapped;
+      auth.workerSet = true;
+    }
+    if(changed){ try { saveLocal(); } catch(e){} }
+    return changed;
+  }
   function applyMe(){
+    if(accountWorker(auth.user)){ ensureMappedWorker(); return; }
     if(!auth.meName) return;
     // 로그인한 계정 이름을 작업자 목록에 자동으로 넣지 않아요 (직접 추가한 이름만 보임)
     if(!auth.workerSet){
@@ -1284,6 +1313,11 @@
         names = filtered.length ? filtered : cleanStaff([]);
         auth.staffDirty = true;
       }
+    }
+    // 매핑된 계정의 실명은 공유 목록에 없어도 이 기기 작업자 목록에는 항상 있어야 해요
+    var mapped = accountWorker(auth.user);
+    if(mapped && names.indexOf(mapped) < 0){
+      names = names.length >= 12 ? [mapped].concat(names).slice(0, 12) : names.concat([mapped]);
     }
     var changed = JSON.stringify(names) !== JSON.stringify(state.staff);
     state.staff = names;
