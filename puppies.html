@@ -270,6 +270,10 @@
   .cadopt{margin-top:8px;padding:4px 8px;border-radius:8px;background:#F1F4E9;border:1px solid #DCE4CB;
     font-size:12.5px;font-weight:800;color:#5F7048;display:inline-flex;align-items:center;gap:4px;letter-spacing:-.02em}
   .cadopt.warn{background:#FDF3E3;border-color:#F0DDBB;color:#A05E12}
+  .cmedrow{display:flex;margin-top:7px}
+  .medbadge{height:24px;max-width:100%;padding:0 8px;border-radius:8px;background:#EEF3FC;border:1px solid #D5E0F2;
+    color:#3D5C97;font-size:12.5px;font-weight:800;letter-spacing:-.02em;display:inline-flex;align-items:center;gap:4px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
   /* ---------- empty ---------- */
   .empty{text-align:center;padding:36px 18px 30px;background:#fff;border-radius:20px;border:1.5px dashed #E6D8C6;margin-top:4px}
@@ -458,6 +462,23 @@
   .hchip:not(.on) .hx{display:none}
   .hadd{display:flex;gap:6px;margin-top:8px}
   .hadd .txt{height:40px;font-size:14px;width:auto;flex:1;min-width:0}
+
+  /* ---------- 💊 투약 · 주사 ---------- */
+  .medchips{display:flex;gap:6px;flex-wrap:wrap}
+  .medchip{height:38px;padding:0 11px;border-radius:11px;border:1.5px solid var(--line);background:#fff;
+    font-size:13.5px;font-weight:800;color:var(--ink-2);letter-spacing:-.02em;display:inline-flex;align-items:center;gap:5px}
+  .medchip:active{transform:scale(.97)}
+  .medchip.has{background:#EEF3FC;border-color:#C9D8F0;color:#3D5C97}
+  .medchip .mcn{font-size:11.5px;font-weight:800;color:#3D5C97;background:#E4EDF9;border-radius:7px;padding:1px 5px;letter-spacing:-.01em}
+  .medadd{display:flex;gap:6px;margin-top:8px}
+  .medadd .txt{height:40px;font-size:14px;width:auto;flex:1;min-width:0}
+  .mednow{margin:0 0 9px;font-size:12.5px;font-weight:800;color:var(--muted-2);letter-spacing:-.02em;
+    display:flex;align-items:center;gap:6px;flex-wrap:wrap;line-height:1.4}
+  .mednow b{color:#3D5C97;font-weight:800}
+  .hrow.medrow{grid-template-columns:1fr 28px;grid-template-areas:"type del"}
+  .medkind{display:inline-flex;align-items:center;height:23px;padding:0 7px;border-radius:7px;background:#EEF3FC;
+    border:1px solid #D5E0F2;color:#3D5C97;font-size:12.5px;font-weight:800;letter-spacing:-.02em}
+  .medempty{margin:10px 0 0;font-size:13px;font-weight:600;color:var(--muted-2);letter-spacing:-.02em;line-height:1.5}
 
   /* ---------- settings ---------- */
   .sp{font-size:14px;font-weight:600;color:var(--ink-2);line-height:1.65;letter-spacing:-.01em}
@@ -853,7 +874,7 @@
   <header>
     <div class="topline">
       <div class="brand"><img class="blogo" src="puppies-icon.png" alt="퍼피댕 로고" width="30" height="30">
-        <span class="brandtext"><span class="brandname">퍼피댕 · 디데이펫</span><span class="brandver">퍼피댕 V1.0</span></span></div>
+        <span class="brandtext"><span class="brandname">퍼피댕 · 디데이펫</span><span class="brandver">퍼피댕 V1.1</span></span></div>
       <div class="topact">
         <button class="wpill" data-act="openWorker" aria-label="작업자 선택">👤 <b id="workerName">—</b><span class="chev">▾</span></button>
         <button class="gbtn adminonly" data-act="openSettings" aria-label="설정">⚙️</button>
@@ -1001,6 +1022,10 @@
   var HEALTH_NO_DAYS = ['탈장','부정교합','숨골'];
   function healthShowsDays(f){ return HEALTH_NO_DAYS.indexOf(String(f || '').trim()) < 0; }
   var BATH_KINDS = ['목욕','약욕'];
+  /* 💊 투약 · 주사 빠른 입력 칩 — 누를 때마다 1회씩 쌓여요(하루 2회 약도 두 번 누르면 2회) */
+  var MED_KINDS = ['피부약','감기약','설사약','귀약','안약','연고','주사'];
+  var MED_MAX = 300;                   // 아이별 투약 기록 안전상한(최근 것부터 보관)
+  var MED_LIST_MAX = 15;               // 상세 화면 최근 기록 표시 개수
   var ACTIVITY_ID = '__activity__';    // public.puppies 의 활동 메타 행 (__staff__ 와 같은 방식)
   var SCHED_ID = '__schedules__';      // 호텔링 · 분양픽업 일정 공유 행 (스키마 변경 없이 같은 방식으로 저장)
   var SCHED_MAX = 400;                 // 안전상한
@@ -1074,6 +1099,14 @@
     if(d === 1) return '어제';
     return d + '일 전';
   }
+  /* 같은 날짜인지 (이 기기 시간대 기준) — 오늘 투약 배지·횟수 집계에 사용 */
+  function isSameLocalDay(iso, ref){
+    var t = new Date(iso);
+    if(isNaN(t.getTime())) return false;
+    var r = (ref === undefined || ref === null) ? new Date() : new Date(ref);
+    if(isNaN(r.getTime())) r = new Date();
+    return t.getFullYear() === r.getFullYear() && t.getMonth() === r.getMonth() && t.getDate() === r.getDate();
+  }
   function intakeDays(p){
     if(isEmptySlot(p)) return null;   // 2주 자동 정리로 비운 빈 장은 입소 일차를 세지 않아요
     var d = daysBetween(p.intakeDate, todayStr());
@@ -1085,7 +1118,7 @@
     if(!p || String(p.name || '') !== '미정') return false;
     return !p.photoProfile && !p.regNo && !p.adopter && !p.birthDate &&
       !(p.baths && p.baths.length) && !(p.vaccines && p.vaccines.length) &&
-      !(p.healthFlags && p.healthFlags.length) && !String(p.memo || '').trim();
+      !(p.healthFlags && p.healthFlags.length) && !(p.medLogs && p.medLogs.length) && !String(p.memo || '').trim();
   }
   /* ---- 종류: 강아지 / 고양이 ---- */
   function isCat(p){
@@ -1380,7 +1413,22 @@
           addedAt: ph.addedAt ? String(ph.addedAt) : '',
           addedBy: String(ph.addedBy == null ? '' : ph.addedBy).slice(0, 12),
           label: String(ph.label == null ? '' : ph.label).slice(0, 20) };
-      }) : []
+      }) : [],
+      /* 💊 투약 · 주사 기록 — 누를 때마다 1회씩 쌓이는 기록 (최근 MED_MAX 건 보관) */
+      medLogs: (function(){
+        var src = Array.isArray(p.medLogs) ? p.medLogs : [];
+        var out = [];
+        src.forEach(function(m){
+          if(!m || typeof m !== 'object') return;
+          var t = new Date(m.at);
+          if(isNaN(t.getTime())) return;
+          var kind = medKindName(m.kind);
+          if(!kind) return;
+          out.push({ id: String(m.id || uid()), kind: kind, at: t.toISOString(),
+            by: String(m.by == null ? '' : m.by).slice(0, 12) });
+        });
+        return out.slice(-MED_MAX);
+      })()
     };
   }
   /* 아이 기록을 고친 사람·시각을 같이 남겨요 (카드·상세 아래에 표시) */
@@ -2305,6 +2353,7 @@
     var a = String((it && it.act) || '');
     if(/약욕/.test(a)) return '🧴';
     if(/목욕/.test(a)) return '🛁';
+    if(/급여|투약/.test(a)) return '💊';
     if(/접종/.test(a)) return '💉';
     if(/정상 회복/.test(a)) return '✅';
     if(/메모/.test(a)) return '📝';
@@ -3236,6 +3285,7 @@
         '<div class="cmeta">' + meta.join('') + '</div>' +
         (adopt ? '<div class="cadopt' + (adopt.warn ? ' warn' : '') + '">🧹 ' + adopt.text + '</div>' : '') +
         '<div class="cbathrow"><span class="bathbadge ' + bl.cls + (bl.kind === '약욕' ? ' yak' : '') + '">' + bl.icon + ' ' + bl.text + '</span></div>' +
+        medBadgeHTML(p) +
         (vac ? '<div class="ctail ' + (vac.cls === 'alert' ? 'over' : '') + '">💉 다음 접종 ' + vac.text +
           (vacDate ? ' <span style="font-weight:700;color:var(--muted-2)">(' + fmtMD(vacDate) + ')</span>' : '') + '</div>' : '') +
         cardAuthorHTML(p) +
@@ -4117,6 +4167,110 @@
     refreshDetail();
     toast('상태 사진을 지웠어요');
   }
+
+  /* ================= 💊 투약 · 주사 ================= */
+  function medKindName(k){
+    return String(k == null ? '' : k).replace(/\s+/g, ' ').trim().slice(0, 20);
+  }
+  /* 최신순 (같은 시각이면 나중에 넣은 것이 위) */
+  function medSorted(p){
+    var arr = Array.isArray(p && p.medLogs) ? p.medLogs : [];
+    return arr.map(function(m, i){ return { m:m, i:i }; }).sort(function(a, b){
+      var c = String(b.m.at || '').localeCompare(String(a.m.at || ''));
+      return c !== 0 ? c : b.i - a.i;
+    }).map(function(x){ return x.m; });
+  }
+  function medToday(p){
+    return medSorted(p).filter(function(m){ return isSameLocalDay(m.at); });
+  }
+  function medTodayCount(p, kind){
+    var want = medKindName(kind), n = 0;
+    medToday(p).forEach(function(m){ if(medKindName(m.kind) === want) n++; });
+    return n;
+  }
+  /* 오늘 먹인 종류 — 최근에 먹인 것부터 */
+  function medTodayKinds(p){
+    var out = [];
+    medToday(p).forEach(function(m){
+      var k = medKindName(m.kind);
+      if(k && out.indexOf(k) < 0) out.push(k);
+    });
+    return out;
+  }
+  /* 직접 입력한 약도 최근 사흘 안에 쓴 것이면 칩으로 보여줘요 (하루 2회 약을 또 누를 수 있게) */
+  function medRecentCustomKinds(p, limit){
+    var out = [], cut = Date.now() - 3 * 86400000;
+    medSorted(p).forEach(function(m){
+      if(out.length >= limit) return;
+      var t = new Date(m.at).getTime();
+      if(!(t >= cut)) return;
+      var k = medKindName(m.kind);
+      if(!k || MED_KINDS.indexOf(k) >= 0 || out.indexOf(k) >= 0) return;
+      out.push(k);
+    });
+    return out;
+  }
+  function medTimeHM(iso){
+    var d = new Date(iso);
+    if(isNaN(d.getTime())) return '';
+    return pad(d.getHours()) + ':' + pad(d.getMinutes());
+  }
+  function medChipsHTML(p){
+    var list = MED_KINDS.concat(medRecentCustomKinds(p, 3));
+    return '<div class="medchips">' + list.map(function(k){
+      var n = medTodayCount(p, k);
+      return '<button type="button" class="medchip' + (n ? ' has' : '') + '" data-act="medQuick" data-kind="' + esc(k) + '"' +
+        ' aria-label="' + esc(k) + ' 급여 1회 기록' + (n ? ' · 오늘 ' + n + '회' : '') + '">' + esc(k) +
+        (n ? '<b class="mcn">오늘 ' + n + '회</b>' : '') + '</button>';
+    }).join('') + '</div>';
+  }
+  function medRecentHTML(p){
+    var list = medSorted(p).slice(0, MED_LIST_MAX);
+    if(!list.length) return '<p class="medempty">아직 투약 기록이 없어요 — 위 약 이름을 누르면 지금 시각으로 1회 기록돼요.</p>';
+    return '<ul class="hlist">' + list.map(function(m){
+      var k = medKindName(m.kind) || '투약';
+      var when = '';
+      if(!isNaN(new Date(m.at).getTime())){
+        when = isSameLocalDay(m.at) ? '오늘 ' + medTimeHM(m.at)
+          : (isSameLocalDay(m.at, Date.now() - 86400000) ? '어제 ' + medTimeHM(m.at) : fmtMD(isoYmd(m.at)) + ' ' + medTimeHM(m.at));
+      }
+      return '<li class="hrow medrow"><span class="htype">💊 <span class="medkind">' + esc(k) + '</span>' +
+        (when ? '<em>' + esc(when) + '</em>' : '') +
+        (m.by ? '<span class="hby">' + esc(m.by) + '</span>' : '') + '</span>' +
+        '<button type="button" class="hdel" data-act="medDel" data-id="' + esc(m.id) + '" aria-label="' + esc(k) + ' 급여 기록 삭제">✕</button></li>';
+    }).join('') + '</ul>';
+  }
+  function medSectionHTML(p){
+    var today = medToday(p);
+    var kinds = medTodayKinds(p);
+    var nowLine;
+    if(today.length){
+      var parts = kinds.slice(0, 3).map(function(k){ return esc(k) + ' ' + medTodayCount(p, k) + '회'; });
+      if(kinds.length > 3) parts.push('외 ' + (kinds.length - 3) + '종');
+      nowLine = '오늘 급여 <b>' + today.length + '회</b> · ' + parts.join(' · ');
+    } else {
+      nowLine = '약 이름을 누를 때마다 <b>지금 시각 · ' + esc(state.worker) + '</b> 이름으로 1회씩 쌓여요';
+    }
+    return '<section class="scard" id="medSec"><div class="shead"><h3>💊 투약 · 주사</h3>' +
+        '<span class="sbadge ' + (today.length ? 'ok' : 'calm') + '">' + (today.length ? '오늘 ' + today.length + '회' : '오늘 기록 없음') + '</span></div>' +
+        '<p class="mednow">' + nowLine + '</p>' +
+        medChipsHTML(p) +
+        '<div class="medadd"><input class="txt grow" id="medCustom" maxlength="20" placeholder="직접 입력 (예: 심장약)" autocomplete="off" aria-label="투약 종류 직접 입력">' +
+          '<button type="button" class="btn sm" data-act="medAddCustom">추가</button></div>' +
+        '<div class="hint" style="margin-top:6px">하루 두 번 먹는 약은 누를 때마다 1회씩 쌓여요 · 잘못 눌렀으면 기록의 ✕ 로 지울 수 있어요</div>' +
+        medRecentHTML(p) +
+      '</section>';
+  }
+  /* 메인 카드 — 오늘 투약이 있는 아이만 작은 배지로 (좁은 카드에서 줄이 깨지지 않게 한 줄) */
+  function medBadgeHTML(p){
+    var today = medToday(p);
+    if(!today.length || p.isArchive) return '';
+    var kinds = medTodayKinds(p);
+    var text = (kinds.length <= 1) ? ((kinds[0] || '투약') + ' 오늘 ' + today.length + '회')
+      : ('오늘 투약 ' + today.length + '회');
+    var full = kinds.map(function(k){ return k + ' ' + medTodayCount(p, k) + '회'; }).join(' · ');
+    return '<div class="cmedrow"><span class="medbadge" title="' + esc(full) + '">💊 ' + esc(text) + '</span></div>';
+  }
   /* 메모 수정도 활동 슬라이드에 한 번씩 남기기 (상세를 열 때의 메모를 기준으로 비교) */
   var memoLog = { id:'', base:'', logged:false, actId:'', preview:'', tail:'' };
   function memoLogReset(p){
@@ -4301,6 +4455,8 @@
         healthPhotosHTML(p) +
       '</section>' +
 
+      medSectionHTML(p) +
+
       '<section class="scard"><div class="shead"><h3>📝 특이사항 · 건강 메모</h3><span class="saved" id="memoSaved">자동 저장</span></div>' +
         '<textarea class="memo" id="memoBox" placeholder="식욕, 배변, 성격, 손님 반응 등 자유롭게 적어두세요">' + esc(p.memo || '') + '</textarea>' +
       '</section>' +
@@ -4338,6 +4494,10 @@
       return '<div class="archrow"><span class="al">💉 ' + esc(vacName(v.type)) + '</span><span>' +
         fmtMD(v.date) + (v.by ? ' · ' + esc(v.by) : '') + (v.memo ? ' · ' + esc(v.memo) : '') + '</span></div>';
     }).join('');
+    var meds = medSorted(p).slice(0, 20).map(function(m){
+      return '<div class="archrow"><span class="al">💊 ' + esc(medKindName(m.kind)) + '</span><span>' +
+        fmtMD(isoYmd(m.at)) + ' ' + medTimeHM(m.at) + (m.by ? ' · ' + esc(m.by) : '') + '</span></div>';
+    }).join('');
     return sheetbar('🗂 분양완료 · ' + esc(p.name || ''), esc(p.cage || '장 번호 없음') + ' · ' + p.branch) +
       '<div class="sheetbody">' +
       '<div class="archnote">분양완료 보관함 기록' + (adopt ? ' · <b>' + adopt.text + '</b>' : '') +
@@ -4347,6 +4507,8 @@
       (p.memo ? '<section class="scard"><div class="shead"><h3>📝 메모</h3></div><p class="sp" style="white-space:pre-wrap">' + esc(p.memo) + '</p></section>' : '') +
       '<section class="scard"><div class="shead"><h3>🛁 목욕 · 약욕 기록</h3><span class="sbadge calm">' + ((p.baths || []).length) + '건</span></div>' +
         (baths || '<p class="sp small">기록 없음</p>') + '</section>' +
+      '<section class="scard"><div class="shead"><h3>💊 투약 · 주사</h3><span class="sbadge calm">' + ((p.medLogs || []).length) + '건</span></div>' +
+        (meds || '<p class="sp small">기록 없음</p>') + '</section>' +
       '<section class="scard"><div class="shead"><h3>💉 접종 · 구충</h3><span class="sbadge calm">' + ((p.vaccines || []).length) + '건</span></div>' +
         (vacs || '<p class="sp small">기록 없음</p>') + '</section>' +
       '<div class="btnrow" style="margin-top:12px"><button class="btn wide danger" data-act="archiveDelete">기록 삭제</button></div>' +
@@ -4574,10 +4736,11 @@
       if(!p) return;
       beforeFlags = (p.healthFlags || []).slice();
       beforeMemo = String(p.memo || '');
-      var keep = { id:p.id, baths:p.baths, vaccines:p.vaccines, nextVaccine:p.nextVaccine, createdAt:p.createdAt, healthPhotos:p.healthPhotos };
+      var keep = { id:p.id, baths:p.baths, vaccines:p.vaccines, nextVaccine:p.nextVaccine, createdAt:p.createdAt, healthPhotos:p.healthPhotos, medLogs:p.medLogs };
       var merged = norm(Object.assign({}, p, d, { updatedAt: now, updatedBy: state.worker }));
       merged.baths = keep.baths;
       merged.healthPhotos = keep.healthPhotos;
+      merged.medLogs = keep.medLogs;
       merged.vaccines = Array.isArray(d.vaccines) ? d.vaccines : keep.vaccines;
       merged.vaccineDates = (d.vaccineDates && typeof d.vaccineDates === 'object') ? d.vaccineDates : (p.vaccineDates || {});
       /* 폼에서 접종일을 체크/수정했으면 그 값(마지막 접종일 + 2주)을 그대로 저장, 아니면 기존 예정일 유지 */
@@ -4805,7 +4968,7 @@
         '<div class="settingrow"><div><b>전체 비우기</b><span>모든 노트를 지워요 · 되돌릴 수 없어요</span></div>' +
           '<button class="btn sm danger" data-act="wipeAll">비우기</button></div>' +
       '</section>' +
-      '<div class="sfoot"><img src="puppies-logo.png" alt="퍼피댕" style="width:132px;display:block;margin:0 auto 7px;border-radius:7px">퍼피댕 V1.0 · 디데이펫 관리 노트</div>' +
+      '<div class="sfoot"><img src="puppies-logo.png" alt="퍼피댕" style="width:132px;display:block;margin:0 auto 7px;border-radius:7px">퍼피댕 V1.1 · 디데이펫 관리 노트</div>' +
       '</div>';
   }
 
@@ -4888,10 +5051,41 @@
     toast(p.name + ' ' + kind + ' 완료 · ' + state.worker);
   }
 
+  /* 💊 투약 · 주사 1회 기록 — 누를 때마다 지금 시각·지금 작업자 이름으로 쌓여요 */
+  function medAdd(id, kind){
+    var p = get(id);
+    var name = medKindName(kind);
+    if(!p || !name) return null;
+    p.medLogs = Array.isArray(p.medLogs) ? p.medLogs : [];
+    var rec = { id: uid(), kind: name, at: new Date().toISOString(), by: String(state.worker || '').slice(0, 12) };
+    p.medLogs.push(rec);
+    if(p.medLogs.length > MED_MAX) p.medLogs = p.medLogs.slice(-MED_MAX);
+    touchPuppy(p);
+    save();
+    logActivity(p, name + ' 급여', '입력했습니다');
+    renderAll();
+    if(ui.detailId === id) refreshDetail();
+    toast((p.name ? p.name + ' ' : '') + name + ' 1회 기록 · 오늘 ' + medTodayCount(p, name) + '회');
+    return rec;
+  }
+  function medDelete(id, mid){
+    var p = get(id);
+    if(!p || !mid) return;
+    var rec = (p.medLogs || []).filter(function(m){ return m.id === mid; })[0];
+    if(!rec) return;
+    p.medLogs = (p.medLogs || []).filter(function(m){ return m.id !== mid; });
+    touchPuppy(p);
+    save();
+    logActivity(p, medKindName(rec.kind) + ' 급여', '삭제했습니다');
+    renderAll();
+    if(ui.detailId === id) refreshDetail();
+    toast(medKindName(rec.kind) + ' 급여 기록을 지웠어요');
+  }
+
   function deleteDog(id){
     var p = get(id);
     if(!p) return;
-    if(!window.confirm('“' + p.name + '” 노트를 삭제할까요?\n목욕·접종 기록과 사진도 함께 지워지고, 되돌릴 수 없어요.')) return;
+    if(!window.confirm('“' + p.name + '” 노트를 삭제할까요?\n목욕·접종·투약 기록과 사진도 함께 지워지고, 되돌릴 수 없어요.')) return;
     state.puppies = state.puppies.filter(function(x){ return x.id !== id; });
     save();
     logActivity(p, '노트', '삭제했습니다');
@@ -4931,6 +5125,7 @@
     p.healthFlags = [];
     p.healthDates = {};
     p.healthPhotos = [];
+    p.medLogs = [];
     p.updatedAt = new Date().toISOString();
   }
   /* 남은 날(14일 뒤 자동 정리 / D-N 자동 정리) */
@@ -4939,7 +5134,7 @@
     if(!p) return true;
     return String(p.name || '미정') === '미정' && !p.photoProfile && !p.regNo && !p.adopter &&
       !(p.baths && p.baths.length) && !(p.vaccines && p.vaccines.length) &&
-      !(p.healthFlags && p.healthFlags.length) && !String(p.memo || '').trim();
+      !(p.healthFlags && p.healthFlags.length) && !(p.medLogs && p.medLogs.length) && !String(p.memo || '').trim();
   }
   /* 기존 기록 전체를 보관함(아카이브) 기록으로 복사 — 원래 장 번호도 그대로 갖고 가요 */
   function makeArchive(src, adoptedAt){
@@ -5195,6 +5390,24 @@
         break;
       case 'bathToday':
         bathToday(id, el.getAttribute('data-kind'));
+        break;
+      case 'medQuick':
+        medAdd(ui.detailId, el.getAttribute('data-kind'));
+        break;
+      case 'medAddCustom':
+        (function(){
+          var inp = $('#medCustom');
+          if(!inp) return;
+          var v = medKindName(inp.value);
+          if(!v){ inp.focus(); return; }
+          inp.value = '';
+          medAdd(ui.detailId, v);
+          var again = $('#medCustom');   // 상세가 다시 그려지므로 새 입력창에 초점을 돌려놔요
+          if(again) again.focus();
+        })();
+        break;
+      case 'medDel':
+        medDelete(ui.detailId, el.getAttribute('data-id'));
         break;
       case 'bathKindPick':
         ui.bathKind = el.getAttribute('data-kind') === '약욕' ? '약욕' : '목욕';
