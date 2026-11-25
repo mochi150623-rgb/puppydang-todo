@@ -167,12 +167,27 @@
   .ph .phlab{position:relative;font-size:13px;font-weight:800;color:#9C7B5A;letter-spacing:-.02em;
     background:rgba(255,255,255,.6);padding:2px 8px;border-radius:7px;margin-top:4px}
   .ph.b2 .phlab{color:#778A5A}
+  /* 고양이 장 카드 — 갈색·크림 톤과 어울리는 은은한 라벤더/로즈 틴트 */
+  .ph.cat{background:radial-gradient(120% 100% at 20% 0%,#FCF8FD 0%,#F2E8F5 55%,#E8DCEE 100%);color:#8E6C9A}
+  .ph.cat::before{background-image:radial-gradient(circle at 13px 13px, rgba(150,110,165,.16) 2px, transparent 2.4px)}
+  .ph.cat .phlab{color:#8E6C9A;background:rgba(255,255,255,.66)}
   .cbadges{position:absolute;left:10px;top:10px;display:flex;gap:5px;max-width:82%;flex-wrap:wrap}
   .btag{height:26px;padding:0 9px;border-radius:8px;font-size:12.5px;font-weight:800;letter-spacing:-.02em;
     display:inline-flex;align-items:center;gap:3px;color:#fff;background:rgba(90,56,30,.84);
     -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 2px 8px rgba(46,33,22,.14)}
   .btag.b2{background:rgba(88,108,60,.88)}
   .btag.cage{background:rgba(255,255,255,.95);color:var(--brown-d)}
+  .btag.cat{background:rgba(142,108,154,.9)}
+  .btag.catcage{background:rgba(255,255,255,.97);color:#6B4C77;border:1px solid rgba(206,183,216,.85)}
+  .card.cat{background:linear-gradient(180deg,#FBF8FC 0%,#FFFCFD 46%,#fff 100%);border-color:rgba(203,181,212,.7);
+    box-shadow:0 6px 20px rgba(126,96,140,.09), 0 1px 2px rgba(46,33,22,.04)}
+  .card.cat .cphoto{background:#F0E7F2}
+  .card.cat .cbathrow{border-top-color:#EADFEC}
+  .card.cat .cname{color:#4C3A54}
+  .card.cat .cprice{color:#6B4C77}
+  .spcat{color:#7C5A88;font-weight:800;display:inline-flex;align-items:center;gap:3px}
+  .catpill{display:inline-flex;align-items:center;gap:3px;height:22px;padding:0 7px;border-radius:7px;
+    background:#F4ECF7;border:1px solid #E2D2E9;color:#7C5A88;font-size:12.5px;font-weight:800;letter-spacing:-.02em}
   .stchip{position:absolute;left:10px;bottom:10px;height:28px;padding:0 10px;border-radius:9px;font-size:13px;font-weight:800;
     display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.95);color:var(--ink);
     box-shadow:0 2px 8px rgba(46,33,22,.14);letter-spacing:-.02em}
@@ -371,6 +386,8 @@
   .seg{display:flex;gap:4px;background:#F5EEE5;padding:4px;border-radius:13px}
   .seg button{flex:1;height:40px;border-radius:10px;font-size:14.5px;font-weight:800;color:var(--muted);letter-spacing:-.02em}
   .seg button.on{background:#fff;color:var(--brown-d);box-shadow:0 2px 8px rgba(90,56,30,.12)}
+  .seg.spcatseg{background:#F5EEF7}
+  .seg.spcatseg button.on{color:#6B4C77;box-shadow:0 2px 8px rgba(126,96,140,.16)}
   .hint{margin:5px 2px 0;font-size:12.5px;font-weight:700;color:var(--muted-2);letter-spacing:-.02em}
   .hint b{color:var(--brown-d)}
   .pricechips{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
@@ -690,6 +707,7 @@
 
   /* ---------- 분양완료 보관함(아카이브) ---------- */
   .card.archive{background:#FCFAF7;border-color:#ECE5D9}
+  .card.archive.cat{background:linear-gradient(180deg,#FAF6FB 0%,#FDFBFD 100%);border-color:#E7DAEC}
   .card.archive .cphoto .stchip{background:rgba(70,60,50,.74);color:#fff}
   .archnote{margin:0 0 12px;padding:11px 13px;border-radius:13px;background:#F4F1EA;border:1px solid #E5DCCD;
     font-size:13px;font-weight:700;color:#6E6152;line-height:1.55;letter-spacing:-.02em}
@@ -957,6 +975,24 @@
       !(p.baths && p.baths.length) && !(p.vaccines && p.vaccines.length) &&
       !(p.healthFlags && p.healthFlags.length) && !String(p.memo || '').trim();
   }
+  /* ---- 종류: 강아지 / 고양이 ---- */
+  function isCat(p){
+    return !!p && (p.species === 'cat' || /^\s*고양이/.test(String(p.cage || '')));
+  }
+  function speciesLabel(p){ return isCat(p) ? '고양이' : '강아지'; }
+  function speciesEmoji(p){ return isCat(p) ? '🐱' : '🐶'; }
+  /* 장 정렬 키: 숫자 장(1번장 … 50번장)이 먼저, 그다음 고양이 장(고양이 1번장 …) */
+  function cageNum(p){
+    var m = String((p && p.cage) || '').match(/(\d+)/);
+    return m ? parseInt(m[1], 10) : 9999;
+  }
+  function cageCmp(a, b){
+    var ca = isCat(a), cb = isCat(b);
+    if(ca !== cb) return ca ? 1 : -1;
+    var na = cageNum(a), nb = cageNum(b);
+    if(na !== nb) return na - nb;
+    return String((a && a.cage) || '').localeCompare(String((b && b.cage) || ''), 'ko', { numeric:true, sensitivity:'base' });
+  }
   function ageInfo(birth){
     if(!birth) return null;
     var days = daysBetween(birth, todayStr());
@@ -1189,6 +1225,8 @@
       id: p.id || uid(),
       branch: p.branch === '디데이펫' ? '디데이펫' : '퍼피댕',
       cage: String(p.cage == null ? '' : p.cage).slice(0, 20),
+      /* 종류: 고양이 장(고양이 N번장)은 species 'cat' 유지, 나머지는 강아지 */
+      species: (p.species === 'cat' || /^\s*고양이/.test(String(p.cage == null ? '' : p.cage))) ? 'cat' : 'dog',
       name: String(p.name == null ? '' : p.name).slice(0, 30),
       breed: String(p.breed == null ? '' : p.breed).slice(0, 30),
       sex: p.sex === 'female' ? 'female' : 'male',
@@ -1310,9 +1348,30 @@
     }
     var data = null;
     try { data = JSON.parse(raw); } catch(e){ data = null; }
-    if(!data || typeof data !== 'object' || !Array.isArray(data.puppies)){
+    if(!data || typeof data !== 'object'){
       return blankState();
     }
+    /* 새 저장 방식(IndexedDB) 표식만 남아 있는 경우: 작은 설정만 먼저 복원하고
+       본문은 initStore()가 IndexedDB에서 불러옵니다 */
+    if(!Array.isArray(data.puppies)){
+      if(data.store === 'idb'){
+        var m = blankState();
+        m.staff = cleanStaff(data.staff);
+        m.worker = m.staff.indexOf(data.worker) >= 0 ? data.worker : m.staff[0];
+        m.hintDismissed = !!data.hintDismissed;
+        m.autoStaffPurged = !!data.autoStaffPurged;
+        m.seeded = !!data.seeded;
+        m.createdAt = data.createdAt || m.createdAt;
+        return m;
+      }
+      return blankState();
+    }
+    return stateFromObject(data);
+  }
+
+  /* 저장된 객체(예전 localStorage · IndexedDB · 백업 파일) → 앱 상태 */
+  function stateFromObject(data){
+    data = (data && typeof data === 'object') ? data : {};
     var staff = cleanStaff(data.staff);
     var worker = staff.indexOf(data.worker) >= 0 ? data.worker : staff[0];
     return {
@@ -1382,9 +1441,85 @@
   };
 
   function isLive(){ return sync.mode === 'live' && !!sync.client; }
+  /* ================= 이 기기 저장소 (IndexedDB) =================
+     예전에는 통째로 localStorage(약 5MB)에 넣었는데 사진 때문에 금방 차서,
+     본문(아이·활동·일정)은 IndexedDB(수백MB)에 넣고 localStorage에는 작은 설정만 남깁니다. */
+  var IDB_NAME = 'puppydang-store';
+  var IDB_STORE = 'kv';
+  var IDB_KEY = 'state';
+  var store = { mode:'ls', db:null, ready:false, timer:null, writing:false, again:false, err:null, bytes:0, savedAt:0 };
+
+  function idbOpen(){
+    return new Promise(function(resolve, reject){
+      var req;
+      try { req = window.indexedDB.open(IDB_NAME, 1); } catch(e){ reject(e); return; }
+      req.onupgradeneeded = function(){ try { req.result.createObjectStore(IDB_STORE); } catch(e){} };
+      req.onsuccess = function(){ resolve(req.result); };
+      req.onerror = function(){ reject(req.error || new Error('indexeddb')); };
+      req.onblocked = function(){ reject(new Error('indexeddb blocked')); };
+    });
+  }
+  function idbRun(mode, fn){
+    return new Promise(function(resolve, reject){
+      if(!store.db){ reject(new Error('no db')); return; }
+      var tx, out;
+      try { tx = store.db.transaction(IDB_STORE, mode); out = fn(tx.objectStore(IDB_STORE)); }
+      catch(e){ reject(e); return; }
+      tx.oncomplete = function(){
+        /* get()은 IDBRequest를 돌려주므로 결과 값을 꺼내서 넘깁니다 */
+        resolve((out && typeof out === 'object' && 'result' in out) ? out.result : out);
+      };
+      tx.onerror = function(){ reject(tx.error); };
+      tx.onabort = function(){ reject(tx.error || new Error('aborted')); };
+    });
+  }
+  function idbGet(key){
+    return idbRun('readonly', function(st){ return st.get(key); });
+  }
+  function idbSet(key, val){
+    return idbRun('readwrite', function(st){ return st.put(val, key); });
+  }
+  function stateBytes(){
+    try { return new Blob([JSON.stringify(state)]).size; } catch(e){ return JSON.stringify(state).length; }
+  }
+  /* localStorage에는 작은 설정과 “본문은 IndexedDB에 있음” 표식만 */
+  function localMeta(){
+    return { v:2, store:'idb', worker:state.worker, staff:state.staff, hintDismissed:state.hintDismissed,
+      autoStaffPurged:!!state.autoStaffPurged, seeded:state.seeded, createdAt:state.createdAt,
+      count:state.puppies.length, savedAt:new Date().toISOString() };
+  }
+  function queueStoreWrite(){
+    if(store.mode !== 'idb' || !store.db) return;
+    if(store.writing){ store.again = true; return; }
+    store.writing = true;
+    var snap;
+    try { snap = { savedAt:new Date().toISOString(), v:1, data: state }; } catch(e){ store.writing = false; return; }
+    idbSet(IDB_KEY, snap).then(function(){
+      store.writing = false;
+      store.bytes = stateBytes();
+      store.savedAt = Date.now();
+      if(store.again){
+        store.again = false;
+        queueStoreWrite();
+      }
+    }, function(err){
+      store.writing = false; store.again = false; store.err = err;
+      /* IndexedDB에 못 쓰면 예전처럼 localStorage에 통째로 (공간이 되면) 저장 */
+      store.mode = 'ls';
+      try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){}
+    });
+  }
   function saveLocal(){
-    try { localStorage.setItem(KEY, JSON.stringify(state)); return true; }
-    catch(e){ return false; }
+    var ok = true;
+    try {
+      localStorage.setItem(KEY, JSON.stringify(store.mode === 'idb' ? localMeta() : state));
+    } catch(e){
+      /* 공간이 부족하면 본문을 IndexedDB로 옮기고 설정만 저장 */
+      try { localStorage.setItem(KEY, JSON.stringify(localMeta())); } catch(e2){}
+      ok = (store.mode === 'idb');
+    }
+    if(store.mode === 'idb') queueStoreWrite();   // 본문은 IndexedDB에
+    return ok;
   }
   function save(){
     var ok = saveLocal();
@@ -1392,6 +1527,46 @@
     try { syncDirty(); } catch(e){}
     return ok;
   }
+  /* 앱을 열 때: IndexedDB → (없으면) 예전 localStorage 순서로 본문을 불러오고, 예전 데이터는 자동 이전 */
+  function initStore(done){
+    var called = false;
+    function finish(){ if(called) return; called = true; store.ready = true; clearTimeout(store.timer); try { done(); } catch(e){} }
+    store.timer = setTimeout(finish, 3500);   // IndexedDB가 멈춰도 앱은 열리게
+    idbOpen().then(function(db){
+      store.db = db;
+      return idbGet(IDB_KEY).then(function(rec){
+        var legacyRaw = null;
+        try { legacyRaw = localStorage.getItem(KEY); } catch(e){}
+        var legacy = null;
+        try { legacy = legacyRaw ? JSON.parse(legacyRaw) : null; } catch(e){ legacy = null; }
+        var idbData = (rec && rec.data && Array.isArray(rec.data.puppies)) ? rec.data : null;
+        var lsData = (legacy && Array.isArray(legacy.puppies)) ? legacy : null;
+        var chosen = null, why = '';
+        if(idbData && lsData){
+          var tIdb = new Date((rec && rec.savedAt) || 0).getTime() || 0;
+          var tLs = new Date(legacy.savedAt || 0).getTime() || 0;
+          /* 이전 도중이라 옛 localStorage 쪽이 더 새 기록이면 그것을 살립니다 */
+          if(tLs > tIdb + 5000){ chosen = lsData; why = 'legacy-newer'; } else { chosen = idbData; why = 'idb'; }
+        } else if(idbData){ chosen = idbData; why = 'idb'; }
+        else if(lsData){ chosen = lsData; why = 'migrate'; }
+        if(chosen && !store.ready){
+          return idbSet(IDB_KEY, { v:1, savedAt:new Date().toISOString(), data: chosen }).then(function(){
+            store.mode = 'idb';
+            state = stateFromObject(chosen);
+            store.bytes = stateBytes(); store.savedAt = Date.now();
+            saveLocal();            // localStorage에는 작은 설정만 → 5MB 한도에서 벗어남
+            store.migrated = why;
+          });
+        }
+        store.mode = 'idb';
+        store.bytes = stateBytes();
+        return null;
+      });
+    }).then(function(){ finish(); }, function(err){
+      store.err = err; store.mode = 'ls'; finish();   // IndexedDB를 못 쓰는 환경 → 예전 방식 유지
+    });
+  }
+  /* 앱을 열 때: 본문은 IndexedDB에서 불러온 뒤에 로그인·렌더링을 시작합니다 */
   function get(id){
     for(var i=0;i<state.puppies.length;i++){ if(state.puppies[i].id === id) return state.puppies[i]; }
     return null;
@@ -2125,16 +2300,16 @@
       }
       if(ui.sort === 'intake'){
         var c = String(b.intakeDate).localeCompare(String(a.intakeDate));
-        return c !== 0 ? c : String(a.cage).localeCompare(String(b.cage), 'ko', {numeric:true});
+        return c !== 0 ? c : cageCmp(a, b);
       }
       if(ui.sort === 'bath'){
         var da = bathDays(a); var db = bathDays(b);
         da = (da === null) ? 99999 : da;
         db = (db === null) ? 99999 : db;
         if(da !== db) return db - da;
-        return String(a.cage).localeCompare(String(b.cage), 'ko', {numeric:true});
+        return cageCmp(a, b);
       }
-      return String(a.cage).localeCompare(String(b.cage), 'ko', {numeric:true, sensitivity:'base'});
+      return cageCmp(a, b);
     });
     return arr;
   }
@@ -2231,6 +2406,11 @@
     if(src){
       return '<img src="' + src + '" alt="' + esc(p.name) + ' 사진">';
     }
+    if(isCat(p)){
+      return '<div class="ph cat">' +
+        '<span class="phemo">🐱</span>' +
+        '<span class="phlab">사진 준비 중</span></div>';
+    }
     return '<div class="ph ' + (p.branch==='디데이펫'?'b2':'') + '">' +
       '<span class="phemo">' + breedEmoji(p.breed) + '</span>' +
       '<span class="phlab">사진 준비 중</span></div>';
@@ -2239,19 +2419,20 @@
   /* 분양완료 보관함 카드 — 원래 장 번호와 자동 삭제까지 남은 날을 같이 보여줘요 */
   function archiveCardHTML(p){
     var adopt = adoptInfo(p);
+    var cat = isCat(p);
     var vacDate = effNextVac(p);
     var vac = vacDate ? dday(vacDate) : null;
     var soldOn = p.adoptedAt ? fmtMD(isoYmd(p.adoptedAt)) : '';
     var sub = [p.cage || '', p.breed || '품종 미정', p.sex === 'female' ? '여아' : '남아'].filter(Boolean).join(' · ');
-    return '<article class="card archive" data-id="' + p.id + '" tabindex="0" aria-label="' + esc(p.name) + ' 분양완료 기록 상세 보기">' +
+    return '<article class="card archive' + (cat ? ' cat' : '') + '" data-id="' + p.id + '" tabindex="0" aria-label="' + esc(p.name) + ' 분양완료 기록 상세 보기">' +
       '<div class="cphoto" data-act="openCard">' + photoBlock(p) +
-        '<div class="cbadges"><span class="btag ' + (p.branch==='디데이펫'?'b2':'') + '">🐾 ' + p.branch + '</span>' +
-        (p.cage ? '<span class="btag cage">' + esc(p.cage) + '</span>' : '') + '</div>' +
+        '<div class="cbadges"><span class="btag ' + (cat ? 'cat' : (p.branch==='디데이펫'?'b2':'')) + '">' + (cat ? '🐱 ' : '🐾 ') + p.branch + '</span>' +
+        (p.cage ? '<span class="btag cage' + (cat ? ' catcage' : '') + '">' + (cat ? '🐱 ' : '') + esc(p.cage) + '</span>' : '') + '</div>' +
         '<span class="stchip sold">분양완료</span></div>' +
       '<div class="cbody" data-act="openCard">' +
         '<div class="crow"><h3 class="cname">' + esc(p.name || '이름 없음') + '</h3>' +
           '<span class="cprice">' + (p.price ? manwon(p.price) : '분양가 미정') + '</span></div>' +
-        '<div class="csub">' + esc(sub) + '</div>' +
+        '<div class="csub">' + (cat ? '<span class="spcat">🐱 고양이</span><span class="sep">·</span>' : '') + esc(sub) + '</div>' +
         (soldOn ? '<div class="cadopt' + (adopt && adopt.warn ? ' warn' : '') + '">🗂 ' + soldOn + ' 분양완료' +
           (adopt ? ' · <b>' + adopt.text + '</b>' : '') + '</div>' : '') +
         (vac ? '<div class="ctail' + (vac.cls === 'alert' ? ' over' : '') + '">💉 다음 접종 ' + vac.text + '</div>' : '') +
@@ -2261,6 +2442,7 @@
   function cardHTML(p){
     if(p.isArchive) return archiveCardHTML(p);
     var st = STATUS[p.status] || STATUS.available;
+    var cat = isCat(p);
     var bl = bathLabel(p);
     var inDays = intakeDays(p);
     var age = ageInfo(p.birthDate);
@@ -2271,17 +2453,18 @@
     var meta = [];
     if(inDays !== null) meta.push('<span class="mchip">🏠 입소 ' + Math.max(1, inDays) + '일차</span>');
     if(age) meta.push('<span class="mchip age">🎂 ' + age.main + '</span>');
-    return '<article class="card" data-id="' + p.id + '" tabindex="0" aria-label="' + esc(p.name) + ' 상세 보기">' +
+    return '<article class="card' + (cat ? ' cat' : '') + '" data-id="' + p.id + '" tabindex="0" aria-label="' + esc(p.name) + ' 상세 보기">' +
       '<div class="cphoto" data-act="openCard">' + photoBlock(p) +
-        '<div class="cbadges"><span class="btag ' + (p.branch==='디데이펫'?'b2':'') + '">🐾 ' + p.branch + '</span>' +
-        (p.cage ? '<span class="btag cage">' + esc(p.cage) + '</span>' : '') + '</div>' +
+        '<div class="cbadges"><span class="btag ' + (cat ? 'cat' : (p.branch==='디데이펫'?'b2':'')) + '">' + (cat ? '🐱 ' : '🐾 ') + p.branch + '</span>' +
+        (p.cage ? '<span class="btag cage' + (cat ? ' catcage' : '') + '">' + (cat ? '🐱 ' : '') + esc(p.cage) + '</span>' : '') + '</div>' +
         '<span class="stchip ' + st.cls + '">' + st.label + '</span>' +
         vacBadgeHTML(p) +
       '</div>' +
       '<div class="cbody" data-act="openCard">' +
         healthBadgesHTML(p) +
         '<div class="crow"><h3 class="cname">' + esc(p.name || '이름 없음') + '</h3>' + priceHTML + '</div>' +
-        '<div class="csub">' + esc(p.breed || '품종 미정') + '<span class="sep">·</span>' + (p.sex === 'female' ? '여아' : '남아') +
+        '<div class="csub">' + (cat ? '<span class="spcat">🐱 고양이</span><span class="sep">·</span>' : '') +
+          esc(p.breed || '품종 미정') + '<span class="sep">·</span>' + (p.sex === 'female' ? '여아' : '남아') +
           (p.color ? '<span class="sep">·</span>' + esc(p.color) : '') + '</div>' +
         '<div class="cmeta">' + meta.join('') + '</div>' +
         (adopt ? '<div class="cadopt' + (adopt.warn ? ' warn' : '') + '">🧹 ' + adopt.text + '</div>' : '') +
@@ -2416,7 +2599,7 @@
     });
     Object.keys(map).forEach(function(k){
       map[k].list.sort(function(a, b){
-        var c = String(a.dog.cage || '').localeCompare(String(b.dog.cage || ''), 'ko', { numeric:true });
+        var c = cageCmp(a.dog, b.dog);
         if(c !== 0) return c;
         if(a.kind !== b.kind) return a.kind === '목욕' ? -1 : 1;
         return String(a.dog.name || '').localeCompare(String(b.dog.name || ''), 'ko');
@@ -2832,7 +3015,7 @@
     var list = state.puppies.filter(function(p){
       return !p.isArchive && p.branch === branch && !isEmptySlot(p) && p.status !== 'sold';
     });
-    list.sort(function(a, b){ return String(a.cage || '').localeCompare(String(b.cage || ''), 'ko', { numeric:true }); });
+    list.sort(function(a, b){ return cageCmp(a, b); });
     return list.slice(0, 12);
   }
   function schedSheetHTML(){
@@ -3162,7 +3345,7 @@
       return '<button class="sseg ' + STATUS[k].cls + ' ' + (p.status === k ? 'on' : '') + '" data-act="setStatus" data-status="' + k + '">' + STATUS[k].label + '</button>';
     }).join('');
 
-    return sheetbar(esc(p.name || '이름 없음'), esc(p.cage || '장 번호 없음') + ' · ' + p.branch,
+    return sheetbar(esc(p.name || '이름 없음'), esc(p.cage || '장 번호 없음') + ' · ' + p.branch + (isCat(p) ? ' · 🐱 고양이' : ''),
         '<button class="ibtn" data-act="editDog" aria-label="수정">✏️</button>', 'back') +
       '<div class="sheetbody">' +
       '<div class="dphoto">' + photoArea + '</div>' +
@@ -3170,7 +3353,8 @@
       '<div class="dhead">' +
         '<div class="dnamerow"><h2 class="dname">' + esc(p.name || '이름 없음') + '</h2>' +
           '<span class="dprice">' + priceTxt + '</span></div>' +
-        '<div class="dsub">' + esc(p.breed || '품종 미정') + '<span class="sep">·</span>' + (p.sex === 'female' ? '여아' : '남아') +
+        '<div class="dsub">' + (isCat(p) ? '<span class="catpill">🐱 고양이</span><span class="sep">·</span>' : '') +
+          esc(p.breed || '품종 미정') + '<span class="sep">·</span>' + (p.sex === 'female' ? '여아' : '남아') +
           (p.color ? '<span class="sep">·</span>' + esc(p.color) : '') + '<span class="sep">·</span>' + p.branch + '</div>' +
         '<div class="statusseg">' + sseg + '</div>' +
         (adopt ? '<div class="adoptnote' + (adopt.warn ? ' warn' : '') + '">🧹 ' + adopt.text +
@@ -3180,6 +3364,7 @@
       '<section class="scard"><div class="shead"><h3>📋 기본 정보</h3>' +
         (p.cage ? '<span class="sbadge calm">' + esc(p.cage) + '</span>' : '') + '</div>' +
         '<div class="inforows">' +
+          '<div class="irow"><span class="ilab">종류</span><span class="ival">' + (isCat(p) ? '🐱 고양이' : '🐶 강아지') + '</span></div>' +
           '<div class="irow"><span class="ilab">개체관리번호</span><span class="ival">' + (p.regNo ? '<b>' + esc(p.regNo) + '</b>' : '<span style="color:var(--muted-2);font-weight:700">미입력</span>') + '</span></div>' +
           '<div class="irow"><span class="ilab">장 번호</span><span class="ival"><b>' + esc(p.cage || '미정') + '</b><span class="tiny">' + p.branch + '</span></span></div>' +
           '<div class="irow"><span class="ilab">입소일</span><span class="ival">' + fmtFull(p.intakeDate) +
@@ -3260,6 +3445,7 @@
     var rows = [
       ['분양일', p.adoptedAt ? fmtFull(isoYmd(p.adoptedAt)) : '—'],
       ['원래 장', (p.cage || '—') + ' · ' + p.branch],
+      ['종류', isCat(p) ? '🐱 고양이' : '🐶 강아지'],
       ['품종', p.breed || '미정'],
       ['성별', (p.sex === 'female' ? '여아' : '남아') + (p.color ? ' · ' + p.color : '')],
       ['생일', p.birthDate ? fmtFull(p.birthDate) : '미입력'],
@@ -3346,9 +3532,11 @@
 
   /* ================= 폼 ================= */
   function newDraft(){
-    return norm({ name:'', cage:'', breed:'', color:'', price:0, status:'available', branch:'퍼피댕',
+    var d = norm({ name:'', cage:'', breed:'', color:'', price:0, status:'available', branch:'퍼피댕', species:'dog',
       regNo:'', adopter:'',
       intakeDate: todayStr(), birthDate:'', nextVaccine:'', memo:'' });
+    d.spManual = false;   // 종류를 직접 고르기 전까지는 장 번호(고양이 N번장)에 맞춰 자동 선택
+    return d;
   }
 
   function formHTML(){
@@ -3373,11 +3561,16 @@
       '<div id="formErr" class="formerr" hidden></div>' +
 
       '<div class="fsec"><h3>지점 · 장 번호</h3>' +
+        '<div class="field"><label>종류</label><div class="seg spcatseg" id="segSpecies">' +
+          '<button type="button" data-act="fSpecies" data-v="dog" class="' + (!isCat(d) ? 'on' : '') + '">🐶 강아지</button>' +
+          '<button type="button" data-act="fSpecies" data-v="cat" class="' + (isCat(d) ? 'on' : '') + '">🐱 고양이</button>' +
+        '</div>' +
+        '<div class="hint">‘고양이 N번장’으로 적으면 자동으로 🐱 고양이로 잡혀요</div></div>' +
         '<div class="field"><label>지점</label><div class="seg" id="segBranch">' +
           BRANCHES.map(function(b){ return '<button type="button" data-act="fBranch" data-v="' + b + '" class="' + (d.branch === b ? 'on' : '') + '">' + b + '</button>'; }).join('') +
         '</div></div>' +
         '<div class="field"><label>장 번호 <span style="color:var(--red)">*</span></label>' +
-            '<input class="txt" id="fCage" value="' + esc(d.cage) + '" placeholder="1번장 / A-03" autocomplete="off"></div>' +
+            '<input class="txt" id="fCage" value="' + esc(d.cage) + '" placeholder="1번장 / 고양이 1번장 / A-03" autocomplete="off"></div>' +
         '<div class="field"><label>분양 상태</label><div class="seg" id="segStatus">' +
             STATUS_KEYS.map(function(k){ return '<button type="button" data-act="fStatus" data-v="' + k + '" class="' + (d.status === k ? 'on' : '') + '">' + STATUS[k].label + '</button>'; }).join('') +
           '</div></div>' +
@@ -3423,11 +3616,11 @@
         '</div>' +
       '</div>' +
 
-      '<div class="fsec"><h3>강아지 사진</h3>' +
+      '<div class="fsec"><h3>' + (isCat(d) ? '고양이 사진' : '강아지 사진') + '</h3>' +
         '<div class="photogrid">' +
-          photoTile('강아지 사진', '앨범에서 고르기') +
+          photoTile(speciesLabel(d) + ' 사진', '앨범에서 고르기') +
         '</div>' +
-        '<p class="hint">한 장만 올리면 돼요. 긴 쪽 1080px · JPEG로 자동 압축해 저장해요.</p>' +
+        '<p class="hint">한 장만 올리면 돼요. 긴 쪽 640px · JPEG로 자동 압축해 저장해요 (장당 약 40~70KB).</p>' +
       '</div>' +
 
       '<div class="fsec"><h3>💉 접종일</h3>' +
@@ -3572,7 +3765,7 @@
       img.onerror = function(){ toast('이미지 형식을 읽을 수 없어요.'); };
       img.onload = function(){
         try {
-          var MAX = 1080;
+          var MAX = 640;   // 모바일 카드·상세에서 충분히 선명하고 장당 40~70KB 정도로 가볍게
           var w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
           var scale = Math.min(1, MAX / Math.max(w, h));
           w = Math.max(1, Math.round(w * scale));
@@ -3583,11 +3776,11 @@
           ctx.fillStyle = '#ffffff';
           ctx.fillRect(0,0,w,h);
           ctx.drawImage(img, 0, 0, w, h);
-          var q = 0.82;
+          var q = 0.72;
           var data = cv.toDataURL('image/jpeg', q);
           var guard = 0;
-          while(data.length > 300000 && guard < 8){
-            q = Math.max(0.35, q - 0.08);
+          while(data.length > 120000 && guard < 8){
+            q = Math.max(0.4, q - 0.06);
             data = cv.toDataURL('image/jpeg', q);
             guard++;
           }
@@ -3648,19 +3841,20 @@
 
   /* ================= 설정 ================= */
   function storageInfo(){
-    var bytes = 0;
-    try { bytes = new Blob([JSON.stringify(state)]).size; } catch(e){ bytes = JSON.stringify(state).length; }
+    var bytes = stateBytes();
     var photos = 0;
     state.puppies.forEach(function(p){
       if(p.photoProfile) photos += p.photoProfile.length;
       if(p.photoStore) photos += p.photoStore.length;
     });
-    return { bytes: bytes, photos: Math.round(photos/1024), kb: Math.max(1, Math.round(bytes/1024)) };
+    return { bytes: bytes, photos: Math.round(photos/1024), kb: Math.max(1, Math.round(bytes/1024)),
+      where: store.mode === 'idb' ? 'IndexedDB' : '브라우저 저장소' };
   }
 
   function settingsHTML(){
     var info = storageInfo();
-    var pct = Math.min(100, Math.round(info.bytes / (5 * 1024 * 1024) * 1000) / 10);
+    /* 브라우저 IndexedDB는 수백MB까지 — 이제 5MB 걱정은 하지 않아도 되도록 안내 */
+    var pct = Math.min(100, Math.round(info.bytes / (50 * 1024 * 1024) * 1000) / 10);
     var cream = state.puppies.length;
     return sheetbar('설정 · 안내', '저장 방식과 공유') +
       '<div class="sheetbody">' +
@@ -3668,9 +3862,10 @@
         '<h3 class="sh3">💾 ' + (isLive() ? '공유 목록 + 이 기기에 함께 저장' : '지금은 ‘이 기기’에만 저장돼요') + '</h3>' +
         '<p class="sp">' + (isLive()
           ? '노트는 Supabase 공유 목록에 저장되고, 이 브라우저에도 사본을 두어 인터넷이 없어도 열립니다. 직원 폰에서 고친 내용은 바로 반영돼요.'
-          : '노트는 이 브라우저의 저장 공간(localStorage)에 들어갑니다. 서버로 보내지 않아 인터넷이 없어도 열리고, 같은 휴대폰·PC의 <b>같은 브라우저</b>에서만 보여요. 시크릿 모드나 방문 기록 삭제를 하면 사라질 수 있으니 가끔 백업해 주세요.') + '</p>' +
+          : '노트와 사진은 이 브라우저의 <b>IndexedDB</b>(수백 MB)에 들어갑니다. 서버로 보내지 않아 인터넷이 없어도 열리고, 같은 휴대폰·PC의 <b>같은 브라우저</b>에서만 보여요. 시크릿 모드나 방문 기록 삭제를 하면 사라질 수 있으니 가끔 백업해 주세요.') + '</p>' +
         '<div class="meterbar"><i style="width:' + Math.max(2, pct) + '%"></i></div>' +
-        '<div class="meterlab"><span>사진 포함 약 ' + info.kb + 'KB</span><span>브라우저 한도 약 5MB</span></div>' +
+        '<div class="meterlab"><span>사진 포함 약 ' + info.kb + 'KB</span><span>' + (store.mode === 'idb' ? '브라우저 IndexedDB · 서버 500MB' : '브라우저 저장소') + '</span></div>' +
+        '<p class="sp small" style="margin-top:6px">사진은 장당 40~70KB로 자동 압축되고, 이 기기(IndexedDB)에는 수백 MB까지 들어가요. 직원들과 같이 보는 서버(Supabase 무료)는 500MB예요.</p>' +
       '</section>' +
       '<section class="scard">' +
         '<h3 class="sh3">📦 백업 · 복원</h3>' +
@@ -3817,6 +4012,8 @@
     if(!p) return;
     p.name = '미정';
     p.status = 'available';
+    /* 고양이 장은 비워도 종류(cat)를 유지 — 14일 자동 정리 뒤에도 🐱 로 남아야 해요 */
+    if(isCat(p)) p.species = 'cat';
     p.adoptedAt = null;
     p.isArchive = false;
     p.archivedFrom = '';
@@ -4410,6 +4607,11 @@
           toast('다음 접종 예정일을 지웠어요' + (lastVacDate(p) ? ' · 접종 기록이 있어 마지막 접종일 + 2주로 다시 계산돼요' : ''));
         })();
         break;
+      case 'fSpecies':
+        draft.species = el.getAttribute('data-v') === 'cat' ? 'cat' : 'dog';
+        draft.spManual = true;   // 직접 고른 종류는 장 번호로 덮어쓰지 않음
+        $$('#segSpecies button').forEach(function(b){ b.classList.toggle('on', b === el); });
+        break;
       case 'fBranch':
         draft.branch = el.getAttribute('data-v');
         $$('#segBranch button').forEach(function(b){ b.classList.toggle('on', b === el); });
@@ -4584,6 +4786,14 @@
       renderList();
       return;
     }
+    if(t.id === 'fCage'){
+      /* 고양이 N번장을 타이핑하면 종류를 자동으로 🐱 고양이로 (직접 고른 경우는 그대로 둠) */
+      if(draft && !draft.spManual && /^\s*고양이/.test(String(t.value || '')) && draft.species !== 'cat'){
+        draft.species = 'cat';
+        $$('#segSpecies button').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-v') === 'cat'); });
+      }
+      return;
+    }
     if(t.id === 'fPrice'){
       var v = Math.max(0, Math.round(Number(String(t.value).replace(/[^0-9]/g,'')) || 0));
       var h = $('#priceHint');
@@ -4739,15 +4949,18 @@
   if(lockAltEl) lockAltEl.addEventListener('click', function(){ unlock(null, true); });
   document.addEventListener('visibilitychange', function(){ if(document.hidden) return; verifyAccount(); try { sweepAdopted(true); } catch(e){} });
 
-  bootAuth();
-  setTimeout(function(){ try { sweepAdopted(true); } catch(e){} }, 0);   // 앱을 열 때 바로 정리
+  initStore(function(){
+    bootAuth();
+    setTimeout(function(){ try { sweepAdopted(true); } catch(e){} }, 0);   // 앱을 열 때 바로 정리
+  });
   window.addEventListener('online', function(){ if(auth.user && sync.mode !== 'live') pullRemote(!sync.channel); });
   if(window.__errors.length){
     // 개발 중 조용한 확인용
     console.warn('init errors', window.__errors);
   }
   if(/[?&]debug=1/.test(location.search)){
-    window.__puppy = { state: state, ui: ui, sync: sync, feed: applyRows, event: onRealtime, mode: setSync, pull: pullRemote,
+    window.__puppy = { get state(){ return state; }, ui: ui, sync: sync, feed: applyRows, event: onRealtime, mode: setSync, pull: pullRemote,
+      store: store, storageInfo: storageInfo, idb: { open: idbOpen, get: idbGet, set: idbSet },
       logActivity: logActivity, renderFeed: renderFeed, openFeed: openFeed, renderAll: renderAll,
       cal: cal, openCalendar: openCalendar, renderCalendar: renderCalendar,
       hotel: hotel, openHotel: openHotel, renderHotel: renderHotel, schedules: function(){ return state.schedules; },
