@@ -516,6 +516,88 @@
   .feedrow .fline{display:block;font-size:13.5px;font-weight:700;color:var(--ink-2);line-height:1.55;letter-spacing:-.02em;word-break:keep-all}
   .feedrow .fline b{font-weight:800}
   .feedrow .ftm{display:block;font-size:12px;font-weight:800;color:var(--muted-2);letter-spacing:-.02em;margin-top:2px}
+
+  /* ---------- 목욕 · 약욕 캘린더 ---------- */
+  .sidebtn.calbtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;width:58px;font-size:17px;line-height:1}
+  .sidebtn.calbtn .cl{font-size:9.5px;font-weight:800;color:var(--muted);letter-spacing:-.04em;margin-top:2px}
+  .calwrap{position:fixed;inset:0;z-index:70;background:var(--bg);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+    background-image:radial-gradient(760px 340px at 50% -140px,#F1DFC8 0%,rgba(250,246,241,0) 68%);background-repeat:no-repeat}
+  .calpage{max-width:480px;margin:0 auto;min-height:100%;padding-bottom:calc(22px + env(safe-area-inset-bottom))}
+  .calbar{position:sticky;top:0;z-index:3;display:flex;align-items:center;gap:8px;padding:calc(9px + env(safe-area-inset-top)) 14px 9px;
+    background:rgba(255,252,248,.97);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid #EDE1D2}
+  .calbar .ibtn{width:40px;height:40px;font-size:17px}
+  .calbar .calt{flex:1;min-width:0}
+  .calbar .calt b{display:block;font-size:17px;font-weight:800;letter-spacing:-.035em}
+  .calbar .calt span{display:block;font-size:12px;font-weight:800;color:var(--muted);letter-spacing:-.02em;margin-top:1px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .caltoday{flex:none;height:38px;padding:0 12px;border-radius:12px;background:#fff;border:1.5px solid var(--line);
+    font-size:13px;font-weight:800;color:var(--ink-2);letter-spacing:-.02em;box-shadow:0 2px 6px rgba(122,88,52,.05)}
+  .caltoday:active{transform:scale(.97)}
+  .calbody{padding:12px 14px 0}
+  .calseg{display:flex;gap:5px;background:#F1E8DC;padding:4px;border-radius:14px}
+  .calseg button{flex:1;height:42px;border-radius:11px;font-size:14.5px;font-weight:800;color:var(--muted);letter-spacing:-.03em;
+    display:inline-flex;align-items:center;justify-content:center;gap:5px;transition:.15s;white-space:nowrap}
+  .calseg button.on{background:#fff;color:var(--brown-d);box-shadow:0 2px 8px rgba(90,56,30,.14)}
+  .calseg .cc{font-size:11.5px;font-weight:800;color:var(--muted);background:#E9DDCB;border-radius:6px;padding:1px 5px}
+  .calseg button.on .cc{background:#F3E7D6;color:var(--brown)}
+  .calmonth{display:flex;align-items:center;gap:6px;margin:13px 1px 9px}
+  .calnav{height:34px;padding:0 9px;border-radius:10px;background:#fff;border:1.5px solid var(--line);font-size:12.5px;font-weight:800;
+    color:var(--ink-2);letter-spacing:-.03em;white-space:nowrap}
+  .calnav:active{transform:scale(.97)}
+  .calmonth b{flex:1;text-align:center;font-size:17px;font-weight:800;letter-spacing:-.04em;white-space:nowrap;color:var(--ink)}
+  .calcard{background:#fff;border:1.5px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:9px 6px 6px}
+  .caldow{display:grid;grid-template-columns:repeat(7,1fr);padding:0 0 5px;text-align:center;font-size:11.5px;font-weight:800;color:var(--muted-2);letter-spacing:-.02em}
+  .caldow span:nth-child(1){color:#BE5A44}
+  .caldow span:nth-child(7){color:#4E6E92}
+  .calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px 2px}
+  .cday{position:relative;min-height:52px;border-radius:11px;padding:3px 1px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;transition:.12s}
+  .cday .dn{font-size:13px;font-weight:800;letter-spacing:-.03em;color:var(--ink);line-height:1.35}
+  .cday.sun .dn{color:#BE5A44}
+  .cday.sat .dn{color:#4E6E92}
+  .cday.out{pointer-events:none}
+  .cday.out .dn{color:var(--muted-2);opacity:.4;font-weight:700}
+  .cday.today{background:#FBF2E6;box-shadow:inset 0 0 0 1.5px #DCC4A6}
+  .cday.on{background:linear-gradient(150deg,#8C5C2E,#5A381E);box-shadow:0 6px 14px rgba(107,68,35,.26)}
+  .cday.on .dn{color:#fff}
+  .cday:not(.out):active{transform:scale(.95)}
+  .cday .bd{display:flex;flex-direction:column;align-items:center;gap:1px;width:100%;padding:0 1px}
+  .cbd{max-width:100%;font-size:10px;font-weight:800;line-height:1.35;padding:1px 4px;border-radius:5px;letter-spacing:-.05em;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:inline-flex;align-items:center;gap:1px}
+  .cbd i{font-style:normal;font-size:11.5px;line-height:1}
+  .cbd.bath{background:#E6EDF8;color:#3D5E86}
+  .cbd.yak{background:#E8F0DD;color:#4C6B37}
+  .cday.on .cbd{background:rgba(255,255,255,.93)}
+  .cday.on .cbd.bath{color:#3D5E86}
+  .cday.on .cbd.yak{color:#4C6B37}
+  .calsum{display:flex;gap:7px;margin-top:10px}
+  .csum{flex:1;min-width:0;display:flex;align-items:center;gap:6px;background:#fff;border:1.5px solid var(--line);
+    border-radius:13px;padding:8px 10px;font-size:12.5px;font-weight:800;color:var(--muted);letter-spacing:-.02em;white-space:nowrap}
+  .csum b{font-size:16.5px;font-weight:800;color:#3D5E86;letter-spacing:-.04em}
+  .csum.yak b{color:#4C6B37}
+  .csum .csx{margin-left:auto;font-size:11.5px;font-weight:800;color:var(--muted-2)}
+  .calsec{display:flex;align-items:baseline;gap:6px;margin:18px 2px 8px;flex-wrap:wrap}
+  .calsec h2{font-size:15.5px;font-weight:800;letter-spacing:-.03em}
+  .calsec .tn{font-size:11.5px;font-weight:800;color:var(--brown);background:#F3E7D6;border-radius:6px;padding:1px 6px;letter-spacing:-.02em}
+  .calsec .n{margin-left:auto;font-size:12.5px;font-weight:800;color:var(--muted-2);letter-spacing:-.02em}
+  .callist{background:#fff;border:1.5px solid var(--line);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+  .calrow{display:flex;align-items:center;gap:8px;width:100%;padding:11px 12px;border-bottom:1px dashed #F1E6D8;text-align:left}
+  .calrow:last-child{border-bottom:0}
+  .calrow:active{background:#FDF8F2}
+  .calrow .cbdg{flex:none;height:27px;padding:0 8px;border-radius:9px;font-size:12px;font-weight:800;letter-spacing:-.03em;
+    display:inline-flex;align-items:center;gap:2px;background:#E6EDF8;color:#3D5E86;white-space:nowrap}
+  .calrow .cbdg.yak{background:#E8F0DD;color:#4C6B37}
+  .crmain{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+  .crmain b{font-size:14.5px;font-weight:800;letter-spacing:-.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .crmain span{font-size:12px;font-weight:700;color:var(--muted-2);letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .crby{flex:none;max-width:88px;font-size:12px;font-weight:800;color:var(--brown);background:#F5EEE5;border-radius:7px;
+    padding:2px 6px;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .crarr{flex:none;font-size:14px;font-weight:700;color:var(--muted-2)}
+  .calnote{background:#fff;border:1.5px dashed #E6D8C6;border-radius:18px;padding:22px 16px;text-align:center}
+  .calnote .ce{font-size:28px;line-height:1}
+  .calnote b{display:block;margin-top:7px;font-size:14.5px;font-weight:800;letter-spacing:-.03em}
+  .calnote p{margin-top:4px;font-size:12.5px;font-weight:700;color:var(--muted);line-height:1.55;letter-spacing:-.02em}
+  .calnote p b{display:inline;margin:0;font-size:12.5px;color:var(--brown-d)}
+  .calfoot{margin:14px 2px 0;text-align:center;font-size:11.5px;font-weight:700;color:var(--muted-2);letter-spacing:-.02em;line-height:1.6}
 </style>
 </head>
 <body class="locked">
@@ -584,8 +666,37 @@
 </div>
 
 <div class="bottombar">
+  <button class="sidebtn calbtn" data-act="openCalendar" aria-label="목욕 · 약욕 캘린더 열기">
+    <span aria-hidden="true">📅</span><span class="cl">캘린더</span>
+  </button>
   <button class="addbtn" data-act="openForm">＋ 새 아이 등록</button>
   <button class="sidebtn adminonly" data-act="openSettings" aria-label="설정">⚙️</button>
+</div>
+
+<div class="calwrap" id="calWrap" hidden>
+  <div class="calpage">
+    <div class="calbar">
+      <button class="ibtn" data-act="closeCalendar" aria-label="캘린더 닫기">‹</button>
+      <div class="calt"><b>목욕 · 약욕 캘린더</b><span id="calSub">—</span></div>
+      <button class="caltoday" data-act="calToday">오늘</button>
+    </div>
+    <div class="calbody">
+      <div class="calseg" id="calSeg" role="tablist" aria-label="지점 캘린더 선택"></div>
+      <div class="calmonth">
+        <button class="calnav" data-act="calMonth" data-delta="-1" aria-label="이전 달">‹ 이전달</button>
+        <b id="calMonthLabel">—</b>
+        <button class="calnav" data-act="calMonth" data-delta="1" aria-label="다음 달">다음달 ›</button>
+      </div>
+      <div class="calcard">
+        <div class="caldow"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></div>
+        <div class="calgrid" id="calGrid"></div>
+      </div>
+      <div class="calsum" id="calSum"></div>
+      <div class="calsec"><h2 id="calDayTitle">—</h2><span class="tn" id="calDayToday" hidden>오늘</span><span class="n" id="calDayCount"></span></div>
+      <div id="calList"></div>
+      <p class="calfoot">기록을 누르면 그 아이 상세로 이동해요 · 다른 폰에서 기록해도 바로 반영돼요</p>
+    </div>
+  </div>
 </div>
 
 <div class="sheetwrap" id="sheetWrap" hidden>
@@ -1136,6 +1247,7 @@
     document.body.classList.remove('is-admin');
     ui.sheet = null; ui.detailId = null; ui.formId = null; draft = null;
     var sw = $('#sheetWrap'); if(sw) sw.hidden = true;
+    var cw = $('#calWrap'); if(cw) cw.hidden = true;
     document.body.classList.remove('lock');
     if(sync.client && sync.channel){ try { sync.client.removeChannel(sync.channel); } catch(e){} }
     sync.channel = null;
@@ -1937,6 +2049,150 @@
     renderNotice();
     renderList();
     renderFeed();
+    renderCalendar();      // 캘린더가 열려 있을 때만 그림 (실시간 동기화 포함)
+  }
+
+  /* ================= 목욕 · 약욕 캘린더 (지점별) ================= */
+  var cal = { branch:'퍼피댕', y:0, m:0, sel:'' };
+
+  function calIsOpen(){ var w = $('#calWrap'); return !!w && !w.hidden; }
+  function syncBodyLock(){
+    var sheetOpen = !!($('#sheetWrap') && !$('#sheetWrap').hidden);
+    document.body.classList.toggle('lock', sheetOpen || calIsOpen());
+  }
+  function calOpenInit(){
+    // 목록에서 디데이펫을 보고 있었으면 디데이펫 캘린더로, 그 외에는 퍼피댕 캘린더로 열기
+    cal.branch = (ui.branch === '디데이펫') ? '디데이펫' : '퍼피댕';
+    var t = new Date();
+    cal.y = t.getFullYear();
+    cal.m = t.getMonth();
+    cal.sel = todayStr();
+  }
+  function calEntries(){
+    var pre = cal.y + '-' + pad(cal.m + 1) + '-';
+    var out = [];
+    state.puppies.forEach(function(p){
+      if(p.branch !== cal.branch) return;
+      (p.baths || []).forEach(function(b){
+        if(!b || !isValidDate(b.date)) return;
+        var d = String(b.date).slice(0, 10);
+        if(d.indexOf(pre) !== 0) return;
+        out.push({ dog:p, date:d, kind:bathKind(b), by:String(b.by || ''), bid:b.id });
+      });
+    });
+    return out;
+  }
+  function calMap(){
+    var map = {};
+    calEntries().forEach(function(e){
+      var o = map[e.date] || (map[e.date] = { bath:0, yak:0, list:[] });
+      if(e.kind === '약욕') o.yak++; else o.bath++;
+      o.list.push(e);
+    });
+    Object.keys(map).forEach(function(k){
+      map[k].list.sort(function(a, b){
+        var c = String(a.dog.cage || '').localeCompare(String(b.dog.cage || ''), 'ko', { numeric:true });
+        if(c !== 0) return c;
+        if(a.kind !== b.kind) return a.kind === '목욕' ? -1 : 1;
+        return String(a.dog.name || '').localeCompare(String(b.dog.name || ''), 'ko');
+      });
+    });
+    return map;
+  }
+  function calTotals(map){
+    var t = { bath:0, yak:0 };
+    Object.keys(map).forEach(function(k){ t.bath += map[k].bath; t.yak += map[k].yak; });
+    return t;
+  }
+  function openCalendar(){
+    var w = $('#calWrap');
+    if(!w) return;
+    calOpenInit();
+    w.hidden = false;
+    w.scrollTop = 0;
+    document.body.classList.add('lock');
+    renderCalendar();
+  }
+  function closeCalendar(){
+    var w = $('#calWrap');
+    if(!w || w.hidden) return;
+    w.hidden = true;
+    syncBodyLock();
+  }
+  function renderCalendar(){
+    var w = $('#calWrap');
+    if(!w || w.hidden) return;
+    var map = calMap();
+    var tot = calTotals(map);
+    var today = todayStr();
+
+    $('#calSub').textContent = cal.branch + ' · ' + (cal.m + 1) + '월 목욕 ' + tot.bath + '건 · 약욕 ' + tot.yak + '건';
+
+    $('#calSeg').innerHTML = BRANCHES.map(function(b){
+      var n = state.puppies.filter(function(p){ return p.branch === b; }).length;
+      var on = cal.branch === b;
+      return '<button type="button" class="' + (on ? 'on' : '') + '" data-act="calBranch" data-branch="' + b + '" role="tab" aria-selected="' + on + '">' +
+        b + ' <span class="cc">' + n + '</span></button>';
+    }).join('');
+
+    $('#calMonthLabel').textContent = cal.y + '년 ' + (cal.m + 1) + '월';
+
+    var firstDow = new Date(cal.y, cal.m, 1).getDay();
+    var dim = new Date(cal.y, cal.m + 1, 0).getDate();
+    var prevDim = new Date(cal.y, cal.m, 0).getDate();
+    var cells = Math.ceil((firstDow + dim) / 7) * 7;
+    var html = '';
+    for(var i = 0; i < cells; i++){
+      var day = i - firstDow + 1;
+      if(day < 1){ html += '<span class="cday out" aria-hidden="true"><span class="dn">' + (prevDim + day) + '</span></span>'; continue; }
+      if(day > dim){ html += '<span class="cday out" aria-hidden="true"><span class="dn">' + (day - dim) + '</span></span>'; continue; }
+      var ds = cal.y + '-' + pad(cal.m + 1) + '-' + pad(day);
+      var dow = i % 7;
+      var o = map[ds];
+      var cls = 'cday' + (dow === 0 ? ' sun' : (dow === 6 ? ' sat' : '')) + (ds === today ? ' today' : '') + (ds === cal.sel ? ' on' : '');
+      var lab = fmtMD(ds) + (o ? ' · 목욕 ' + o.bath + '건 약욕 ' + o.yak + '건' : ' · 기록 없음');
+      html += '<button type="button" class="' + cls + '" data-act="calPick" data-date="' + ds + '" aria-label="' + lab + '" aria-pressed="' + (ds === cal.sel) + '">' +
+        '<span class="dn">' + day + '</span>' +
+        '<span class="bd">' +
+          (o && o.bath ? '<span class="cbd bath"><i>🛁</i>' + o.bath + '</span>' : '') +
+          (o && o.yak ? '<span class="cbd yak"><i>🧴</i>' + o.yak + '</span>' : '') +
+        '</span></button>';
+    }
+    $('#calGrid').innerHTML = html;
+
+    $('#calSum').innerHTML =
+      '<span class="csum">🛁 <b>' + tot.bath + '</b> 목욕<span class="csx">' + (cal.m + 1) + '월</span></span>' +
+      '<span class="csum yak">🧴 <b>' + tot.yak + '</b> 약욕<span class="csx">' + (cal.m + 1) + '월</span></span>';
+
+    var sel = cal.sel;
+    var selDay = Number(String(sel).slice(8, 10));
+    var selDow = new Date(cal.y, cal.m, selDay).getDay();
+    $('#calDayTitle').textContent = fmtMD(sel) + ' (' + WEEK[selDow] + ')';
+    var tn = $('#calDayToday');
+    if(tn) tn.hidden = (sel !== today);
+
+    var dayMap = map[sel];
+    var listEl = $('#calList');
+    var cntEl = $('#calDayCount');
+    if(!dayMap || !dayMap.list.length){
+      cntEl.textContent = '기록 없음';
+      listEl.className = '';
+      listEl.innerHTML = '<div class="calnote"><span class="ce">🛁</span><b>이 날은 목욕 · 약욕 기록이 없어요</b>' +
+        '<p>' + cal.branch + ' ' + (cal.m + 1) + '월은 목욕 <b>' + tot.bath + '건</b> · 약욕 <b>' + tot.yak + '건</b>이에요.</p></div>';
+      return;
+    }
+    cntEl.textContent = '목욕 ' + dayMap.bath + ' · 약욕 ' + dayMap.yak;
+    listEl.className = 'callist';
+    listEl.innerHTML = dayMap.list.map(function(e){
+      var p = e.dog;
+      var yak = e.kind === '약욕';
+      var sub = [p.breed || '품종 미정', p.sex === 'female' ? '여아' : '남아'].join(' · ');
+      return '<button type="button" class="calrow" data-act="calOpen" data-dog="' + p.id + '">' +
+        '<span class="cbdg ' + (yak ? 'yak' : '') + '">' + (yak ? '🧴' : '🛁') + ' ' + e.kind + '</span>' +
+        '<span class="crmain"><b>' + esc((p.cage ? p.cage + ' ' : '') + (p.name || '이름 없음')) + '</b><span>' + esc(sub) + '</span></span>' +
+        '<span class="crby">' + esc(e.by || '기록자 없음') + '</span>' +
+        '<span class="crarr">›</span></button>';
+    }).join('');
   }
 
   /* ================= 시트 ================= */
@@ -1953,6 +2209,7 @@
     ui.formId = null;
     ui.sheet = null;
     draft = null;
+    syncBodyLock();   // 캘린더가 열려 있으면 배경 스크롤을 다시 잠가요
   }
   function setSheet(html, keepScroll){
     var sc = $('#sheet .sheetbody');
@@ -2746,6 +3003,49 @@
       case 'openFeed':
         openFeed();
         break;
+      case 'openCalendar':
+        openCalendar();
+        break;
+      case 'closeCalendar':
+        closeCalendar();
+        break;
+      case 'calBranch':
+        cal.branch = el.getAttribute('data-branch') === '디데이펫' ? '디데이펫' : '퍼피댕';
+        renderCalendar();
+        break;
+      case 'calMonth':
+        (function(){
+          var step = Number(el.getAttribute('data-delta')) || 0;
+          var d = new Date(cal.y, cal.m + step, 1);
+          cal.y = d.getFullYear(); cal.m = d.getMonth();
+          var want = cal.sel ? Number(String(cal.sel).slice(8, 10)) : 1;
+          var dim = new Date(cal.y, cal.m + 1, 0).getDate();
+          if(want > dim) want = dim;
+          if(want < 1) want = 1;
+          cal.sel = cal.y + '-' + pad(cal.m + 1) + '-' + pad(want);
+          renderCalendar();
+        })();
+        break;
+      case 'calToday':
+        (function(){
+          var t = new Date();
+          cal.y = t.getFullYear(); cal.m = t.getMonth(); cal.sel = todayStr();
+          renderCalendar();
+          var g = $('#calGrid');
+          if(g){ try{ g.scrollIntoView({ behavior:'smooth', block:'center' }); }catch(e){} }
+        })();
+        break;
+      case 'calPick':
+        cal.sel = el.getAttribute('data-date');
+        renderCalendar();
+        break;
+      case 'calOpen':
+        (function(){
+          var d = el.getAttribute('data-dog');
+          if(d && get(d)) openDetail(d);
+          else toast('지금은 열 수 없는 아이 기록이에요');
+        })();
+        break;
       case 'feedOpen':
         (function(){
           var dog = el.getAttribute('data-dog');
@@ -3011,7 +3311,10 @@
   });
 
   document.addEventListener('keydown', function(e){
-    if(e.key === 'Escape'){ if(!$('#sheetWrap').hidden) closeSheet(); }
+    if(e.key === 'Escape'){
+      if(!$('#sheetWrap').hidden) closeSheet();
+      else if(calIsOpen()) closeCalendar();
+    }
     if((e.key === 'Enter' || e.key === ' ') && document.activeElement && document.activeElement.classList.contains('card')){
       e.preventDefault();
       openDetail(document.activeElement.getAttribute('data-id'));
@@ -3161,7 +3464,8 @@
   }
   if(/[?&]debug=1/.test(location.search)){
     window.__puppy = { state: state, ui: ui, sync: sync, feed: applyRows, event: onRealtime, mode: setSync, pull: pullRemote,
-      logActivity: logActivity, renderFeed: renderFeed, openFeed: openFeed, renderAll: renderAll };
+      logActivity: logActivity, renderFeed: renderFeed, openFeed: openFeed, renderAll: renderAll,
+      cal: cal, openCalendar: openCalendar, renderCalendar: renderCalendar };
   }
 })();
 </script>
