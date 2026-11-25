@@ -177,6 +177,13 @@
     display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.95);color:var(--ink);
     box-shadow:0 2px 8px rgba(46,33,22,.14);letter-spacing:-.02em}
   .stchip::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+  .cvac{position:absolute;right:10px;top:10px;z-index:4;display:inline-flex;align-items:center;gap:3px;
+    height:27px;padding:0 10px;border-radius:9px;font-size:13px;font-weight:800;letter-spacing:-.02em;
+    color:#fff;background:rgba(58,42,26,.78);box-shadow:0 3px 10px rgba(0,0,0,.22);white-space:nowrap}
+  .cvac.soon{background:rgba(200,112,20,.94);box-shadow:0 3px 10px rgba(200,112,20,.32)}
+  .cvac.today,.cvac.over{background:rgba(190,52,38,.95);box-shadow:0 3px 10px rgba(190,52,38,.34)}
+  .vacnote.done{background:#F1F6EA;border-color:#D8E5C8;color:#41602F}
+  .vacnote.done b{color:#33501F}
   .stchip.available{color:#4F7A4A}
   .stchip.reserved{color:#A96A22}
   .stchip.sold{color:#8B7A68}
@@ -857,7 +864,9 @@
     sold:{label:'분양완료', cls:'sold'}
   };
   var STATUS_KEYS = ['available','reserved','sold'];
-  var VAC_PRESETS = ['1차 종합백신','2차 종합백신','3차 종합백신','4차 종합백신','5차 종합백신','심장사상충','원구충'];
+  /* 기본 접종은 3차까지 — 4차·5차는 이제 새로 고르지 않지만, 예전 기록은 그대로 보여요 */
+  var VAC_PRESETS = ['1차 종합백신','2차 종합백신','3차 종합백신','심장사상충','원구충'];
+  var VAC_COURSE_LAST = '3차 종합백신';   // 이걸 맞으면 기본 접종 끝 → D-day 자동 계산 종료
   var VAC_ALIAS = { '구충':'원구충' };   // 예전에 적힌 '구충'은 화면에서 '원구충'으로 보여줘요
   var VAC_INTERVAL_DAYS = 14;           // 접종 간격 — 마지막 접종일 + 2주(14일)가 다음 접종 예정일
   function vacName(t){ var s = String(t || ''); return VAC_ALIAS[s] || s; }
@@ -1044,39 +1053,74 @@
     });
     return best;
   }
-  /* 마지막 접종일 + 14일 */
+  /* 3차 종합백신까지 맞았는지 — 기본 접종이 끝난 상태 */
+  function vacCourseDone(p){
+    if(!p) return false;
+    if(p.vaccineDates && isValidDate(p.vaccineDates[VAC_COURSE_LAST])) return true;
+    return (Array.isArray(p.vaccines) ? p.vaccines : []).some(function(v){
+      return v && vacName(v.type) === VAC_COURSE_LAST && isValidDate(v.date);
+    });
+  }
+  /* 마지막 접종일 + 14일 (3차까지 끝났으면 자동 계산 없음) */
   function calcNextVac(p){
+    if(vacCourseDone(p)) return '';
     var last = lastVacDate(p);
     return last ? addDaysYmd(last, VAC_INTERVAL_DAYS) : '';
   }
   /* 화면에 쓰는 다음 접종일 — 저장된 값이 비어 있으면 마지막 접종일 + 2주로 계산해 보여줘요 */
   function effNextVac(p){
     if(!p) return '';
+    if(p.nextVacManual && isValidDate(p.nextVaccine)) return String(p.nextVaccine).slice(0, 10);   // 직접 넣은 날짜
+    if(vacCourseDone(p)) return '';
     if(isValidDate(p.nextVaccine)) return String(p.nextVaccine).slice(0, 10);
     return calcNextVac(p);
   }
   /* 접종을 새로 체크/수정하면 다음 접종일을 마지막 접종일 + 2주로 다시 계산해요 */
   function syncNextVac(p){
     if(!p) return '';
+    if(vacCourseDone(p)){          // 3차까지 완료 → 기본 접종 끝, 자동 D-day 종료
+      p.nextVaccine = '';
+      p.nextVacManual = false;
+      return '';
+    }
     var nx = calcNextVac(p);
-    if(nx) p.nextVaccine = nx;
+    if(nx){ p.nextVaccine = nx; p.nextVacManual = false; }
     return p.nextVaccine || '';
+  }
+  /* 사진 위에 딱 붙는 접종 D-day 배지 (메인 카드) */
+  function vacBadgeHTML(p){
+    var nx = effNextVac(p);
+    if(!nx) return '';
+    var v = dday(nx);
+    if(!v) return '';
+    var cls = v.diff < 0 ? 'over' : (v.diff === 0 ? 'today' : (v.diff <= 2 ? 'soon' : ''));
+    var txt = v.diff < 0 ? ('D+' + Math.abs(v.diff)) : (v.diff === 0 ? '오늘' : ('D-' + v.diff));
+    var lab = '다음 접종 ' + (v.diff < 0 ? txt + ' 지남' : txt);
+    return '<span class="cvac' + (cls ? ' ' + cls : '') + '" aria-label="' + lab + '">💉 ' + txt + '</span>';
+  }
+  /* 접종 기록 토스트에 붙는 꼬리말 */
+  function vacToastSuffix(p){
+    if(vacCourseDone(p)) return ' · 3차까지 완료!';
+    var nx = effNextVac(p);
+    return nx ? ' · 다음 접종 ' + fmtMD(nx) + ' (2주 간격)' : '';
   }
   /* 상세·폼에 함께 보여주는 '2주 간격' 안내 한 줄 */
   function nextVacNoteHTML(p){
     var eff = effNextVac(p);
     var last = lastVacDate(p);
+    var done = vacCourseDone(p);
+    if(!eff && done) return '<div class="vacnote done">✅ 기본 접종(1~3차)을 마쳤어요 · 다음 접종 D-day는 자동으로 잡지 않아요</div>';
     if(!eff && !last) return '';
-    var auto = last ? addDaysYmd(last, VAC_INTERVAL_DAYS) : '';
     var parts = [];
     if(eff){
       var v = dday(eff);
       parts.push(fmtFull(eff) + (v ? ' · <b>' + v.text + '</b>' : ''));
     }
-    if(last) parts.push('마지막 접종 ' + fmtMD(last) + ' + 2주(14일)');
+    if(done) parts.push('기본 접종(3차) 완료');
+    else if(last) parts.push('마지막 접종 ' + fmtMD(last) + ' + 2주(14일)');
     else parts.push('접종일을 체크하면 마지막 접종일 + 2주로 계산돼요');
-    if(eff && auto && eff !== auto) parts.push('직접 지정한 날짜');
-    return '<div class="vacnote">💉 ' + parts.join(' · ') + '</div>';
+    if(eff && p.nextVacManual) parts.push('직접 지정한 날짜');
+    return '<div class="vacnote' + (done ? ' done' : '') + '">💉 ' + parts.join(' · ') + '</div>';
   }
   function isoYmd(iso){
     if(!iso) return '';
@@ -1172,6 +1216,7 @@
       vaccines: vaccs,
       vaccineDates: vdates,
       nextVaccine: isValidDate(p.nextVaccine) ? p.nextVaccine : '',
+      nextVacManual: !!p.nextVacManual,
       memo: String(p.memo == null ? '' : p.memo).slice(0, 2000),
       createdAt: p.createdAt || new Date().toISOString(),
       updatedAt: p.updatedAt || new Date().toISOString()
@@ -2231,6 +2276,7 @@
         '<div class="cbadges"><span class="btag ' + (p.branch==='디데이펫'?'b2':'') + '">🐾 ' + p.branch + '</span>' +
         (p.cage ? '<span class="btag cage">' + esc(p.cage) + '</span>' : '') + '</div>' +
         '<span class="stchip ' + st.cls + '">' + st.label + '</span>' +
+        vacBadgeHTML(p) +
       '</div>' +
       '<div class="cbody" data-act="openCard">' +
         healthBadgesHTML(p) +
@@ -3170,12 +3216,13 @@
       '</section>' +
 
       '<section class="scard"><div class="shead"><h3>💉 접종 · 구충</h3>' +
-        (vac ? '<span class="sbadge ' + vac.cls + '">' + vac.text + '</span>' : '<span class="sbadge none">예정일 없음</span>') + '</div>' +
-        '<div><label class="mini">다음 접종 예정일<span class="vchiplab">2주 간격</span></label>' +
+        (vac ? '<span class="sbadge ' + vac.cls + '">' + vac.text + '</span>'
+             : (lastVac && vacCourseDone(p) ? '<span class="sbadge ok">3차 완료</span>' : '<span class="sbadge none">예정일 없음</span>')) + '</div>' +
+        '<div><label class="mini">다음 접종 예정일' + (vacCourseDone(p) ? '' : '<span class="vchiplab">2주 간격</span>') + '</label>' +
           '<div class="row"><input type="date" class="fdate grow" id="nextVac" value="' + (effVac || '') + '" data-act="nextVac" aria-label="다음 접종 예정일">' +
           (vac ? '<button class="btn sm" data-act="clearNextVac">지우기</button>' : '') + '</div>' +
           nextVacNoteHTML(p) +
-          (lastVac ? '<button class="btn sm wide" data-act="nextVacAuto" style="margin-top:6px;height:auto;min-height:38px;white-space:normal;line-height:1.35;padding:7px 10px;font-size:13px" aria-label="마지막 접종일 + 2주로 맞추기">↻ 마지막 접종일 + 2주로 맞추기</button>' : '') +
+          (lastVac && !vacCourseDone(p) ? '<button class="btn sm wide" data-act="nextVacAuto" style="margin-top:6px;height:auto;min-height:38px;white-space:normal;line-height:1.35;padding:7px 10px;font-size:13px" aria-label="마지막 접종일 + 2주로 맞추기">↻ 마지막 접종일 + 2주로 맞추기</button>' : '') +
         '</div>' +
         '<div style="margin-top:12px"><label class="mini">접종일 — 칩을 누르면 오늘로 체크, 옆 날짜로 바로 수정</label>' +
           vacGrid +
@@ -3271,14 +3318,18 @@
     ui.detailId = id;
     ui.vacType = VAC_PRESETS[0];
     ui.sheet = 'detail';
-    /* 예전 기록: 접종일은 있는데 다음 접종 예정일이 비어 있으면 마지막 접종일 + 2주로 보정 */
+    /* 예전 기록 보정 — 3차까지 맞았으면 자동 D-day 를 비우고, 아니면 마지막 접종일 + 2주로 채워요 */
     (function(){
       var p0 = get(id);
       if(!p0 || p0.isArchive) return;
-      if(isValidDate(p0.nextVaccine)) return;
-      var nx = calcNextVac(p0);
-      if(!nx) return;
-      p0.nextVaccine = nx;
+      var touched = false;
+      if(vacCourseDone(p0)){
+        if(!p0.nextVacManual && p0.nextVaccine){ p0.nextVaccine = ''; touched = true; }
+      } else if(!isValidDate(p0.nextVaccine)){
+        var nx = calcNextVac(p0);
+        if(nx){ p0.nextVaccine = nx; p0.nextVacManual = false; touched = true; }
+      }
+      if(!touched) return;
       p0.updatedAt = new Date().toISOString();
       save();
     })();
@@ -3957,14 +4008,14 @@
     if(target === draft){                       // 등록·수정 폼: 폼 안에서만 바뀌고 [저장] 때 반영
       readForm();                               // 입력 중이던 값이 사라지지 않게 먼저 담아요
       setSheet(formHTML(), true);
-      toast(type + ' 접종일 ' + fmtMD(ds) + (target.nextVaccine ? ' · 다음 접종 ' + fmtMD(target.nextVaccine) : '') + ' · 저장을 누르면 반영돼요');
+      toast(type + ' 접종일 ' + fmtMD(ds) + (vacCourseDone(target) ? ' · 3차까지 완료!' : (target.nextVaccine ? ' · 다음 접종 ' + fmtMD(target.nextVaccine) : '')) + ' · 저장을 누르면 반영돼요');
       return;
     }
     save();
     logActivity(target, type + ' 접종', '입력했습니다');
     renderAll();
     refreshDetail();
-    toast(type + ' 접종일 ' + fmtMD(ds) + (target.nextVaccine ? ' · 다음 접종 ' + fmtMD(target.nextVaccine) + ' (2주 간격)' : ''));
+    toast(type + ' 접종일 ' + fmtMD(ds) + vacToastSuffix(target));
   }
 
   function act(name, el, e){
@@ -4315,7 +4366,7 @@
           save();
           logActivity(p, vacName(ui.vacType || VAC_PRESETS[0]) + ' 접종', '입력했습니다');
           renderAll(); refreshDetail();
-          toast(ui.vacType + ' 기록 · ' + state.worker + (p.nextVaccine ? ' · 다음 접종 ' + fmtMD(p.nextVaccine) : ''));
+          toast(ui.vacType + ' 기록 · ' + state.worker + vacToastSuffix(p));
         })();
         break;
       case 'vacDel':
@@ -4333,7 +4384,7 @@
           p.updatedAt = new Date().toISOString();
           if((p.vaccines || []).length) syncNextVac(p);   // 남은 기록의 마지막 접종일 + 2주로 다시 계산
           save(); renderAll(); refreshDetail();
-          toast('접종 기록을 지웠어요' + (p.nextVaccine ? ' · 다음 접종 ' + fmtMD(p.nextVaccine) + ' (2주 간격)' : ''));
+          toast('접종 기록을 지웠어요' + vacToastSuffix(p));
         })();
         break;
       case 'nextVacAuto':
@@ -4343,6 +4394,7 @@
           if(!last){ toast('먼저 아래 접종일을 하나 체크해 주세요'); return; }
           var nx = addDaysYmd(last, VAC_INTERVAL_DAYS);
           p.nextVaccine = nx;
+          p.nextVacManual = false;
           p.updatedAt = new Date().toISOString();
           save(); renderAll(); refreshDetail();
           toast('마지막 접종 ' + fmtMD(last) + ' + 2주 → ' + fmtMD(nx) + '(으)로 맞췄어요');
@@ -4352,6 +4404,7 @@
         (function(){
           var p = get(ui.detailId); if(!p) return;
           p.nextVaccine = '';
+          p.nextVacManual = false;
           p.updatedAt = new Date().toISOString();
           save(); renderAll(); refreshDetail();
           toast('다음 접종 예정일을 지웠어요' + (lastVacDate(p) ? ' · 접종 기록이 있어 마지막 접종일 + 2주로 다시 계산돼요' : ''));
@@ -4643,7 +4696,7 @@
         p.updatedAt = new Date().toISOString();
         syncNextVac(p);                        // 다음 접종 예정일 = 가장 최근 접종일 + 2주(14일)
         save(); renderAll(); refreshDetail();
-        toast('접종 날짜를 고쳤어요' + (p.nextVaccine ? ' · 다음 접종 ' + fmtMD(p.nextVaccine) + ' (2주 간격)' : ''));
+        toast('접종 날짜를 고쳤어요' + vacToastSuffix(p));
       }
       return;
     }
@@ -4660,6 +4713,7 @@
     if(actName === 'nextVac' || t.id === 'nextVac'){
       if(isValidDate(t.value)){
         p.nextVaccine = t.value;
+        p.nextVacManual = true;
         p.updatedAt = new Date().toISOString();
         save(); renderAll(); refreshDetail();
         toast('다음 접종일을 ' + fmtMD(t.value) + '(으)로 저장했어요 · 새 접종을 기록하면 다시 2주로 계산돼요');
