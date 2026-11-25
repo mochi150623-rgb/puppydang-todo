@@ -889,6 +889,9 @@
   var VAC_INTERVAL_DAYS = 14;           // 접종 간격 — 마지막 접종일 + 2주(14일)가 다음 접종 예정일
   function vacName(t){ var s = String(t || ''); return VAC_ALIAS[s] || s; }
   var HEALTH_FLAGS = ['귀진드기','감기','피부','설사','사료거부','탈장','부정교합'];
+  // 탈장 · 부정교합은 오래 지켜보는 항목이라 경과 일수(N일째) 없이 이름만 표시해요
+  var HEALTH_NO_DAYS = ['탈장','부정교합'];
+  function healthShowsDays(f){ return HEALTH_NO_DAYS.indexOf(String(f || '').trim()) < 0; }
   var BATH_KINDS = ['목욕','약욕'];
   var ACTIVITY_ID = '__activity__';    // public.puppies 의 활동 메타 행 (__staff__ 와 같은 방식)
   var SCHED_ID = '__schedules__';      // 호텔링 · 분양픽업 일정 공유 행 (스키마 변경 없이 같은 방식으로 저장)
@@ -1052,7 +1055,8 @@
     if(!flags.length) return '';
     var shown = flags.slice(0, 4);
     return '<div class="chealth">' + shown.map(function(f){
-      return '<span class="hbadge">🩺 ' + esc(f) + ' <b class="hd">' + healthDays(p, f) + '일째</b></span>';
+      return '<span class="hbadge">🩺 ' + esc(f) +
+        (healthShowsDays(f) ? ' <b class="hd">' + healthDays(p, f) + '일째</b>' : '') + '</span>';
     }).join('') + (flags.length > 4 ? '<span class="hbadge more">+' + (flags.length - 4) + '</span>' : '') + '</div>';
   }
   function dday(dateStr){
@@ -3255,7 +3259,8 @@
     if(!flags.length) return '';
     var rows = flags.map(function(f){
       return '<li class="hrow hsrow">' +
-        '<span class="htype">🩺 ' + esc(f) + ' <em>' + healthDays(p, f) + '일째</em></span>' +
+        '<span class="htype">🩺 ' + esc(f) +
+          (healthShowsDays(f) ? ' <em>' + healthDays(p, f) + '일째</em>' : '') + '</span>' +
         '<input type="date" class="hdate" value="' + healthDateOf(p, f) + '" data-act="healthDate" data-flag="' + esc(f) + '" aria-label="' + esc(f) + ' 시작일">' +
         '<button type="button" class="hcure" data-act="healthCure" data-flag="' + esc(f) + '" aria-label="' + esc(f) + ' 정상 회복">✓ 정상</button>' +
         '</li>';
@@ -3439,7 +3444,7 @@
 
       '<section class="scard"><div class="shead"><h3>🩺 건강 · 특이사항</h3>' +
         '<span class="sbadge warn" id="healthCount"' + ((p.healthFlags && p.healthFlags.length) ? '' : ' style="display:none"') + '>' + ((p.healthFlags && p.healthFlags.length) ? p.healthFlags.length + '개 체크' : '0개 체크') + '</span></div>' +
-        '<p class="sp small" style="margin:0 0 9px">해당되는 항목을 누르면 체크되고, 사진 아래에 <b>며칠째</b>인지 표시돼요. 나으면 <b>✓ 정상</b>을 누르면 배지가 사라져요.</p>' +
+        '<p class="sp small" style="margin:0 0 9px">해당되는 항목을 누르면 체크되고, 사진 아래에 <b>며칠째</b>인지 표시돼요. 나으면 <b>✓ 정상</b>을 누르면 배지가 사라져요. <b>탈장 · 부정교합</b>은 며칠째 없이 이름만 표시해요.</p>' +
         healthChipsHTML(p.healthFlags, true) +
         healthDateListHTML(p) +
       '</section>' +
