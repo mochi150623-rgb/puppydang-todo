@@ -3957,7 +3957,6 @@
     if(target === draft){                       // 등록·수정 폼: 폼 안에서만 바뀌고 [저장] 때 반영
       readForm();                               // 입력 중이던 값이 사라지지 않게 먼저 담아요
       setSheet(formHTML(), true);
-      var sc = $('#sheet .sheetbody');
       toast(type + ' 접종일 ' + fmtMD(ds) + (target.nextVaccine ? ' · 다음 접종 ' + fmtMD(target.nextVaccine) : '') + ' · 저장을 누르면 반영돼요');
       return;
     }
