@@ -3592,7 +3592,7 @@
   if(lockFormEl) lockFormEl.addEventListener('submit', submitLogin);
   var lockAltEl = $('#lockOfflineBtn');
   if(lockAltEl) lockAltEl.addEventListener('click', function(){ unlock(null, true); });
-  document.addEventListener('visibilitychange', function(){ if(!document.hidden) verifyAccount(); });
+  document.addEventListener('visibilitychange', function(){ if(document.hidden) return; verifyAccount(); try { sweepAdopted(true); } catch(e){} });
 
   bootAuth();
   setTimeout(function(){ try { sweepAdopted(true); } catch(e){} }, 0);   // 앱을 열 때 바로 정리
