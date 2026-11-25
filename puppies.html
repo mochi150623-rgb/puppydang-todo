@@ -978,6 +978,7 @@
   var auth = { user:null, offline:false, staffDirty:false, meName:'', workerSet:false, purgeName:'' };
   var pushed = {};      // id -> 마지막으로 DB에 있는 것으로 확인된 스냅샷
   var localOnly = {};   // 이 기기에만 있는(아직 공유 목록에 없는) id
+  var activityDirty = false;   // 이 기기에만 있는 활동이 있어 공유 목록에 합쳐야 함
 
   var SYNC_META = {
     live:      { text:'🟢 실시간 동기화', cls:'live' },
@@ -1018,6 +1019,7 @@
     if(mode === 'live'){
       sync.err = null;
       if(auth.staffDirty){ auth.staffDirty = false; pushMeta(); }
+      if(activityDirty) pushActivity();
     }
     renderSyncBadge();
     if(ui.sheet === 'sync') setSheet(syncHTML(), true);
@@ -1489,13 +1491,15 @@
     });
     state.activity = activityFresh([item].concat(state.activity || [])).slice(0, ACTIVITY_MAX);
     saveLocal();
+    activityDirty = true;
     pushActivity();
     renderFeed(true);
   }
   function pushActivity(){
-    if(!isLive()) return;
+    if(!isLive()) return;   // 연결되면 setSync('live') 에서 다시 올려요
     sync.client.from('puppies').upsert({ id: ACTIVITY_ID, data: { items: state.activity }, updated_at: new Date().toISOString() }).then(function(res){
       if(res && res.error) handleSyncError(res.error);
+      else activityDirty = false;
     }, function(err){ handleSyncError(err); });
   }
   function applyActivity(data, fromRemote){
@@ -1516,7 +1520,7 @@
       var remoteIds = {};
       data.items.forEach(function(raw){ if(raw && raw.id) remoteIds[raw.id] = 1; });
       var missing = out.some(function(it){ return !remoteIds[it.id]; });
-      if(missing) pushActivity();   // 이 기기에만 있던 활동을 공유 목록에도 합쳐요
+      if(missing){ activityDirty = true; pushActivity(); }   // 이 기기에만 있던 활동을 공유 목록에도 합쳐요
     }
   }
   function feedShow(it, animate){
