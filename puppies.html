@@ -2092,9 +2092,14 @@
       return t > 0 && t >= cutoff;
     }));
   }
-  // "2026년 11월 25일 (수) · 12시 24분" — 목록 순서를 눈으로 확인할 수 있게 시각까지
+  // "11월 25일 (수) · 12시 24분" — 목록 순서를 눈으로 확인할 수 있게 날짜·시각까지
   function activityStamp(iso){
-    var day = iso ? fmtFull(isoYmd(iso)) : '—';
+    var day = '—';
+    var t = parseYmd(isoYmd(iso));
+    if(t !== null){
+      var d = new Date(t);
+      day = (d.getUTCMonth() + 1) + '월 ' + d.getUTCDate() + '일 (' + WEEK[d.getUTCDay()] + ')';
+    }
     var hm = timeHM(iso);
     return hm ? day + ' · ' + hm : day;
   }
