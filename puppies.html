@@ -205,6 +205,9 @@
   .ctail{margin-top:8px;font-size:13px;font-weight:800;color:var(--amber);display:flex;align-items:center;gap:4px;letter-spacing:-.02em}
   .ctail.over{color:var(--red-d)}
   .ctail .arr{margin-left:auto;color:var(--muted-2);font-weight:700}
+  .cadopt{margin-top:8px;padding:4px 8px;border-radius:8px;background:#F1F4E9;border:1px solid #DCE4CB;
+    font-size:12.5px;font-weight:800;color:#5F7048;display:inline-flex;align-items:center;gap:4px;letter-spacing:-.02em}
+  .cadopt.warn{background:#FDF3E3;border-color:#F0DDBB;color:#A05E12}
 
   /* ---------- empty ---------- */
   .empty{text-align:center;padding:36px 18px 30px;background:#fff;border-radius:20px;border:1.5px dashed #E6D8C6;margin-top:4px}
@@ -273,6 +276,10 @@
   .dsub{margin-top:4px;font-size:14.5px;color:var(--muted);font-weight:700;letter-spacing:-.02em;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
   .dsub .sep{color:var(--tint-3)}
   .statusseg{display:flex;gap:5px;background:#F5EEE5;padding:4px;border-radius:13px;margin-top:12px}
+  .adoptnote{margin-top:9px;padding:9px 11px;border-radius:12px;background:#F6F2E7;border:1px solid #E8DEC6;
+    font-size:13px;font-weight:800;color:#7A6A45;letter-spacing:-.02em;line-height:1.45}
+  .adoptnote.warn{background:#FDF3E3;border-color:#F0DDBB;color:#A05E12}
+  .adoptnote .sub{display:block;margin-top:3px;font-size:12px;font-weight:700;color:#9A8B6E}
   .sseg{flex:1;height:38px;border-radius:10px;font-size:14px;font-weight:800;letter-spacing:-.02em;color:var(--muted)}
   .sseg.on{background:#fff;box-shadow:0 2px 8px rgba(90,56,30,.12)}
   .sseg.on.available{color:#4F7A4A}
@@ -727,11 +734,12 @@
   var VAC_PRESETS = ['1차 종합백신','2차 종합백신','3차 종합백신','4차 종합백신','5차 종합백신','심장사상충','원구충'];
   var VAC_ALIAS = { '구충':'원구충' };   // 예전에 적힌 '구충'은 화면에서 '원구충'으로 보여줘요
   function vacName(t){ var s = String(t || ''); return VAC_ALIAS[s] || s; }
-  var HEALTH_FLAGS = ['귀진드기','감기','피부','설사','탈장','부정교합'];
+  var HEALTH_FLAGS = ['귀진드기','감기','피부','설사','사료거부','탈장','부정교합'];
   var BATH_KINDS = ['목욕','약욕'];
   var ACTIVITY_ID = '__activity__';    // public.puppies 의 활동 메타 행 (__staff__ 와 같은 방식)
   var ACTIVITY_MAX = 200;              // 안전상한
   var ACTIVITY_TTL = 3 * 24 * 60 * 60 * 1000;   // 3일(72시간) 지난 활동은 자동 정리
+  var ADOPT_TTL = 14 * 24 * 60 * 60 * 1000;     // 분양완료 후 14일(2주) 지나면 장은 그대로 두고 내용만 비움
 
   var errs = [];
   window.__errors = errs;
@@ -798,9 +806,17 @@
     return d + '일 전';
   }
   function intakeDays(p){
+    if(isEmptySlot(p)) return null;   // 2주 자동 정리로 비운 빈 장은 입소 일차를 세지 않아요
     var d = daysBetween(p.intakeDate, todayStr());
     if(d === null) return null;
     return d + 1; // 입소일 = 1일차
+  }
+  /* 자동 정리로 내용만 비운 빈 장인지 확인 (장 번호·지점은 그대로 유지) */
+  function isEmptySlot(p){
+    if(!p || String(p.name || '') !== '미정') return false;
+    return !p.photoProfile && !p.regNo && !p.adopter && !p.birthDate &&
+      !(p.baths && p.baths.length) && !(p.vaccines && p.vaccines.length) &&
+      !(p.healthFlags && p.healthFlags.length) && !String(p.memo || '').trim();
   }
   function ageInfo(birth){
     if(!birth) return null;
@@ -895,6 +911,12 @@
   function norm(p){
     p = p || {};
     var status = STATUS_KEYS.indexOf(p.status) >= 0 ? p.status : 'available';
+    /* 분양완료 시각(adoptedAt) — 2주 자동 정리의 기준. 다른 상태로 돌리면 비웁니다. */
+    var adoptedAt = '';
+    if(status === 'sold' && p.adoptedAt){
+      var adT = new Date(p.adoptedAt).getTime();
+      if(adT > 0) adoptedAt = new Date(adT).toISOString();
+    }
     /* 특이사항 목록 + 각 증상 시작일(healthDates) */
     var flags = (function(){
       if(!Array.isArray(p.healthFlags)) return [];
@@ -927,6 +949,7 @@
       regNo: String(p.regNo == null ? '' : p.regNo).slice(0, 30).trim(),
       adopter: String(p.adopter == null ? '' : p.adopter).slice(0, 40).trim(),
       status: status,
+      adoptedAt: adoptedAt,
       intakeDate: isValidDate(p.intakeDate) ? p.intakeDate : todayStr(),
       birthDate: isValidDate(p.birthDate) ? p.birthDate : '',
       photoProfile: typeof p.photoProfile === 'string' ? p.photoProfile : '',
@@ -1271,6 +1294,7 @@
     }
     syncAdminUI();
     renderAll();
+    sweepAdopted(true);          // 로그인한 사용자가 목록을 볼 때: 분양완료 2주 지난 장 정리
     if(auth.offline || !sync.client){ setSync('local'); return; }
     setSync('connecting');
     pullRemote(true);
@@ -1469,6 +1493,7 @@
     applyMe();
     saveLocal();
     renderAll();
+    sweepAdopted(true);          // 공유 목록을 끌어온 직후에도 2주 지난 분양완료 장 정리
     pushAfter.forEach(function(p){ pushed[p.id] = JSON.stringify(p); upsertPuppy(p); });
     if(ui.sheet === 'detail' && ui.detailId && !get(ui.detailId)) closeSheet();
     else if(ui.sheet === 'detail' && ui.detailId) refreshDetail();
@@ -1620,6 +1645,7 @@
     if(/메모/.test(a)) return '📝';
     if(/체크|해제|증상/.test(a)) return '🩺';
     if(/노트/.test(a)) return '🗑️';
+    if(/자동 정리/.test(a)) return '🧹';
     if(/분양 상태/.test(a)) return '🏷️';
     return '📝';
   }
@@ -1946,6 +1972,7 @@
     var inDays = intakeDays(p);
     var age = ageInfo(p.birthDate);
     var vac = p.nextVaccine ? dday(p.nextVaccine) : null;
+    var adopt = adoptInfo(p);
     var priceHTML = '<span class="cprice">' + (p.price ? manwon(p.price) : '분양가 미정') + '</span>';
     var meta = [];
     if(inDays !== null) meta.push('<span class="mchip">🏠 입소 ' + Math.max(1, inDays) + '일차</span>');
@@ -1962,6 +1989,7 @@
         '<div class="csub">' + esc(p.breed || '품종 미정') + '<span class="sep">·</span>' + (p.sex === 'female' ? '여아' : '남아') +
           (p.color ? '<span class="sep">·</span>' + esc(p.color) : '') + '</div>' +
         '<div class="cmeta">' + meta.join('') + '</div>' +
+        (adopt ? '<div class="cadopt' + (adopt.warn ? ' warn' : '') + '">🧹 ' + adopt.text + '</div>' : '') +
         '<div class="cbathrow"><span class="bathbadge ' + bl.cls + (bl.kind === '약욕' ? ' yak' : '') + '">' + bl.icon + ' ' + bl.text + '</span></div>' +
         (vac ? '<div class="ctail ' + (vac.cls === 'alert' ? 'over' : '') + '">💉 다음 접종 ' + vac.text +
           (p.nextVaccine ? ' <span style="font-weight:700;color:var(--muted-2)">(' + fmtMD(p.nextVaccine) + ')</span>' : '') + '</div>' : '') +
@@ -2335,6 +2363,7 @@
     var last = lastBath(p);
     var vac = p.nextVaccine ? dday(p.nextVaccine) : null;
     var priceTxt = p.price ? manwon(p.price) : '분양가 미정';
+    var adopt = adoptInfo(p);
 
     var photoArea = '<div class="dphmain">' + photoBlock(p) + '</div>';
 
@@ -2378,6 +2407,8 @@
         '<div class="dsub">' + esc(p.breed || '품종 미정') + '<span class="sep">·</span>' + (p.sex === 'female' ? '여아' : '남아') +
           (p.color ? '<span class="sep">·</span>' + esc(p.color) : '') + '<span class="sep">·</span>' + p.branch + '</div>' +
         '<div class="statusseg">' + sseg + '</div>' +
+        (adopt ? '<div class="adoptnote' + (adopt.warn ? ' warn' : '') + '">🧹 ' + adopt.text +
+          '<span class="sub">분양완료 후 2주가 지나면 이 장은 그대로 두고 내용만 비워요 · ' + fmtFull(adopt.day) + '에 비워짐</span></div>' : '') +
       '</div>' +
 
       '<section class="scard"><div class="shead"><h3>📋 기본 정보</h3>' +
@@ -2630,9 +2661,11 @@
       merged.nextVaccine = keep.nextVaccine;
       merged.createdAt = keep.createdAt;
       for(var k in merged){ p[k] = merged[k]; }
+      if(p.status === 'sold' && !p.adoptedAt) p.adoptedAt = now;   // 폼에서 분양완료로 바꿈
       saved = p;
     } else {
       var np = norm(Object.assign({}, d, { createdAt: now, updatedAt: now }));
+      if(np.status === 'sold' && !np.adoptedAt) np.adoptedAt = now;
       state.puppies.push(np);
       saved = np;
     }
@@ -2908,11 +2941,84 @@
     toast(p.name + ' 노트를 삭제했어요');
   }
 
+  /* ================= 분양완료 2주 자동 정리 ================= */
+  /* 장(행)은 그대로 두고 내용만 비웁니다 — 이름 '미정' + 분양중, 사진·기록 삭제 */
+  function clearSlot(p){
+    if(!p) return;
+    p.name = '미정';
+    p.status = 'available';
+    p.adoptedAt = null;
+    p.photoProfile = '';
+    p.photoStore = '';
+    p.breed = '';
+    p.sex = 'male';
+    p.color = '';
+    p.birthDate = '';
+    p.intakeDate = todayStr();
+    p.price = 0;
+    p.cost = 0;
+    p.regNo = '';
+    p.adopter = '';
+    p.nextVaccine = '';
+    p.memo = '';
+    p.baths = [];
+    p.vaccines = [];
+    p.healthFlags = [];
+    p.healthDates = {};
+    p.updatedAt = new Date().toISOString();
+  }
+  /* 남은 날(14일 뒤 자동 정리 / D-N 자동 정리) */
+  function adoptInfo(p){
+    if(!p || p.status !== 'sold' || !p.adoptedAt) return null;
+    var t = new Date(p.adoptedAt).getTime();
+    if(!(t > 0)) return null;
+    var left = ADOPT_TTL - (Date.now() - t);
+    var clearDate = isoYmd(new Date(t + ADOPT_TTL).toISOString());
+    if(left <= 0) return { rem:0, text:'곧 자동 정리', day:clearDate, warn:true };
+    var rem = Math.ceil(left / 86400000);
+    return { rem:rem, text: rem >= 14 ? '14일 뒤 자동 정리' : 'D-' + rem + ' 자동 정리', day:clearDate, warn: rem <= 3 };
+  }
+  /* 앱을 열 때 · 공유 목록을 불러올 때 · 로그인 후: 14일 지난 분양완료 개체를 빈 장으로 초기화 */
+  function sweepAdopted(quiet){
+    if(!state || !state.puppies) return 0;
+    var now = Date.now(), cleared = 0, stamped = 0;
+    state.puppies.forEach(function(p){
+      if(p.status !== 'sold') return;
+      var t = p.adoptedAt ? new Date(p.adoptedAt).getTime() : NaN;
+      if(!(t > 0)){
+        /* 기존 데이터 보호: 기준 시각이 없으면 updatedAt(14일 이내) 또는 지금부터 14일을 셉니다 */
+        var upT = p.updatedAt ? new Date(p.updatedAt).getTime() : NaN;
+        p.adoptedAt = (upT > 0 && (now - upT) < ADOPT_TTL) ? new Date(upT).toISOString() : new Date(now).toISOString();
+        stamped++;
+        t = new Date(p.adoptedAt).getTime();
+      }
+      if((now - t) < ADOPT_TTL) return;
+      clearSlot(p);
+      cleared++;
+    });
+    if(cleared){
+      save();
+      renderAll();
+      if(ui.detailId && !get(ui.detailId)) closeSheet();
+      else if(ui.sheet === 'detail' && ui.detailId) refreshDetail();
+      logActivity(null, '분양완료 2주 자동 정리' + (cleared > 1 ? ' (' + cleared + '장)' : ''), '했습니다');
+      if(!quiet) toast(cleared + '장을 비웠어요 · 분양완료 2주 경과');
+    } else if(stamped){
+      save();
+    }
+    return cleared;
+  }
+
   function setStatus(id, st){
     var p = get(id);
     if(!p || !STATUS[st]) return;
     var prev = p.status;
     p.status = st;
+    if(st === 'sold'){
+      if(!p.adoptedAt) p.adoptedAt = new Date().toISOString();   // 분양완료로 바꾼 시각부터 14일
+    } else {
+      p.adoptedAt = null;                                        // 분양중·예약중으로 되돌리면 기준 비움
+    }
     p.updatedAt = new Date().toISOString();
     save();
     if(prev !== st) logActivity(p, '분양 상태', '수정했습니다');
@@ -3489,6 +3595,7 @@
   document.addEventListener('visibilitychange', function(){ if(!document.hidden) verifyAccount(); });
 
   bootAuth();
+  setTimeout(function(){ try { sweepAdopted(true); } catch(e){} }, 0);   // 앱을 열 때 바로 정리
   window.addEventListener('online', function(){ if(auth.user && sync.mode !== 'live') pullRemote(!sync.channel); });
   if(window.__errors.length){
     // 개발 중 조용한 확인용
