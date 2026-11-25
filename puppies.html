@@ -457,6 +457,65 @@
   .lockfoot{margin-top:16px;font-size:12px;font-weight:700;color:var(--muted-2);letter-spacing:-.02em;line-height:1.5}
   .lockdet{margin-top:10px}
   .lockdet summary{font-size:13.5px;font-weight:800;color:var(--brown-d);cursor:pointer;padding:6px 0}
+
+  /* ---------- 목욕 / 약욕 ---------- */
+  .bathbadge.yak{color:#4F7A4A}
+  .bathbadge.yak.warn{color:#B06714}
+  .bathacts{display:flex;gap:7px;margin-top:10px}
+  .bathacts .btn{flex:1;min-width:0}
+  .btn.yak{background:#EEF4E6;border-color:#D6E3C5;color:#456B33}
+  .bathkindseg{display:flex;gap:5px}
+  .bks{height:33px;padding:0 10px;border-radius:9px;border:1.5px solid var(--line);background:#fff;
+    font-size:12.5px;font-weight:800;color:var(--ink-2);letter-spacing:-.02em;white-space:nowrap}
+  .bks.on{background:var(--tint);border-color:var(--tint-3);color:var(--brown-d)}
+  .bks.on.yak{background:#EEF4E6;border-color:#CFE0BC;color:#456B33}
+  .hkind{font-size:11.5px;font-weight:800;color:var(--brown-d);background:#F5EEE5;border-radius:6px;padding:1px 5px;letter-spacing:-.02em;flex:none}
+  .hkind.yak{background:#EEF4E6;color:#456B33}
+
+  /* ---------- 건강 배지 (며칠째) ---------- */
+  .hbadge .hd{font-weight:800;color:#B8432F}
+  .hbadge.more{background:#F7F0E7;border-color:#E8DACA;color:var(--muted)}
+  .chealth{margin:0 0 8px}
+  .hsblock{margin-top:12px}
+  .hslist{margin-top:7px}
+  .hsrow{grid-template-columns:1fr auto auto;grid-template-areas:"type date cure"}
+  .hsrow .hcure{grid-area:cure;justify-self:end;height:32px;padding:0 9px;border-radius:9px;border:1.5px solid #DCE6CE;
+    background:#F5F8EE;color:#4F7A4A;font-size:12px;font-weight:800;letter-spacing:-.02em;white-space:nowrap}
+  .hsrow .hcure:active{transform:scale(.96)}
+  .hsrow .hdate{width:124px}
+
+  /* ---------- 실시간 작업 슬라이드 ---------- */
+  .feedwrap{position:sticky;top:0;z-index:56;margin:0 -16px 6px;padding:7px 16px 9px;
+    background:linear-gradient(to bottom,rgba(250,246,241,.98) 62%,rgba(250,246,241,0))}
+  .feedbar{display:flex;align-items:center;gap:9px;width:100%;min-height:52px;padding:7px 11px 7px 8px;border-radius:15px;
+    background:#fff;border:1px solid #EFE3D3;box-shadow:0 5px 16px rgba(122,88,52,.11);text-align:left;
+    animation:feeddrop .3s cubic-bezier(.2,.9,.3,1)}
+  .feedbar:active{transform:scale(.994)}
+  @keyframes feeddrop{from{transform:translateY(-6px);opacity:.35}to{transform:none;opacity:1}}
+  .feedbar .fic{flex:none;width:32px;height:32px;border-radius:10px;display:grid;place-items:center;font-size:15px;
+    background:linear-gradient(140deg,#A9743F,#6B4423);color:#fff;box-shadow:0 3px 8px rgba(107,68,35,.22)}
+  .feedvp{flex:1;min-width:0;height:38px;overflow:hidden;position:relative}
+  .feedvp .fl{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+    font-size:13px;line-height:19px;font-weight:700;color:var(--ink-2);letter-spacing:-.02em;word-break:keep-all}
+  .feedvp .fl b{font-weight:800}
+  .feedvp .fl .ft{color:var(--brown)}
+  .feedvp .fl .fb{color:var(--brown-d)}
+  .feedvp .fl .fd{color:var(--ink)}
+  .feedvp .flin{animation:feedUp .42s cubic-bezier(.2,.9,.3,1) both}
+  .feedvp .flout{position:absolute;left:0;right:0;top:0;animation:feedOut .42s cubic-bezier(.2,.9,.3,1) forwards}
+  @keyframes feedUp{from{transform:translateY(100%);opacity:0}to{transform:none;opacity:1}}
+  @keyframes feedOut{from{transform:none;opacity:1}to{transform:translateY(-100%);opacity:0}}
+  .feedbar .fn{flex:none;min-width:26px;height:26px;padding:0 7px;border-radius:9px;background:#F3E7D6;color:var(--brown-d);
+    font-size:12px;font-weight:800;display:inline-flex;align-items:center;justify-content:center}
+  .fright{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+  .fgolab{font-size:10.5px;font-weight:800;color:var(--muted-2);letter-spacing:-.02em;white-space:nowrap}
+  .feedrow{display:flex;align-items:flex-start;gap:9px;width:100%;padding:11px 0;border-bottom:1px dashed #F1E6D8;text-align:left}
+  .feedrow:last-child{border-bottom:0}
+  .feedrow .fic{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:14px;background:#F5EEE5}
+  .feedrow .fbody{flex:1;min-width:0}
+  .feedrow .fline{display:block;font-size:13.5px;font-weight:700;color:var(--ink-2);line-height:1.55;letter-spacing:-.02em;word-break:keep-all}
+  .feedrow .fline b{font-weight:800}
+  .feedrow .ftm{display:block;font-size:12px;font-weight:800;color:var(--muted-2);letter-spacing:-.02em;margin-top:2px}
 </style>
 </head>
 <body class="locked">
@@ -514,6 +573,13 @@
     </div>
     <div id="noticeWrap"></div>
   </header>
+  <div class="feedwrap" id="feedWrap" hidden>
+    <button class="feedbar" id="feedBar" data-act="openFeed" aria-label="최근 작업 활동 전체 보기">
+      <span class="fic" aria-hidden="true">📣</span>
+      <span class="feedvp" id="feedText"></span>
+      <span class="fright"><span class="fn" id="feedCount">0</span><span class="fgolab">전체 ›</span></span>
+    </button>
+  </div>
   <main class="list" id="list"></main>
 </div>
 
@@ -548,7 +614,11 @@
   var VAC_PRESETS = ['1차 종합백신','2차 종합백신','3차 종합백신','4차 종합백신','5차 종합백신','심장사상충','원구충'];
   var VAC_ALIAS = { '구충':'원구충' };   // 예전에 적힌 '구충'은 화면에서 '원구충'으로 보여줘요
   function vacName(t){ var s = String(t || ''); return VAC_ALIAS[s] || s; }
-  var HEALTH_FLAGS = ['귀진드기','감기','피부','탈장','부정교합'];
+  var HEALTH_FLAGS = ['귀진드기','감기','피부','설사','탈장','부정교합'];
+  var BATH_KINDS = ['목욕','약욕'];
+  var ACTIVITY_ID = '__activity__';    // public.puppies 의 활동 메타 행 (__staff__ 와 같은 방식)
+  var ACTIVITY_MAX = 200;              // 안전상한
+  var ACTIVITY_TTL = 3 * 24 * 60 * 60 * 1000;   // 3일(72시간) 지난 활동은 자동 정리
 
   var errs = [];
   window.__errors = errs;
@@ -636,7 +706,12 @@
   }
   function lastBath(p){
     if(!p.baths || !p.baths.length) return null;
-    return p.baths.slice().sort(function(a,b){ return String(b.date).localeCompare(String(a.date)); })[0];
+    var best = null;
+    p.baths.forEach(function(b){
+      if(!b || !isValidDate(b.date)) return;
+      if(!best || String(b.date) >= String(best.date)) best = b;   // 같은 날짜면 나중에 기록한 것
+    });
+    return best;
   }
   function bathDays(p){
     var l = lastBath(p);
@@ -644,11 +719,37 @@
     var d = daysSince(l.date);
     return d === null ? null : Math.max(0, d);
   }
+  function bathKind(b){ return (b && b.kind === '약욕') ? '약욕' : '목욕'; }
   function bathLabel(p){
+    var l = lastBath(p);
     var d = bathDays(p);
-    if(d === null) return { text:'목욕 기록 없음', cls:'none' };
-    if(d === 0) return { text:'오늘 목욕했어요', cls:'ok' };
-    return { text:'목욕한 지 ' + d + '일째', cls: d >= 7 ? 'warn' : 'calm' };
+    if(d === null) return { text:'목욕 기록 없음', long:'목욕 기록 없음', cls:'none', kind:'', icon:'🛁' };
+    var kind = bathKind(l);
+    var icon = kind === '약욕' ? '🧴' : '🛁';
+    var text = kind + ' ' + (d === 0 ? '오늘' : d + '일째');
+    var long = (d === 0 ? '오늘 ' + kind : kind + '한 지 ' + d + '일째');
+    var cls = d >= 7 ? 'warn' : (d === 0 ? 'ok' : 'calm');
+    return { text:text, long:long, cls:cls, kind:kind, icon:icon };
+  }
+  /* ---- 특이사항: 시작일 · 며칠째 ---- */
+  function healthDateOf(p, f){
+    var src = (p && p.healthDates) || {};
+    var v = src[f];
+    if(isValidDate(v)) return String(v).slice(0, 10);
+    var fb = isoYmd(p && p.updatedAt) || todayStr();
+    return isValidDate(fb) ? fb : todayStr();
+  }
+  function healthDays(p, f){
+    var d = daysSince(healthDateOf(p, f));
+    return d === null ? 1 : Math.max(1, d + 1);
+  }
+  function healthBadgesHTML(p){
+    var flags = (p && p.healthFlags) || [];
+    if(!flags.length) return '';
+    var shown = flags.slice(0, 4);
+    return '<div class="chealth">' + shown.map(function(f){
+      return '<span class="hbadge">🩺 ' + esc(f) + ' <b class="hd">' + healthDays(p, f) + '일째</b></span>';
+    }).join('') + (flags.length > 4 ? '<span class="hbadge more">+' + (flags.length - 4) + '</span>' : '') + '</div>';
   }
   function dday(dateStr){
     if(!dateStr) return null;
@@ -681,6 +782,24 @@
   function norm(p){
     p = p || {};
     var status = STATUS_KEYS.indexOf(p.status) >= 0 ? p.status : 'available';
+    /* 특이사항 목록 + 각 증상 시작일(healthDates) */
+    var flags = (function(){
+      if(!Array.isArray(p.healthFlags)) return [];
+      var out = [];
+      p.healthFlags.forEach(function(f){
+        var s = String(f == null ? '' : f).trim().slice(0, 10);
+        if(s && out.indexOf(s) < 0) out.push(s);
+      });
+      return out.slice(0, 12);
+    })();
+    var srcDates = (p.healthDates && typeof p.healthDates === 'object') ? p.healthDates : {};
+    var fallback = isoYmd(p.updatedAt) || todayStr();
+    if(!isValidDate(fallback)) fallback = todayStr();
+    var dates = {};
+    flags.forEach(function(f){
+      var v = srcDates[f];
+      dates[f] = isValidDate(v) ? String(v).slice(0, 10) : fallback;
+    });
     return {
       id: p.id || uid(),
       branch: p.branch === '디데이펫' ? '디데이펫' : '퍼피댕',
@@ -700,17 +819,10 @@
       photoProfile: typeof p.photoProfile === 'string' ? p.photoProfile : '',
       /* 예전 기록에 남아 있는 분양장 사진 값 — 화면에는 쓰지 않고, 저장 시 지워지지 않도록만 보존함 */
       photoStore: typeof p.photoStore === 'string' ? p.photoStore : '',
-      healthFlags: (function(){
-        if(!Array.isArray(p.healthFlags)) return [];
-        var out = [];
-        p.healthFlags.forEach(function(f){
-          var s = String(f == null ? '' : f).trim().slice(0, 10);
-          if(s && out.indexOf(s) < 0) out.push(s);
-        });
-        return out.slice(0, 12);
-      })(),
+      healthFlags: flags,
+      healthDates: dates,
       baths: Array.isArray(p.baths) ? p.baths.filter(function(b){ return b && isValidDate(b.date); }).map(function(b){
-        return { id: b.id || uid(), date: b.date, by: String(b.by || '').slice(0, 12), memo: String(b.memo || '') };
+        return { id: b.id || uid(), date: b.date, kind: b.kind === '약욕' ? '약욕' : '목욕', by: String(b.by || '').slice(0, 12), memo: String(b.memo || '') };
       }) : [],
       vaccines: Array.isArray(p.vaccines) ? p.vaccines.filter(function(v){ return v && isValidDate(v.date); }).map(function(v){
         return { id: v.id || uid(), type: String(v.type || '접종'), date: v.date, by: String(v.by || '').slice(0, 12), memo: String(v.memo || '') };
@@ -787,7 +899,7 @@
 
   function blankState(){
     return { v:2, worker:DEFAULT_STAFF[0], staff:DEFAULT_STAFF.slice(), hintDismissed:false, autoStaffPurged:true,
-      puppies: [], seeded:false, createdAt:new Date().toISOString() };
+      puppies: [], activity: [], seeded:false, createdAt:new Date().toISOString() };
   }
 
   // 작업자 목록 정규화: 공백/중복/길이 정리 + '대표님' 제외 + 비면 기본 목록
@@ -822,6 +934,7 @@
       hintDismissed: !!data.hintDismissed,
       autoStaffPurged: !!data.autoStaffPurged,
       puppies: data.puppies.map(norm),
+      activity: activityFresh((Array.isArray(data.activity) ? data.activity : []).map(normActivity)).slice(0, ACTIVITY_MAX),
       seeded: !!data.seeded,
       createdAt: data.createdAt || new Date().toISOString()
     };
@@ -829,7 +942,7 @@
 
   var state = loadState();
   var ui = {
-    branch:'전체', status:'전체', q:'', sort:'cage', special:'', prevSort:'cage',
+    branch:'전체', status:'전체', q:'', sort:'cage', special:'', prevSort:'cage', bathKind:'목욕',
     detailId:null,
     vacType: VAC_PRESETS[0], formEdit:false, formId:null, sheet:null
   };
@@ -948,6 +1061,7 @@
       var el = $(sel);
       if(el) el.innerHTML = '';
     });
+    var fw = $('#feedWrap'); if(fw) fw.hidden = true;
     var w = $('#workerName'); if(w) w.textContent = '—';
     var t = $('#todayLine'); if(t) t.textContent = '—';
   }
@@ -1180,6 +1294,7 @@
     (rows || []).forEach(function(r){
       if(!r || !r.id) return;
       if(r.id === META_ID){ applyStaff(r.data); return; }
+      if(r.id === ACTIVITY_ID){ applyActivity(r.data, true); return; }
       try { remote.push(norm(r.data || {})); } catch(e){}
     });
     var remoteIds = {}, snap = {}, merged = [], pushAfter = [];
@@ -1215,7 +1330,7 @@
     if(!payload || payload.table !== 'puppies') return;
     if(payload.eventType === 'DELETE'){
       var oldId = payload.old && payload.old.id;
-      if(!oldId || oldId === META_ID) return;
+      if(!oldId || oldId === META_ID || oldId === ACTIVITY_ID) return;
       var gone = get(oldId);
       if(!gone) return;
       state.puppies = state.puppies.filter(function(x){ return x.id !== oldId; });
@@ -1228,6 +1343,7 @@
     var row = payload.new;
     if(!row || !row.id) return;
     if(row.id === META_ID){ applyStaff(row.data); return; }
+    if(row.id === ACTIVITY_ID){ applyActivity(row.data, true); return; }
     var incoming = norm(row.data || {});
     var cur = get(incoming.id);
     var s = JSON.stringify(incoming);
@@ -1295,6 +1411,184 @@
       if(ui.sheet === 'sync') setSheet(syncHTML(), true);
       toast(list.length + '마리를 공유 목록에 올렸어요');
     }, function(err){ handleSyncError(err); });
+  }
+
+  /* ================= 작업 활동 피드 (3일 보관) ================= */
+  var feed = { idx:0, timer:null, cur:'' };
+
+  function josa(word){
+    var s = String(word == null ? '' : word).replace(/\s+$/, '');
+    if(!s) return '를';
+    var c = s.charCodeAt(s.length - 1);
+    if(c >= 0xAC00 && c <= 0xD7A3) return ((c - 0xAC00) % 28) === 0 ? '를' : '을';
+    return '를';
+  }
+  function timeHM(iso){
+    var d = new Date(iso);
+    if(isNaN(d.getTime())) return '';
+    return d.getHours() + '시 ' + pad(d.getMinutes()) + '분';
+  }
+  function normActivity(it){
+    it = it || {};
+    var t = new Date(it.at || Date.now());
+    if(isNaN(t.getTime())) t = new Date();
+    return {
+      id: String(it.id || uid()),
+      at: t.toISOString(),
+      by: String(it.by || '').slice(0, 12),
+      dogId: String(it.dogId || ''),
+      branch: String(it.branch || '').slice(0, 12),
+      cage: String(it.cage || '').slice(0, 20),
+      name: String(it.name || '').slice(0, 30),
+      act: String(it.act || '').slice(0, 40),
+      tail: String(it.tail || '입력했습니다').slice(0, 20)
+    };
+  }
+  // 3일이 지난 활동은 읽기/쓰기 때 자동으로 걸러냅니다 (최신순 정렬)
+  function activityFresh(list){
+    var cutoff = Date.now() - ACTIVITY_TTL;
+    return (Array.isArray(list) ? list : []).filter(function(it){
+      var t = new Date(it.at).getTime();
+      return !isNaN(t) && t >= cutoff;
+    }).sort(function(a, b){ return new Date(b.at).getTime() - new Date(a.at).getTime(); });
+  }
+  function activityHTML(it){
+    var when = timeHM(it.at);
+    var by = it.by ? esc(it.by) + '님' : '직원';
+    var where = [it.branch, it.cage].filter(Boolean).map(function(s){ return esc(s); }).join(' ');
+    var act = String(it.act || '');
+    return (when ? '<b class="ft">' + esc(when) + '</b> ' : '') +
+      '<b class="fb">' + by + '</b>이 ' +
+      (where ? where + ' ' : '') +
+      (it.name ? '<b class="fd">' + esc(it.name) + '</b> ' : '') +
+      esc(act) + josa(act) + ' ' + esc(it.tail || '입력했습니다');
+  }
+  function feedIcon(it){
+    var a = String((it && it.act) || '');
+    if(/약욕/.test(a)) return '🧴';
+    if(/목욕/.test(a)) return '🛁';
+    if(/접종/.test(a)) return '💉';
+    if(/정상 회복/.test(a)) return '✅';
+    if(/증상/.test(a)) return '🩺';
+    if(/노트/.test(a)) return '🗑️';
+    if(/분양 상태/.test(a)) return '🏷️';
+    return '📝';
+  }
+  function logActivity(p, act, tail){
+    var now = new Date();
+    var item = normActivity({
+      id: 'a' + now.getTime().toString(36) + Math.random().toString(36).slice(2, 6),
+      at: now.toISOString(),
+      by: state.worker,
+      dogId: p ? p.id : '',
+      branch: p ? p.branch : '',
+      cage: p ? p.cage : '',
+      name: p ? p.name : '',
+      act: act,
+      tail: tail || '입력했습니다'
+    });
+    state.activity = activityFresh([item].concat(state.activity || [])).slice(0, ACTIVITY_MAX);
+    saveLocal();
+    pushActivity();
+    renderFeed(true);
+  }
+  function pushActivity(){
+    if(!isLive()) return;
+    sync.client.from('puppies').upsert({ id: ACTIVITY_ID, data: { items: state.activity }, updated_at: new Date().toISOString() }).then(function(res){
+      if(res && res.error) handleSyncError(res.error);
+    }, function(err){ handleSyncError(err); });
+  }
+  function applyActivity(data, fromRemote){
+    if(!data || !Array.isArray(data.items)) return;
+    var seen = {}, out = [];
+    data.items.concat(state.activity || []).forEach(function(raw){
+      var it = normActivity(raw);
+      if(seen[it.id]) return;
+      seen[it.id] = 1;
+      out.push(it);
+    });
+    out.sort(function(a, b){ return new Date(b.at).getTime() - new Date(a.at).getTime(); });
+    out = activityFresh(out).slice(0, ACTIVITY_MAX);
+    var before = JSON.stringify(state.activity || []);
+    state.activity = out;
+    if(before !== JSON.stringify(out)){ saveLocal(); renderFeed(!!fromRemote); }
+    if(fromRemote){
+      var remoteIds = {};
+      data.items.forEach(function(raw){ if(raw && raw.id) remoteIds[raw.id] = 1; });
+      var missing = out.some(function(it){ return !remoteIds[it.id]; });
+      if(missing) pushActivity();   // 이 기기에만 있던 활동을 공유 목록에도 합쳐요
+    }
+  }
+  function feedShow(it, animate){
+    var vp = $('#feedText');
+    if(!vp || !it) return;
+    var html = activityHTML(it);
+    if(!animate || !feed.cur){ vp.innerHTML = '<span class="fl">' + html + '</span>'; feed.cur = html; return; }
+    if(feed.cur === html) return;
+    vp.innerHTML = '<span class="fl flout">' + feed.cur + '</span><span class="fl flin">' + html + '</span>';
+    feed.cur = html;
+    setTimeout(function(){
+      if(feed.cur === html) vp.innerHTML = '<span class="fl">' + html + '</span>';
+    }, 460);
+  }
+  function scheduleFeed(){
+    if(feed.timer) clearTimeout(feed.timer);
+    feed.timer = setTimeout(function(){
+      var cur = state.activity || [];
+      var fresh = activityFresh(cur);
+      if(fresh.length !== cur.length){        // 3일 지난 활동 정리
+        state.activity = fresh.slice(0, ACTIVITY_MAX);
+        saveLocal();
+        renderFeed(true);
+        return;
+      }
+      var wrap = $('#feedWrap');
+      if(fresh.length > 1 && wrap && !wrap.hidden && !document.hidden && $('#sheetWrap').hidden){
+        feed.idx = (feed.idx + 1) % fresh.length;
+        feedShow(fresh[feed.idx], true);
+      }
+      scheduleFeed();
+    }, 4600);
+  }
+  function renderFeed(fresh){
+    var wrap = $('#feedWrap');
+    if(!wrap) return;
+    var items = activityFresh(state.activity || []);
+    if(!items.length){
+      wrap.hidden = true;
+      feed.cur = '';
+      var vp0 = $('#feedText');
+      if(vp0) vp0.innerHTML = '';
+      scheduleFeed();
+      return;
+    }
+    wrap.hidden = false;
+    if(fresh || feed.idx >= items.length) feed.idx = 0;
+    feedShow(items[feed.idx] || items[0], !!fresh);
+    var cnt = $('#feedCount');
+    if(cnt) cnt.textContent = items.length > 99 ? '99+' : String(items.length);
+    scheduleFeed();
+  }
+  function feedSheetHTML(){
+    var items = activityFresh(state.activity || []);
+    var rows = items.map(function(it){
+      return '<button class="feedrow" data-act="feedOpen" data-dog="' + esc(it.dogId || '') + '">' +
+        '<span class="fic" aria-hidden="true">' + feedIcon(it) + '</span>' +
+        '<span class="fbody"><span class="fline">' + activityHTML(it) + '</span>' +
+        '<span class="ftm">' + fmtFull(isoYmd(it.at)) + '</span></span></button>';
+    }).join('');
+    return sheetbar('작업 활동', '최근 3일 · ' + items.length + '건') +
+      '<div class="sheetbody">' +
+      (items.length
+        ? '<div class="scard" style="margin-top:0;padding:2px 14px">' + rows + '</div>'
+        : '<div class="empty"><div class="ee">📣</div><h3>최근 3일 활동이 없어요</h3><p>목욕·약욕, 특이사항, 접종을 기록하면 여기에 쌓여요.</p></div>') +
+      '<p class="hint" style="text-align:center;margin-top:12px">작성한 지 3일이 지난 기록은 자동으로 사라져요 · 활동을 누르면 그 아이 상세로 이동해요</p>' +
+      '</div>';
+  }
+  function openFeed(){
+    ui.sheet = 'feed';
+    setSheet(feedSheetHTML());
+    openSheet();
   }
 
   function timeText(d){
@@ -1512,14 +1806,12 @@
         '<span class="stchip ' + st.cls + '">' + st.label + '</span>' +
       '</div>' +
       '<div class="cbody" data-act="openCard">' +
+        healthBadgesHTML(p) +
         '<div class="crow"><h3 class="cname">' + esc(p.name || '이름 없음') + '</h3>' + priceHTML + '</div>' +
-        ((p.healthFlags && p.healthFlags.length) ? '<div class="chealth">' + p.healthFlags.map(function(f){
-          return '<span class="hbadge">🩺 ' + esc(f) + '</span>';
-        }).join('') + '</div>' : '') +
         '<div class="csub">' + esc(p.breed || '품종 미정') + '<span class="sep">·</span>' + (p.sex === 'female' ? '여아' : '남아') +
           (p.color ? '<span class="sep">·</span>' + esc(p.color) : '') + '</div>' +
         '<div class="cmeta">' + meta.join('') + '</div>' +
-        '<div class="cbathrow"><span class="bathbadge ' + bl.cls + '">🛁 ' + bl.text + '</span></div>' +
+        '<div class="cbathrow"><span class="bathbadge ' + bl.cls + (bl.kind === '약욕' ? ' yak' : '') + '">' + bl.icon + ' ' + bl.text + '</span></div>' +
         (vac ? '<div class="ctail ' + (vac.cls === 'alert' ? 'over' : '') + '">💉 다음 접종 ' + vac.text +
           (p.nextVaccine ? ' <span style="font-weight:700;color:var(--muted-2)">(' + fmtMD(p.nextVaccine) + ')</span>' : '') + '</div>' : '') +
       '</div></article>';
@@ -1606,6 +1898,7 @@
     renderTools();
     renderNotice();
     renderList();
+    renderFeed();
   }
 
   /* ================= 시트 ================= */
@@ -1658,13 +1951,47 @@
   function healthTarget(){
     if(ui.sheet === 'form' && draft){
       if(!Array.isArray(draft.healthFlags)) draft.healthFlags = [];
+      if(!draft.healthDates || typeof draft.healthDates !== 'object') draft.healthDates = {};
       return draft;
     }
     if(ui.detailId){
       var p = get(ui.detailId);
-      if(p){ if(!Array.isArray(p.healthFlags)) p.healthFlags = []; return p; }
+      if(p){
+        if(!Array.isArray(p.healthFlags)) p.healthFlags = [];
+        if(!p.healthDates || typeof p.healthDates !== 'object') p.healthDates = {};
+        return p;
+      }
     }
     return null;
+  }
+  // 특이사항별 시작일 · 정상 회복
+  function healthDateListHTML(p){
+    var flags = (p && p.healthFlags) || [];
+    if(!flags.length) return '';
+    var rows = flags.map(function(f){
+      return '<li class="hrow hsrow">' +
+        '<span class="htype">🩺 ' + esc(f) + ' <em>' + healthDays(p, f) + '일째</em></span>' +
+        '<input type="date" class="hdate" value="' + healthDateOf(p, f) + '" data-act="healthDate" data-flag="' + esc(f) + '" aria-label="' + esc(f) + ' 시작일">' +
+        '<button type="button" class="hcure" data-act="healthCure" data-flag="' + esc(f) + '" aria-label="' + esc(f) + ' 정상 회복">✓ 정상</button>' +
+        '</li>';
+    }).join('');
+    return '<div class="hsblock"><label class="mini">증상 시작일 · 정상 회복</label>' +
+      '<ul class="hlist hslist">' + rows + '</ul></div>';
+  }
+  function healthCure(flag){
+    var t = healthTarget();
+    if(!t || !flag) return;
+    if((t.healthFlags || []).indexOf(flag) < 0) return;
+    t.healthFlags = t.healthFlags.filter(function(x){ return x !== flag; });
+    if(t.healthDates) delete t.healthDates[flag];
+    if(t === draft){ commitHealth(true); return; }
+    grabMemo();
+    t.updatedAt = new Date().toISOString();
+    save();
+    logActivity(t, flag + ' 정상 회복', '입력했습니다');
+    renderAll();
+    refreshDetail();
+    toast(flag + ' 정상 회복 처리했어요');
   }
   function grabMemo(){
     var mb = $('#memoBox');
@@ -1675,18 +2002,19 @@
     var sv = $('#memoSaved');
     if(sv){ sv.textContent = '저장됨 ✓'; sv.classList.add('on'); }
   }
-  function commitHealth(render){
+  function commitHealth(){
     var t = healthTarget();
     if(!t) return;
     if(t === draft){
-      if(render){ readForm(); setSheet(formHTML(), true); }
+      readForm();
+      setSheet(formHTML(), true);
       return;
     }
     grabMemo();
     t.updatedAt = new Date().toISOString();
     save();
     renderList();
-    if(render) refreshDetail();
+    refreshDetail();
   }
 
   function detailHTML(id){
@@ -1703,7 +2031,10 @@
     var photoArea = '<div class="dphmain">' + photoBlock(p) + '</div>';
 
     var bathHistory = (p.baths || []).slice().sort(function(a,b){ return String(b.date).localeCompare(String(a.date)); }).map(function(b){
-      return '<li class="hrow"><span class="htype">🛁 목욕 <em>' + agoText(b.date) + '</em>' +
+      var bk = bathKind(b);
+      return '<li class="hrow"><span class="htype">' +
+        '<button type="button" class="hkind' + (bk === '약욕' ? ' yak' : '') + '" data-act="bathKind" data-id="' + b.id + '" aria-label="목욕 종류 바꾸기">' + (bk === '약욕' ? '🧴 ' : '🛁 ') + bk + '</button>' +
+        '<em>' + agoText(b.date) + '</em>' +
         (b.by ? '<span class="hby">' + esc(b.by) + '</span>' : '') + '</span>' +
         '<input type="date" class="hdate" value="' + b.date + '" data-act="bathDate" data-id="' + b.id + '" aria-label="목욕 날짜">' +
         '<button class="hdel" data-act="bathDel" data-id="' + b.id + '" aria-label="목욕 기록 삭제">✕</button></li>';
@@ -1759,15 +2090,23 @@
         '</div>' +
       '</section>' +
 
-      '<section class="scard"><div class="shead"><h3>🛁 목욕 기록</h3><span class="sbadge ' + bl.cls + '">' + bl.text + '</span></div>' +
-        '<div class="bathnow"><div class="bathlast">마지막 목욕' +
+      '<section class="scard"><div class="shead"><h3>🛁 목욕 · 약욕 기록</h3><span class="sbadge ' + bl.cls + '">' + bl.long + '</span></div>' +
+        '<div class="bathnow"><div class="bathlast">마지막 ' + (bl.kind || '목욕') +
           '<b>' + (last ? fmtMD(last.date) : '기록 없음') + '</b>' +
           (last ? '<span class="sub">' + agoText(last.date) + (last.by ? ' · ' + esc(last.by) : '') + '</span>' : '<span class="sub">아래 버튼으로 오늘 목욕을 기록해 보세요</span>') +
-        '</div><button class="btn primary sm" data-act="bathToday">＋ 목욕 완료</button></div>' +
+        '</div></div>' +
+        '<div class="bathacts">' +
+          '<button class="btn primary sm" data-act="bathToday" data-kind="목욕">🛁 목욕 완료</button>' +
+          '<button class="btn sm yak" data-act="bathToday" data-kind="약욕">🧴 약욕 완료</button>' +
+        '</div>' +
         '<div class="bathadd"><label class="mini">다른 날짜로 기록 / 수정</label>' +
-          '<div class="row"><input type="date" class="fdate grow" id="bathNewDate" value="' + todayStr() + '" aria-label="목욕 날짜 지정">' +
+          '<div class="bathkindseg">' +
+            '<button type="button" class="bks ' + (ui.bathKind === '목욕' ? 'on' : '') + '" data-act="bathKindPick" data-kind="목욕">🛁 목욕</button>' +
+            '<button type="button" class="bks yak ' + (ui.bathKind === '약욕' ? 'on' : '') + '" data-act="bathKindPick" data-kind="약욕">🧴 약욕</button>' +
+          '</div>' +
+          '<div class="row" style="margin-top:7px"><input type="date" class="fdate grow" id="bathNewDate" value="' + todayStr() + '" aria-label="목욕 날짜 지정">' +
           '<button class="btn sm" data-act="bathAdd">이 날짜로 기록</button></div>' +
-          '<div class="hint" style="margin-top:6px">기록은 지금 작업자 <b>' + esc(state.worker) + '</b> 이름으로 남아요</div></div>' +
+          '<div class="hint" style="margin-top:6px">기록은 지금 작업자 <b>' + esc(state.worker) + '</b> 이름으로 남아요 · 기록의 종류 배지를 누르면 목욕↔약욕을 바꿀 수 있어요</div></div>' +
         '<ul class="hlist">' + bathHistory + '</ul>' +
       '</section>' +
 
@@ -1789,8 +2128,9 @@
 
       '<section class="scard"><div class="shead"><h3>🩺 건강 · 특이사항</h3>' +
         '<span class="sbadge warn" id="healthCount"' + ((p.healthFlags && p.healthFlags.length) ? '' : ' style="display:none"') + '>' + ((p.healthFlags && p.healthFlags.length) ? p.healthFlags.length + '개 체크' : '0개 체크') + '</span></div>' +
-        '<p class="sp small" style="margin:0 0 9px">해당되는 항목을 누르면 체크되고, 목록 카드 사진 아래에 표시돼요.</p>' +
+        '<p class="sp small" style="margin:0 0 9px">해당되는 항목을 누르면 체크되고, 사진 아래에 <b>며칠째</b>인지 표시돼요. 나으면 <b>✓ 정상</b>을 누르면 배지가 사라져요.</p>' +
         healthChipsHTML(p.healthFlags, true) +
+        healthDateListHTML(p) +
       '</section>' +
 
       '<section class="scard"><div class="shead"><h3>📝 특이사항 · 건강 메모</h3><span class="saved" id="memoSaved">자동 저장</span></div>' +
@@ -1906,6 +2246,7 @@
       '<div class="fsec"><h3>특이사항 · 건강 메모</h3>' +
         '<label class="mini">건강 · 특이사항 체크 (해당되는 항목을 누르기)</label>' +
         healthChipsHTML(d.healthFlags, true) +
+        healthDateListHTML(d) +
         '<textarea class="memo" id="fMemo" style="margin-top:10px" placeholder="식욕, 배변, 성격, 손님 반응 등">' + esc(d.memo || '') + '</textarea>' +
       '</div>' +
 
@@ -1984,8 +2325,9 @@
       saved = np;
     }
     if(!save()) return;
-    renderAll();
     var wasEdit = ui.formEdit;
+    logActivity(saved, '정보', wasEdit ? '수정했습니다' : '등록했습니다');
+    renderAll();
     ui.formEdit = false;
     ui.formId = null;
     ui.detailId = saved.id;
@@ -2161,7 +2503,7 @@
   function exportJSON(){
     var data = {
       app: 'puppydang-puppies', version: 2, exportedAt: new Date().toISOString(),
-      worker: state.worker, staff: state.staff, puppies: state.puppies
+      worker: state.worker, staff: state.staff, puppies: state.puppies, activity: state.activity
     };
     try {
       var blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
@@ -2193,6 +2535,7 @@
       if(!ok) return;
       state.puppies = list.map(norm);
       localOnly = {};
+      if(Array.isArray(data.activity)) state.activity = activityFresh(data.activity.map(normActivity)).slice(0, ACTIVITY_MAX);
       if(Array.isArray(data.staff)){
         state.staff = cleanStaff(data.staff);
       }
@@ -2209,21 +2552,23 @@
   }
 
   /* ================= 액션 ================= */
-  function bathToday(id){
+  function bathToday(id, kind){
     var p = get(id);
     if(!p) return;
+    kind = kind === '약욕' ? '약욕' : '목욕';
     var t = todayStr();
-    if((p.baths || []).some(function(b){ return b.date === t; })){
-      toast('오늘 목욕은 이미 기록되어 있어요');
+    if((p.baths || []).some(function(b){ return b.date === t && bathKind(b) === kind; })){
+      toast('오늘 ' + kind + '은 이미 기록되어 있어요');
       return;
     }
     p.baths = p.baths || [];
-    p.baths.push({ id: uid(), date: t, by: state.worker, memo:'' });
+    p.baths.push({ id: uid(), date: t, kind: kind, by: state.worker, memo:'' });
     p.updatedAt = new Date().toISOString();
     save();
+    logActivity(p, kind + '완료', '입력했습니다');
     renderAll();
     if(ui.detailId === id) refreshDetail();
-    toast(p.name + ' 목욕 완료 · ' + state.worker);
+    toast(p.name + ' ' + kind + ' 완료 · ' + state.worker);
   }
 
   function deleteDog(id){
@@ -2232,6 +2577,7 @@
     if(!window.confirm('“' + p.name + '” 노트를 삭제할까요?\n목욕·접종 기록과 사진도 함께 지워지고, 되돌릴 수 없어요.')) return;
     state.puppies = state.puppies.filter(function(x){ return x.id !== id; });
     save();
+    logActivity(p, '노트', '삭제했습니다');
     ui.detailId = null;
     closeSheet();
     renderAll();
@@ -2241,9 +2587,11 @@
   function setStatus(id, st){
     var p = get(id);
     if(!p || !STATUS[st]) return;
+    var prev = p.status;
     p.status = st;
     p.updatedAt = new Date().toISOString();
     save();
+    if(prev !== st) logActivity(p, '분양 상태', '수정했습니다');
     renderAll();
     refreshDetail();
     toast('상태를 ‘' + STATUS[st].label + '’(으)로 바꿨어요');
@@ -2341,7 +2689,32 @@
         openDetail(el.closest('.card').getAttribute('data-id'));
         break;
       case 'bathToday':
-        bathToday(id);
+        bathToday(id, el.getAttribute('data-kind'));
+        break;
+      case 'bathKindPick':
+        ui.bathKind = el.getAttribute('data-kind') === '약욕' ? '약욕' : '목욕';
+        $$('#sheet .bks').forEach(function(c){ c.classList.toggle('on', c === el); });
+        break;
+      case 'bathKind':
+        (function(){
+          var p = get(ui.detailId); if(!p) return;
+          var b = findBath(p, el.getAttribute('data-id')); if(!b) return;
+          b.kind = bathKind(b) === '약욕' ? '목욕' : '약욕';
+          p.updatedAt = new Date().toISOString();
+          save(); renderAll(); refreshDetail();
+          toast('기록을 ‘' + b.kind + '’(으)로 바꿨어요');
+        })();
+        break;
+      case 'openFeed':
+        openFeed();
+        break;
+      case 'feedOpen':
+        (function(){
+          var dog = el.getAttribute('data-dog');
+          closeSheet();
+          if(dog && get(dog)) openDetail(dog);
+          else toast('지금은 열 수 없는 아이 기록이에요');
+        })();
         break;
       case 'openForm':
         openForm(null);
@@ -2393,13 +2766,16 @@
         (function(){
           var p = get(ui.detailId); if(!p) return;
           var dt = $('#bathNewDate') ? $('#bathNewDate').value : todayStr();
+          var kind = ui.bathKind === '약욕' ? '약욕' : '목욕';
           if(!isValidDate(dt)){ toast('날짜를 골라주세요'); return; }
           p.baths = p.baths || [];
-          if(p.baths.some(function(b){ return b.date === dt; })){ toast('그 날짜는 이미 기록되어 있어요'); return; }
-          p.baths.push({ id: uid(), date: dt, by: state.worker, memo:'' });
+          if(p.baths.some(function(b){ return b.date === dt && bathKind(b) === kind; })){ toast('그 날짜는 이미 ' + kind + ' 기록이 있어요'); return; }
+          p.baths.push({ id: uid(), date: dt, kind: kind, by: state.worker, memo:'' });
           p.updatedAt = new Date().toISOString();
-          save(); renderAll(); refreshDetail();
-          toast(fmtMD(dt) + ' 목욕 기록 · ' + state.worker);
+          save();
+          logActivity(p, (dt === todayStr() ? '' : fmtMD(dt) + ' ') + kind + '완료', '입력했습니다');
+          renderAll(); refreshDetail();
+          toast(fmtMD(dt) + ' ' + kind + ' 기록 · ' + state.worker);
         })();
         break;
       case 'bathDel':
@@ -2426,7 +2802,9 @@
           p.vaccines = p.vaccines || [];
           p.vaccines.push({ id: uid(), type: ui.vacType || VAC_PRESETS[0], date: dt, by: state.worker, memo: memo });
           p.updatedAt = new Date().toISOString();
-          save(); renderAll(); refreshDetail();
+          save();
+          logActivity(p, vacName(ui.vacType || VAC_PRESETS[0]) + ' 접종', '입력했습니다');
+          renderAll(); refreshDetail();
           toast(ui.vacType + ' 기록 · ' + state.worker);
         })();
         break;
@@ -2490,14 +2868,25 @@
           if(!f || !t) return;
           var arr = t.healthFlags;
           var i = arr.indexOf(f);
-          if(i >= 0) arr.splice(i, 1); else arr.push(f);
+          if(i >= 0){
+            arr.splice(i, 1);
+            if(t.healthDates) delete t.healthDates[f];
+          } else {
+            arr.push(f);
+            if(!t.healthDates) t.healthDates = {};
+            t.healthDates[f] = todayStr();
+            if(t !== draft) logActivity(t, f + ' 증상', '입력했습니다');
+          }
           var on = arr.indexOf(f) >= 0;
           el.classList.toggle('on', on);
           el.setAttribute('aria-pressed', on ? 'true' : 'false');
           var cnt = $('#healthCount');
           if(cnt){ cnt.textContent = arr.length + '개 체크'; cnt.style.display = arr.length ? '' : 'none'; }
-          commitHealth(false);
+          commitHealth();
         })();
+        break;
+      case 'healthCure':
+        healthCure(el.getAttribute('data-flag'));
         break;
       case 'healthFlagDel':
         (function(){
@@ -2505,7 +2894,8 @@
           var t = healthTarget();
           if(!f || !t) return;
           t.healthFlags = t.healthFlags.filter(function(x){ return x !== f; });
-          commitHealth(true);
+          if(t.healthDates) delete t.healthDates[f];
+          commitHealth();
         })();
         break;
       case 'healthAdd':
@@ -2517,8 +2907,11 @@
           if(!v){ inp.focus(); return; }
           if(t.healthFlags.indexOf(v) >= 0){ toast('이미 체크된 항목이에요'); inp.value = ''; return; }
           t.healthFlags.push(v);
+          if(!t.healthDates) t.healthDates = {};
+          t.healthDates[v] = todayStr();
           inp.value = '';
-          commitHealth(true);
+          if(t !== draft) logActivity(t, v + ' 증상', '입력했습니다');
+          commitHealth();
           toast('‘' + v + '’ 체크했어요');
         })();
         break;
@@ -2649,6 +3042,18 @@
       renderList();
       return;
     }
+    var actName0 = t.getAttribute('data-act');
+    if(actName0 === 'healthDate'){
+      var ht = healthTarget();
+      var hf = t.getAttribute('data-flag');
+      if(ht && hf && isValidDate(t.value)){
+        if(!ht.healthDates) ht.healthDates = {};
+        ht.healthDates[hf] = t.value;
+        commitHealth();
+        toast('‘' + hf + '’ 시작일을 ' + fmtMD(t.value) + '(으)로 저장했어요');
+      }
+      return;
+    }
     var p = get(ui.detailId);
     if(!p) return;
     var actName = t.getAttribute('data-act');
@@ -2717,7 +3122,8 @@
     console.warn('init errors', window.__errors);
   }
   if(/[?&]debug=1/.test(location.search)){
-    window.__puppy = { state: state, ui: ui, sync: sync, feed: applyRows, event: onRealtime, mode: setSync, pull: pullRemote };
+    window.__puppy = { state: state, ui: ui, sync: sync, feed: applyRows, event: onRealtime, mode: setSync, pull: pullRemote,
+      logActivity: logActivity, renderFeed: renderFeed, openFeed: openFeed, renderAll: renderAll };
   }
 })();
 </script>
