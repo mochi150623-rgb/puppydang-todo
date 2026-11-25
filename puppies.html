@@ -67,12 +67,11 @@
   .wopt.on .wdel{background:rgba(255,255,255,.24);color:#fff}
   .wadd{display:flex;gap:7px;margin-top:10px}
   .wmem{display:flex;align-items:center;gap:8px;margin-top:14px;padding:10px 12px;border-radius:13px;background:#FBF6EF;font-size:13px;font-weight:700;color:var(--muted);line-height:1.5;letter-spacing:-.02em}
-  .pushcard{display:flex;align-items:center;gap:10px;margin-top:13px;padding:12px 13px;border-radius:15px;border:1.5px solid var(--line);background:#fff;box-shadow:0 4px 14px rgba(122,88,52,.04)}
+  .pushcard{margin-top:13px;padding:12px 13px;border-radius:15px;border:1.5px solid var(--line);background:#fff;box-shadow:0 4px 14px rgba(122,88,52,.04)}
   .pushcard.on{background:#F3FAF0;border-color:#CBE6BF}
-  .pushcard>div:first-child{flex:1;min-width:0}
   .pushcard b{display:block;font-size:14px;font-weight:800;letter-spacing:-.02em;color:var(--brown-d)}
   .pushcard span{display:block;font-size:12px;font-weight:650;color:var(--muted);margin-top:2px;line-height:1.45;letter-spacing:-.02em}
-  .pushcard .pushbtn{flex:none;white-space:nowrap}
+  .pushcard .pushbtn{display:block;width:100%;margin-top:10px;white-space:nowrap}
   .wlogout{width:100%;margin-top:16px;height:46px;border-radius:13px;border:1.5px solid var(--line);background:#FBF6EF;
     font-size:13.5px;font-weight:800;color:var(--muted);letter-spacing:-.02em}
   .wlogout:active{transform:scale(.985)}
@@ -2757,7 +2756,7 @@
     return '<div class="pushcard' + (on ? ' on' : '') + '">' +
       '<div><b>🔔 잠금화면 알림</b><span>' + esc(pushStateText()) + '</span></div>' +
       '<button class="btn sm pushbtn' + (on ? '' : ' primary') + '" data-act="togglePush" aria-pressed="' + on + '"' + (push.busy ? ' disabled' : '') + '>' +
-        (push.busy ? '처리 중…' : (on ? '🔔 알림 켜짐 (끄기)' : '🔔 알림 켜기')) + '</button></div>';
+        (push.busy ? '처리 중…' : (on ? '🔔 알림 켜짐 (끄기)' : '🔔 잠금화면 알림 켜기')) + '</button></div>';
   }
   /* 지금 열려 있는 작업자·설정 시트의 버튼 상태만 다시 그리기 */
   function renderPushUI(){
