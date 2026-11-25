@@ -496,6 +496,56 @@
   .lockdet{margin-top:10px}
   .lockdet summary{font-size:13.5px;font-weight:800;color:var(--brown-d);cursor:pointer;padding:6px 0}
 
+  /* ---------- 내 폰에 앱으로 설치 (PWA) ---------- */
+  .lockwrap{flex-direction:column;overflow-y:auto}
+  .lockinstall{width:100%;max-width:360px;margin-top:12px;text-align:center;flex:none}
+  .installbtn{width:100%;height:50px;border-radius:14px;border:1.5px solid var(--tint-3);background:#FFFDFB;
+    color:var(--brown-d);font-size:15px;font-weight:800;letter-spacing:-.02em;display:flex;align-items:center;justify-content:center;gap:7px;
+    box-shadow:0 4px 14px rgba(122,88,52,.1)}
+  .installbtn:active{transform:scale(.985)}
+  .installhint{margin-top:8px;font-size:12px;font-weight:700;color:var(--muted-2);letter-spacing:-.02em;line-height:1.5}
+  .winstall{width:100%;margin-top:14px;height:46px;border-radius:13px;border:1.5px solid var(--tint-3);background:#FFFDFB;
+    font-size:13.5px;font-weight:800;color:var(--brown-d);letter-spacing:-.02em}
+  .winstall:active{transform:scale(.985)}
+
+  .instwrap{position:fixed;inset:0;z-index:320;display:flex;align-items:flex-end;justify-content:center}
+  .instscrim{position:absolute;inset:0;background:rgba(46,33,22,.42)}
+  .instcard{position:relative;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+    background:#FFFDFB;border-radius:24px 24px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom));
+    box-shadow:0 -12px 40px rgba(60,38,20,.24);animation:instup .22s ease-out}
+  @keyframes instup{from{transform:translateY(20px);opacity:.5}to{transform:none;opacity:1}}
+  @media (min-width:600px){
+    .instwrap{align-items:center;padding:20px}
+    .instcard{border-radius:24px}
+  }
+  .insthead{display:flex;align-items:center;gap:8px}
+  .insttitle{flex:1;min-width:0;font-size:19px;font-weight:800;letter-spacing:-.035em;color:var(--ink)}
+  .instx{flex:none;width:34px;height:34px;border-radius:11px;background:#F4EDE3;color:var(--muted);font-size:15px;font-weight:800}
+  .instsub{margin-top:6px;font-size:13.5px;font-weight:700;color:var(--muted);line-height:1.55;letter-spacing:-.02em}
+  .instsub b{color:var(--brown-d)}
+  .instwarn{margin-top:14px;padding:13px 14px;border-radius:15px;background:#FDF2E3;border:1.5px solid #EFD6B2;text-align:left}
+  .instwarn .wt{font-size:14.5px;font-weight:800;color:#8A4A16;letter-spacing:-.02em}
+  .instwarn p{margin-top:5px;font-size:13px;font-weight:700;color:#7C5330;line-height:1.6;letter-spacing:-.02em}
+  .instwarn b{color:#6B3D12}
+  .insttabs{display:flex;gap:6px;margin-top:16px;background:#F6EFE5;border-radius:12px;padding:4px}
+  .insttab{flex:1;height:38px;border-radius:9px;font-size:13.5px;font-weight:800;color:var(--muted);letter-spacing:-.02em}
+  .insttab.on{background:#fff;color:var(--brown-d);box-shadow:0 2px 6px rgba(122,88,52,.12)}
+  .inststep{display:flex;gap:11px;margin-top:14px;text-align:left;padding:0 2px}
+  .instnum{flex:none;width:26px;height:26px;margin-top:1px;border-radius:50%;background:var(--tint);color:var(--brown-d);
+    display:grid;place-items:center;font-size:13px;font-weight:800}
+  .inststep p{font-size:14px;font-weight:700;color:var(--ink-2);line-height:1.6;letter-spacing:-.02em}
+  .inststep b{font-weight:800;color:var(--brown-d)}
+  .inststep .sb{display:inline-block;padding:0 5px;border-radius:6px;background:#F4EDE3;font-weight:800;color:var(--brown-d)}
+  .instcopy{margin-top:16px;width:100%;height:50px;border-radius:14px;background:linear-gradient(140deg,#8C5C2E,#5A381E);
+    color:#fff;font-size:15px;font-weight:800;letter-spacing:-.02em;box-shadow:0 8px 20px rgba(107,68,35,.24)}
+  .instcopy:active{transform:scale(.985)}
+  .instcopy.done{background:#EEF4E6;color:#456B33;border:1.5px solid #CFE0BC;box-shadow:none}
+  .instlink{margin-top:10px;padding:10px 12px;border-radius:11px;background:#F8F3EB;border:1px dashed #E2D2BC;
+    font-size:11.5px;font-weight:700;color:var(--muted-2);word-break:break-all;line-height:1.5;text-align:left}
+  .instclose{margin-top:12px;width:100%;height:46px;border-radius:13px;border:1.5px solid var(--line);
+    background:#FBF6EF;font-size:14.5px;font-weight:800;color:var(--ink-2);letter-spacing:-.02em}
+  .instfoot{margin-top:11px;font-size:12px;font-weight:700;color:var(--muted-2);text-align:center;line-height:1.55;letter-spacing:-.02em}
+
   /* ---------- 목욕 / 약욕 ---------- */
   .bathbadge.yak{color:#4F7A4A}
   .bathbadge.yak.warn{color:#B06714}
@@ -754,6 +804,10 @@
     </form>
     <p class="lockfoot" id="lockFoot">직원 계정은 대표님이 Supabase에서 만들어 드려요.</p>
   </div>
+  <div class="lockinstall" id="lockInstall" data-install-slot hidden>
+    <button class="installbtn" id="lockInstallBtn" data-act="installApp">📲 내 폰에 앱으로 설치</button>
+    <p class="installhint">홈 화면에 추가하면 주소창 없이 앱처럼 열려요</p>
+  </div>
 </div>
 <div class="app" id="app">
   <header>
@@ -868,6 +922,7 @@
   <div class="scrim" data-act="closeSheet"></div>
   <section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="상세"></section>
 </div>
+<div class="instwrap" id="installWrap" hidden></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <!-- 실시간 동기화 (Supabase) -->
@@ -2299,6 +2354,199 @@
     t.classList.add('on');
     if(toastT) clearTimeout(toastT);
     toastT = setTimeout(function(){ t.classList.remove('on'); }, 2200);
+  }
+
+  /* ================= 📲 내 폰에 앱으로 설치 (PWA) ================= */
+  var INSTALL_URL = 'https://mochi150623-rgb.github.io/puppydang-todo/puppies.html';
+  var INSTALL_APP_NAME = '퍼피댕 노트';
+  var deferredPrompt = null;      // beforeinstallprompt 로 잡아둔 네이티브 설치 팝업
+  var instInstalled = false;      // 이번에 설치를 마쳤는지
+  var instOs = '';                // 안내 모달에서 보고 있는 탭: 'ios' | 'android'
+  var instCopied = false;
+
+  function uaText(){ return String(navigator.userAgent || ''); }
+
+  /* 홈 화면 앱(standalone)·전체화면으로 이미 열려 있는지 */
+  function isStandaloneApp(){
+    try{
+      if(navigator.standalone === true) return true;
+      if(window.matchMedia){
+        if(window.matchMedia('(display-mode: standalone)').matches) return true;
+        if(window.matchMedia('(display-mode: fullscreen)').matches) return true;
+      }
+    }catch(e){}
+    return false;
+  }
+
+  /* 안드로이드 앱(WebView) 안에서 실행 중인지 — 이때는 설치 버튼을 숨겨요
+     (카퉡·네이버 같은 인앱 브라우저도 wv 표시가 붙지만, 그건 안내 모달로 이끌어야 해서 제외) */
+  function isAndroidAppWebView(){
+    var ua = uaText();
+    if(/PuppyDangApp|PuppyDang\/|PuppyDang-Android/i.test(ua)) return true;
+    if(inAppBrowserName()) return false;
+    if(/Android/i.test(ua) && /;\s*wv\)/i.test(ua)) return true;
+    if(document.referrer && /^android-app:\/\//i.test(document.referrer)) return true;
+    return false;
+  }
+
+  function isIOSDevice(){
+    var ua = uaText();
+    return /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  }
+
+  /* 카톡·네이버 등 인앱 브라우저 이름 (아니면 '') */
+  function inAppBrowserName(){
+    var ua = uaText();
+    if(/KAKAOTALK/i.test(ua)) return '카카오톡';
+    if(/NAVER\(inapp/i.test(ua)) return '네이버';
+    if(/Instagram/i.test(ua)) return '인스타그램';
+    if(/FBAN|FBAV|FB_IAB/i.test(ua)) return '페이스북';
+    if(/Line\//i.test(ua)) return '라인';
+    if(/DaumApps/i.test(ua)) return '다음';
+    if(/Twitter/i.test(ua)) return 'X(트위터)';
+    return '';
+  }
+
+  /* 버튼을 보여도 되는 상태인지 */
+  function installAvailable(){ return !instInstalled && !isStandaloneApp() && !isAndroidAppWebView(); }
+
+  /* 화면에 있는 설치 버튼들을 상태에 맞게 보이거나 숨김 */
+  function syncInstallUI(){
+    var show = installAvailable();
+    var nodes = document.querySelectorAll('[data-install-slot]');
+    for(var i = 0; i < nodes.length; i++) nodes[i].hidden = !show;
+  }
+
+  /* 버튼 클릭: 네이티브 설치 팝업이 가능하면 바로 띄우고, 아니면 안내 모달 */
+  function installApp(){
+    if(isStandaloneApp()){ toast('이미 홈 화면 앱으로 열고 있어요'); return; }
+    if(isAndroidAppWebView()){ toast('이미 앱으로 열고 있어요'); return; }
+    var dp = deferredPrompt;
+    if(dp && typeof dp.prompt === 'function'){
+      deferredPrompt = null;
+      try{
+        dp.prompt();
+        var ch = dp.userChoice;
+        if(ch && typeof ch.then === 'function'){
+          ch.then(function(res){
+            if(res && res.outcome === 'accepted'){
+              toast('앱을 설치하고 있어요… 잠시만 기다려 주세요');
+            }else{
+              toast('설치를 취소했어요 · 언제든 다시 설치할 수 있어요');
+              syncInstallUI();
+            }
+          }, function(){});
+        }
+        return;
+      }catch(e){ /* 팝업이 막히면 안내 모달로 */ }
+    }
+    openInstallGuide();
+  }
+
+  /* 기기·브라우저에 맞는 안내 모달 */
+  function openInstallGuide(){
+    instCopied = false;
+    var env = installEnv();
+    instOs = env.ios ? 'ios' : (env.android ? 'android' : 'ios');
+    renderInstallGuide();
+    var w = $('#installWrap');
+    if(!w) return;
+    w.hidden = false;
+    document.body.classList.add('lock');
+  }
+  function closeInstallGuide(){
+    var w = $('#installWrap');
+    if(!w || w.hidden) return;
+    w.hidden = true;
+    if($('#sheetWrap') && $('#sheetWrap').hidden) document.body.classList.remove('lock');
+  }
+  function installEnv(){
+    var ua = uaText();
+    return {
+      ios: isIOSDevice(),
+      android: /Android/i.test(ua),
+      samsung: /SamsungBrowser/i.test(ua),
+      inapp: inAppBrowserName()
+    };
+  }
+  function instStepHTML(n, text){
+    return '<div class="inststep"><span class="instnum">' + n + '</span><p>' + text + '</p></div>';
+  }
+  function renderInstallGuide(){
+    var w = $('#installWrap');
+    if(!w) return;
+    var env = installEnv();
+    var os = instOs === 'ios' ? 'ios' : 'android';
+    var html = '<div class="instscrim" data-act="closeInstall"></div>' +
+      '<div class="instcard" role="dialog" aria-modal="true" aria-label="내 폰에 앱으로 설치 안내">' +
+      '<div class="insthead"><div class="insttitle">📲 내 폰에 앱으로 설치</div>' +
+      '<button class="instx" data-act="closeInstall" aria-label="설치 안내 닫기">✕</button></div>';
+
+    if(env.inapp){
+      html += '<p class="instsub">지금은 <b>' + esc(env.inapp) + '</b> 안에서 열려 있어요. ' + esc(env.inapp) + '에서는 홈 화면에 추가가 안 돼요.</p>' +
+        '<div class="instwarn"><div class="wt">먼저 브라우저로 열어 주세요!</div>' +
+        '<p>오른쪽 아래 <b>⋮</b> → <b>「Safari로 열기」</b>(아이폰) / <b>「다른 브라우저로 열기」</b>(갤럭시)를 눌러 주세요.</p></div>' +
+        '<button class="instcopy' + (instCopied ? ' done' : '') + '" data-act="copyInstallLink">' +
+          (instCopied ? '✅ 링크를 복사했어요' : '🔗 링크 복사하기') + '</button>' +
+        '<div class="instlink">' + esc(INSTALL_URL) + '</div>';
+    }else if(!env.ios && !env.android){
+      html += '<p class="instsub">휴대폰에서 홈 화면에 추가하면 앱처럼 써요. 아래에서 기기를 골라 순서를 확인하세요.<br>(PC는 주소창 오른쪽 <b>설치 아이콘</b> 또는 <b>⋮ → 앱 설치</b>)</p>';
+    }else if(os === 'ios'){
+      html += '<p class="instsub">아이폰은 <b>Safari</b>에서 아래 3단계만 누르면 돼요. (카톡·네이버 안에서는 안 돼요)</p>';
+    }else{
+      html += '<p class="instsub">갤럭시는 <b>크롬 · 삼성 인터넷</b>에서 3단계면 끝나요. (카톡 안에서는 안 돼요)</p>';
+    }
+
+    html += '<div class="insttabs" role="tablist">' +
+      '<button class="insttab' + (os === 'ios' ? ' on' : '') + '" role="tab" aria-selected="' + (os === 'ios') + '" data-act="installOs" data-os="ios">🍎 아이폰</button>' +
+      '<button class="insttab' + (os === 'android' ? ' on' : '') + '" role="tab" aria-selected="' + (os === 'android') + '" data-act="installOs" data-os="android">🤖 갤럭시</button>' +
+      '</div>';
+
+    if(os === 'ios'){
+      html += instStepHTML(1, '화면 <b>아래 가운데</b>의 <span class="sb">공유 ↑</span> 버튼을 누르세요.') +
+        instStepHTML(2, '목록을 살짝 내려 <b>「홈 화면에 추가」</b>를 고르세요.') +
+        instStepHTML(3, '오른쪽 위 <b>「추가」</b>를 누르면 끝! 홈 화면에 <b>' + esc(INSTALL_APP_NAME) + '</b> 아이콘이 생겨요.');
+    }else{
+      html += instStepHTML(1, '<b>크롬</b>은 오른쪽 위 <span class="sb">⋮</span>, <b>삼성 인터넷</b>은 오른쪽 아래 <span class="sb">≡</span> 메뉴를 누르세요.') +
+        instStepHTML(2, '크롬은 <b>「앱 설치」</b>(또는 <b>「홈 화면에 추가」</b>) · 삼성 인터넷은 <b>「현재 페이지 추가」 → 「홈 화면」</b>을 고르세요.') +
+        instStepHTML(3, '<b>「설치」</b>(또는 <b>「추가」</b>)를 누르면 끝! 홈 화면에 <b>' + esc(INSTALL_APP_NAME) + '</b> 아이콘이 생겨요.');
+    }
+
+    html += '<p class="instfoot">설치하면 주소창 없이 전체 화면으로 열리고, 로그인도 그대로 유지돼요.</p>' +
+      '<button class="instclose" data-act="closeInstall">나중에 할게요</button></div>';
+    w.innerHTML = html;
+  }
+
+  /* 설치 링크 복사 (인앱 브라우저에서 브라우저로 다시 열 때) */
+  function copyInstallLink(btn){
+    function ok(){
+      instCopied = true;
+      if(btn){ btn.classList.add('done'); btn.textContent = '✅ 링크를 복사했어요'; }
+      toast('링크를 복사했어요 · 브라우저 주소창에 붙여넣어 주세요');
+    }
+    function fail(){
+      try{
+        var ta = document.createElement('textarea');
+        ta.value = INSTALL_URL;
+        ta.setAttribute('readonly', '');
+        ta.style.cssText = 'position:fixed;top:0;left:-9999px;opacity:0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { ta.setSelectionRange(0, INSTALL_URL.length); } catch(e){}
+        var done = false;
+        try { done = document.execCommand('copy'); } catch(e){}
+        document.body.removeChild(ta);
+        if(done){ ok(); return; }
+      }catch(e){}
+      toast('복사가 안 되면 아래 주소를 길게 눌러 복사해 주세요');
+    }
+    try{
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(INSTALL_URL).then(ok, fail);
+        return;
+      }
+    }catch(e){}
+    fail();
   }
 
   /* ================= 목록 ================= */
@@ -3875,11 +4123,15 @@
     var logout = auth.user
       ? '<button class="wlogout" data-act="logout">로그아웃</button>'
       : '';
+    var installRow = installAvailable()
+      ? '<button class="winstall" data-act="installApp">📲 내 폰에 앱으로 설치</button>'
+      : '';
     return sheetbar('작업자 선택', '지금 누구 차례인가요?') +
       '<div class="sheetbody">' +
       '<div class="wgrid">' + list + '</div>' +
       addRow +
       '<div class="wmem"><span>👤</span><span>여기서 고른 이름으로 목욕·접종 기록에 <b style="color:var(--brown-d)">누가 했는지</b>가 함께 남아요. ' + (isLive() ? '기록은 공유 목록에 바로 저장돼요.' : '지금은 이 기기에만 저장돼요.') + '</span></div>' +
+      installRow +
       logout +
       '</div>';
   }
@@ -3948,6 +4200,11 @@
             '<button class="btn" data-act="openSupabase">Supabase 열기</button></div>' +
         '</details>' +
       '</section>' +
+      (installAvailable() ? '<section class="scard">' +
+        '<h3 class="sh3">📲 내 폰에 앱으로 설치</h3>' +
+        '<p class="sp">홈 화면에 앱 아이콘으로 추가하면 주소창 없이 앱처럼 열려요. 직원 폰에서도 같은 방법으로 설치할 수 있어요.</p>' +
+        '<div class="btnrow"><button class="btn primary" data-act="installApp">📲 내 폰에 앱으로 설치</button></div>' +
+      '</section>' : '') +
       '<section class="scard">' +
         '<h3 class="sh3">👤 작업자 · 안내</h3>' +
         '<div class="settingrow"><div><b>지금 작업자: ' + esc(state.worker) + '</b><span>목욕·접종 기록에 누가 했는지 남아요</span></div>' +
@@ -4533,6 +4790,19 @@
         try { window.open('https://supabase.com/dashboard/project/hrhvpihzuerwjzcqebfs/sql/new', '_blank'); }
         catch(e){ toast('supabase.com 대시보드에서 SQL Editor를 열어 주세요'); }
         break;
+      case 'installApp':
+        installApp();
+        break;
+      case 'installOs':
+        instOs = el.getAttribute('data-os') === 'ios' ? 'ios' : 'android';
+        renderInstallGuide();
+        break;
+      case 'copyInstallLink':
+        copyInstallLink(el);
+        break;
+      case 'closeInstall':
+        closeInstallGuide();
+        break;
       case 'closeSheet':
         closeSheet();
         break;
@@ -4812,7 +5082,8 @@
 
   document.addEventListener('keydown', function(e){
     if(e.key === 'Escape'){
-      if(!$('#sheetWrap').hidden) closeSheet();
+      if($('#installWrap') && !$('#installWrap').hidden) closeInstallGuide();
+      else if(!$('#sheetWrap').hidden) closeSheet();
       else if(hotelIsOpen()) closeHotel();
       else if(calIsOpen()) closeCalendar();
     }
@@ -4999,6 +5270,28 @@
   if(lockFormEl) lockFormEl.addEventListener('submit', submitLogin);
   var lockAltEl = $('#lockOfflineBtn');
   if(lockAltEl) lockAltEl.addEventListener('click', function(){ unlock(null, true); });
+
+  /* 📲 앱 설치: 네이티브 설치 팝업 잡아두기 · 설치되면 버튼 숨기기 */
+  window.addEventListener('beforeinstallprompt', function(e){
+    try { e.preventDefault(); } catch(err){}
+    deferredPrompt = e;
+    syncInstallUI();
+  });
+  window.addEventListener('appinstalled', function(){
+    deferredPrompt = null;
+    instInstalled = true;
+    closeInstallGuide();
+    syncInstallUI();
+    toast('홈 화면에 앱을 설치했어요 🐾');
+  });
+  if(window.matchMedia){
+    try{
+      var standaloneMq = window.matchMedia('(display-mode: standalone)');
+      if(standaloneMq.addEventListener) standaloneMq.addEventListener('change', syncInstallUI);
+      else if(standaloneMq.addListener) standaloneMq.addListener(syncInstallUI);
+    }catch(e){}
+  }
+  syncInstallUI();
   document.addEventListener('visibilitychange', function(){ if(document.hidden) return; verifyAccount(); try { sweepAdopted(true); } catch(e){} });
 
   initStore(function(){
