@@ -5016,11 +5016,13 @@
 })();
 </script>
 <script>
-/* 퍼피댕 아이들 관리 — 전용 서비스 워커 등록 (puppies.html 범위만) */
+/* 퍼피댕 아이들 관리 — 전용 서비스 워커 등록 (puppies.html 페이지만 담당) */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function(){
     try {
-      navigator.serviceWorker.register('puppies-sw.js', { scope: '/puppydang-todo/puppies.html' }).catch(function(){});
+      var scope = new URL('puppies.html', location.href).pathname;   // 배포 경로가 달라도 그대로 동작
+      if (scope.charAt(scope.length - 1) === '/') scope += 'puppies.html';
+      navigator.serviceWorker.register('puppies-sw.js', { scope: scope }).catch(function(){});
     } catch(e){}
   });
 }
