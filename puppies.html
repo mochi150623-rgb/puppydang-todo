@@ -605,6 +605,96 @@
   .calnote p{margin-top:4px;font-size:12.5px;font-weight:700;color:var(--muted);line-height:1.55;letter-spacing:-.02em}
   .calnote p b{display:inline;margin:0;font-size:12.5px;color:var(--brown-d)}
   .calfoot{margin:14px 2px 0;text-align:center;font-size:11.5px;font-weight:700;color:var(--muted-2);letter-spacing:-.02em;line-height:1.6}
+
+  /* ---------- 🏨 호텔링 · 분양픽업 캘린더 (목욕 캘린더와 완전히 별도 화면 · 보라/앰버 톤) ---------- */
+  .sidebtn.hotelbtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;width:58px;font-size:17px;line-height:1;
+    background:linear-gradient(160deg,#F6F3FE,#ECE7FB);border-color:#DAD3F1;color:#453A93}
+  .sidebtn.hotelbtn .cl{font-size:9.5px;font-weight:800;color:#5E51A6;letter-spacing:-.04em;margin-top:2px;white-space:nowrap}
+  .hotelwrap{position:fixed;inset:0;z-index:72;background:var(--bg);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+    background-image:radial-gradient(760px 340px at 50% -120px,#E4DFF9 0%,rgba(250,246,241,0) 70%);background-repeat:no-repeat}
+  .hotelpage{max-width:480px;margin:0 auto;min-height:100%;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+  .hotelbar{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:8px;padding:calc(9px + env(safe-area-inset-top)) 14px 9px;
+    background:linear-gradient(140deg,#4E419D,#2C2566);border-bottom:1px solid rgba(255,255,255,.14);box-shadow:0 6px 18px rgba(44,37,102,.18)}
+  .hotelbar .ibtn{width:40px;height:40px;font-size:17px;background:rgba(255,255,255,.16);color:#fff}
+  .hotelbar .calt{flex:1;min-width:0}
+  .hotelbar .calt b{display:block;font-size:17px;font-weight:800;letter-spacing:-.035em;color:#fff}
+  .hotelbar .calt span{display:block;font-size:12px;font-weight:800;color:rgba(255,255,255,.8);letter-spacing:-.02em;margin-top:1px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hotelbar .caltoday{flex:none;height:38px;padding:0 12px;border-radius:12px;background:rgba(255,255,255,.16);border:1.5px solid rgba(255,255,255,.3);
+    font-size:13px;font-weight:800;color:#fff;letter-spacing:-.02em}
+  .hotelbar .caltoday:active{transform:scale(.97)}
+  .hotelbody{padding:12px 14px 0}
+  .hotelseg{background:#E9E5F8}
+  .hotelseg button.on{color:#3D2F8E}
+  .hotelseg button.on .cc{background:#E6E1F9;color:#4B3F94}
+  .hotelwrap .cday.today{background:#F3F1FD;box-shadow:inset 0 0 0 1.5px #CFC8EF}
+  .hotelwrap .cday.on{background:linear-gradient(150deg,#5B4BAA,#2F2870);box-shadow:0 6px 14px rgba(47,40,112,.28)}
+  .hotelwrap .cday.on .dn{color:#fff}
+  .hotelwrap .calcard{border-color:#E2DDF3}
+  .cbd.hotel{background:#ECE8FB;color:#4B3F94}
+  .cbd.pick{background:#FDF0DA;color:#A45F0B}
+  .cday.on .cbd.hotel{color:#4B3F94}
+  .cday.on .cbd.pick{color:#A45F0B}
+  .hotelsum .csum b{color:#4B3F94}
+  .hotelsum .csum.pick b{color:#A45F0B}
+  .hoteladd{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;height:50px;margin-top:12px;border-radius:15px;
+    background:linear-gradient(140deg,#5D4DB4,#332A74);color:#fff;font-size:15.5px;font-weight:800;letter-spacing:-.02em;
+    box-shadow:0 8px 20px rgba(51,42,116,.24)}
+  .hoteladd:active{transform:scale(.985)}
+  .calrow .cbdg.hotel{background:#ECE8FB;color:#4B3F94}
+  .calrow .cbdg.pick{background:#FDF0DA;color:#A45F0B}
+  .crmain .crst{display:inline-flex;align-items:center;font-size:10.5px;font-weight:800;padding:1px 5px;border-radius:6px;
+    background:#ECE8FB;color:#4B3F94;letter-spacing:-.02em;vertical-align:1px;margin-left:2px}
+  .crmain .crst.stay{background:#E8F1DF;color:#4C6B37}
+  .crmain .crst.done{background:#EFECE7;color:#857A6C}
+  .hstype{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:800;color:#4B3F94;background:#ECE8FB;border-radius:9px;padding:6px 11px}
+  .hstype.pick{color:#A45F0B;background:#FDF0DA}
+  .dogchips{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+  .dogchip{height:34px;padding:0 10px;border-radius:10px;border:1.5px solid #DED8F0;background:#FBFAFE;
+    font-size:12.5px;font-weight:800;color:#4B3F94;letter-spacing:-.02em;white-space:nowrap}
+  .dogchip:active{transform:scale(.97)}
+  .schednote{margin:0 0 11px;padding:10px 12px;border-radius:12px;background:#F5F3FD;border:1px solid #E3DEF6;
+    font-size:12.5px;font-weight:700;color:#4B3F94;line-height:1.5;letter-spacing:-.02em}
+  .schednote.pick{background:#FEF8EE;border-color:#F3E3C9;color:#8A5310}
+  .hshelp{margin:6px 2px 0;font-size:11.5px;font-weight:700;color:var(--muted-2);letter-spacing:-.02em}
+
+  /* ---------- 접종일 그리드 ---------- */
+  .vgrid{display:flex;flex-direction:column;gap:6px;margin-top:7px}
+  .vrow{display:flex;align-items:center;gap:6px}
+  .vchip2{flex:1;min-width:0;height:40px;border-radius:11px;border:1.5px solid var(--line);background:#fff;
+    font-size:13.5px;font-weight:800;color:var(--ink-2);letter-spacing:-.02em;display:inline-flex;align-items:center;gap:5px;padding:0 9px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left}
+  .vchip2 .vck{flex:none;width:18px;height:18px;border-radius:50%;background:#F1E7DA;color:var(--muted);font-size:11px;font-style:normal;
+    display:inline-flex;align-items:center;justify-content:center;font-weight:800}
+  .vchip2.on{background:#EFF5E7;border-color:#CFE0BC;color:#456B33}
+  .vchip2.on .vck{background:#DFEDCE;color:#456B33}
+  .vrow .vdate{flex:none;width:134px;height:40px;border-radius:11px;border:1.5px solid var(--line);background:#fff;
+    padding:0 9px;font-size:13px;font-weight:800;color:var(--ink)}
+  .vrow.done .vdate{border-color:#CFE0BC;background:#FBFDF8;color:#456B33}
+  .vacmore{margin-top:10px;border-top:1px dashed #F1E6D8;padding-top:8px}
+  .vacmore summary{font-size:12.5px;font-weight:800;color:var(--muted-2);cursor:pointer;list-style:none}
+  .vacmore summary::-webkit-details-marker{display:none}
+  .vacmore summary:before{content:'＋ ';font-weight:800}
+
+  /* ---------- 분양완료 보관함(아카이브) ---------- */
+  .card.archive{background:#FCFAF7;border-color:#ECE5D9}
+  .card.archive .cphoto .stchip{background:rgba(70,60,50,.74);color:#fff}
+  .archnote{margin:0 0 12px;padding:11px 13px;border-radius:13px;background:#F4F1EA;border:1px solid #E5DCCD;
+    font-size:13px;font-weight:700;color:#6E6152;line-height:1.55;letter-spacing:-.02em}
+  .archnote b{font-weight:800;color:#8C5C2E}
+  .archnote span{display:block;margin-top:3px;font-size:12px;color:#8A7E70}
+  .archrow{display:flex;gap:8px;padding:7px 0;font-size:13px;font-weight:700;color:var(--ink-2);letter-spacing:-.02em;border-bottom:1px dashed #F1E6D8}
+  .archrow:last-child{border-bottom:0}
+  .archrow .al{width:92px;flex:none;color:var(--muted-2);font-weight:800;font-size:12.5px}
+
+  /* ---------- 하단 바: 캘린더 · 호텔픽업 · 새 아이 · 설정 ---------- */
+  .bottombar{gap:7px;padding-left:12px;padding-right:12px}
+  @media (max-width:380px){
+    .bottombar{gap:6px;padding-left:10px;padding-right:10px}
+    .sidebtn,.sidebtn.calbtn,.sidebtn.hotelbtn{width:50px;height:48px;font-size:16px}
+    .sidebtn.calbtn .cl,.sidebtn.hotelbtn .cl{font-size:9px}
+    .addbtn{height:48px;font-size:14px;letter-spacing:-.03em}
+  }
 </style>
 </head>
 <body class="locked">
@@ -676,6 +766,9 @@
   <button class="sidebtn calbtn" data-act="openCalendar" aria-label="목욕 · 약욕 캘린더 열기">
     <span aria-hidden="true">📅</span><span class="cl">캘린더</span>
   </button>
+  <button class="sidebtn hotelbtn" data-act="openHotel" aria-label="호텔링 · 분양픽업 캘린더 열기">
+    <span aria-hidden="true">🏨</span><span class="cl">호텔·픽업</span>
+  </button>
   <button class="addbtn" data-act="openForm">＋ 새 아이 등록</button>
   <button class="sidebtn adminonly" data-act="openSettings" aria-label="설정">⚙️</button>
 </div>
@@ -702,6 +795,34 @@
       <div class="calsec"><h2 id="calDayTitle">—</h2><span class="tn" id="calDayToday" hidden>오늘</span><span class="n" id="calDayCount"></span></div>
       <div id="calList"></div>
       <p class="calfoot">기록을 누르면 그 아이 상세로 이동해요 · 다른 폰에서 기록해도 바로 반영돼요</p>
+    </div>
+  </div>
+</div>
+
+<div class="hotelwrap" id="hotelWrap" hidden>
+  <div class="hotelpage">
+    <div class="hotelbar">
+      <button class="ibtn" data-act="closeHotel" aria-label="호텔·픽업 닫기">‹</button>
+      <div class="calt"><b>🏨 호텔링 · 분양픽업</b><span id="hotelSub">—</span></div>
+      <button class="ibtn" data-act="hotelAdd" aria-label="일정 추가">＋</button>
+      <button class="caltoday" data-act="hotelToday">오늘</button>
+    </div>
+    <div class="hotelbody">
+      <div class="calseg hotelseg" id="hotelSeg" role="tablist" aria-label="지점 선택"></div>
+      <div class="calmonth">
+        <button class="calnav" data-act="hotelMonth" data-delta="-1" aria-label="이전 달">‹ 이전달</button>
+        <b id="hotelMonthLabel">—</b>
+        <button class="calnav" data-act="hotelMonth" data-delta="1" aria-label="다음 달">다음달 ›</button>
+      </div>
+      <div class="calcard">
+        <div class="caldow"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></div>
+        <div class="calgrid" id="hotelGrid"></div>
+      </div>
+      <div class="calsum hotelsum" id="hotelSum"></div>
+      <button class="hoteladd" data-act="hotelAdd">＋ 일정 추가</button>
+      <div class="calsec"><h2 id="hotelDayTitle">—</h2><span class="tn" id="hotelDayToday" hidden>오늘</span><span class="n" id="hotelDayCount"></span></div>
+      <div id="hotelList"></div>
+      <p class="calfoot">호텔링은 입실일부터 퇴실일까지 날짜에 걸쳐 보여요 · 다른 폰에서 등록해도 바로 반영돼요</p>
     </div>
   </div>
 </div>
@@ -737,6 +858,9 @@
   var HEALTH_FLAGS = ['귀진드기','감기','피부','설사','사료거부','탈장','부정교합'];
   var BATH_KINDS = ['목욕','약욕'];
   var ACTIVITY_ID = '__activity__';    // public.puppies 의 활동 메타 행 (__staff__ 와 같은 방식)
+  var SCHED_ID = '__schedules__';      // 호텔링 · 분양픽업 일정 공유 행 (스키마 변경 없이 같은 방식으로 저장)
+  var SCHED_MAX = 400;                 // 안전상한
+  var SCHED_DEL_TTL = 90 * 24 * 60 * 60 * 1000;   // 삭제 표식 보관 기간
   var ACTIVITY_MAX = 200;              // 안전상한
   var ACTIVITY_TTL = 3 * 24 * 60 * 60 * 1000;   // 3일(72시간) 지난 활동은 자동 정리
   var ADOPT_TTL = 14 * 24 * 60 * 60 * 1000;     // 분양완료 후 14일(2주) 지나면 장은 그대로 두고 내용만 비움
@@ -935,6 +1059,23 @@
       var v = srcDates[f];
       dates[f] = isValidDate(v) ? String(v).slice(0, 10) : fallback;
     });
+    /* 접종 기록 + 접종별 날짜(vaccineDates) — 기록만 있고 날짜가 없으면 가장 최근 기록일로 채워요 */
+    var vaccs = Array.isArray(p.vaccines) ? p.vaccines.filter(function(v){ return v && isValidDate(v.date); }).map(function(v){
+      return { id: v.id || uid(), type: String(v.type || '접종'), date: v.date, by: String(v.by || '').slice(0, 12), memo: String(v.memo || '') };
+    }) : [];
+    var vdates = (function(){
+      var src = (p.vaccineDates && typeof p.vaccineDates === 'object') ? p.vaccineDates : {};
+      var out = {};
+      Object.keys(src).forEach(function(k){
+        var nm = vacName(String(k || '').slice(0, 20));
+        if(nm && isValidDate(src[k])) out[nm] = String(src[k]).slice(0, 10);
+      });
+      vaccs.forEach(function(v){
+        var nm = vacName(v.type);
+        if(nm && (!out[nm] || String(v.date) > out[nm])) out[nm] = String(v.date).slice(0, 10);
+      });
+      return out;
+    })();
     return {
       id: p.id || uid(),
       branch: p.branch === '디데이펫' ? '디데이펫' : '퍼피댕',
@@ -950,6 +1091,9 @@
       adopter: String(p.adopter == null ? '' : p.adopter).slice(0, 40).trim(),
       status: status,
       adoptedAt: adoptedAt,
+      /* 분양완료 보관함 기록: 장을 비우고 옮겨 둔 기록(14일 뒤 자동 삭제) */
+      isArchive: !!p.isArchive,
+      archivedFrom: String(p.archivedFrom == null ? '' : p.archivedFrom).slice(0, 68),
       intakeDate: isValidDate(p.intakeDate) ? p.intakeDate : todayStr(),
       birthDate: isValidDate(p.birthDate) ? p.birthDate : '',
       photoProfile: typeof p.photoProfile === 'string' ? p.photoProfile : '',
@@ -960,9 +1104,8 @@
       baths: Array.isArray(p.baths) ? p.baths.filter(function(b){ return b && isValidDate(b.date); }).map(function(b){
         return { id: b.id || uid(), date: b.date, kind: b.kind === '약욕' ? '약욕' : '목욕', by: String(b.by || '').slice(0, 12), memo: String(b.memo || '') };
       }) : [],
-      vaccines: Array.isArray(p.vaccines) ? p.vaccines.filter(function(v){ return v && isValidDate(v.date); }).map(function(v){
-        return { id: v.id || uid(), type: String(v.type || '접종'), date: v.date, by: String(v.by || '').slice(0, 12), memo: String(v.memo || '') };
-      }) : [],
+      vaccines: vaccs,
+      vaccineDates: vdates,
       nextVaccine: isValidDate(p.nextVaccine) ? p.nextVaccine : '',
       memo: String(p.memo == null ? '' : p.memo).slice(0, 2000),
       createdAt: p.createdAt || new Date().toISOString(),
@@ -1035,7 +1178,7 @@
 
   function blankState(){
     return { v:2, worker:DEFAULT_STAFF[0], staff:DEFAULT_STAFF.slice(), hintDismissed:false, autoStaffPurged:true,
-      puppies: [], activity: [], seeded:false, createdAt:new Date().toISOString() };
+      puppies: [], activity: [], schedules: [], schedDel: [], seeded:false, createdAt:new Date().toISOString() };
   }
 
   // 작업자 목록 정규화: 공백/중복/길이 정리 + '대표님' 제외 + 비면 기본 목록
@@ -1071,6 +1214,8 @@
       autoStaffPurged: !!data.autoStaffPurged,
       puppies: data.puppies.map(norm),
       activity: activityFresh((Array.isArray(data.activity) ? data.activity : []).map(normActivity)).slice(0, ACTIVITY_MAX),
+      schedules: (Array.isArray(data.schedules) ? data.schedules : []).map(normSched).slice(0, SCHED_MAX),
+      schedDel: (Array.isArray(data.schedDel) ? data.schedDel : []).filter(function(d){ return d && d.id; }).slice(0, 300),
       seeded: !!data.seeded,
       createdAt: data.createdAt || new Date().toISOString()
     };
@@ -1115,6 +1260,7 @@
   var pushed = {};      // id -> 마지막으로 DB에 있는 것으로 확인된 스냅샷
   var localOnly = {};   // 이 기기에만 있는(아직 공유 목록에 없는) id
   var activityDirty = false;   // 이 기기에만 있는 활동이 있어 공유 목록에 합쳐야 함
+  var schedDirty = false;      // 이 기기에만 있는 호텔·픽업 일정이 있어 공유 행에 합쳐야 함
 
   var SYNC_META = {
     live:      { text:'🟢 실시간 동기화', cls:'live' },
@@ -1156,6 +1302,7 @@
       sync.err = null;
       if(auth.staffDirty){ auth.staffDirty = false; pushMeta(); }
       if(activityDirty) pushActivity();
+      if(schedDirty) pushSchedules();
     }
     renderSyncBadge();
     if(ui.sheet === 'sync') setSheet(syncHTML(), true);
@@ -1271,6 +1418,7 @@
     ui.sheet = null; ui.detailId = null; ui.formId = null; draft = null;
     var sw = $('#sheetWrap'); if(sw) sw.hidden = true;
     var cw = $('#calWrap'); if(cw) cw.hidden = true;
+    var hw = $('#hotelWrap'); if(hw) hw.hidden = true;
     document.body.classList.remove('lock');
     if(sync.client && sync.channel){ try { sync.client.removeChannel(sync.channel); } catch(e){} }
     sync.channel = null;
@@ -1467,6 +1615,7 @@
       if(!r || !r.id) return;
       if(r.id === META_ID){ applyStaff(r.data); return; }
       if(r.id === ACTIVITY_ID){ applyActivity(r.data, true); return; }
+      if(r.id === SCHED_ID){ applySchedules(r.data, true); return; }
       try { remote.push(norm(r.data || {})); } catch(e){}
     });
     var remoteIds = {}, snap = {}, merged = [], pushAfter = [];
@@ -1503,7 +1652,7 @@
     if(!payload || payload.table !== 'puppies') return;
     if(payload.eventType === 'DELETE'){
       var oldId = payload.old && payload.old.id;
-      if(!oldId || oldId === META_ID || oldId === ACTIVITY_ID) return;
+      if(!oldId || oldId === META_ID || oldId === ACTIVITY_ID || oldId === SCHED_ID) return;
       var gone = get(oldId);
       if(!gone) return;
       state.puppies = state.puppies.filter(function(x){ return x.id !== oldId; });
@@ -1517,6 +1666,7 @@
     if(!row || !row.id) return;
     if(row.id === META_ID){ applyStaff(row.data); return; }
     if(row.id === ACTIVITY_ID){ applyActivity(row.data, true); return; }
+    if(row.id === SCHED_ID){ applySchedules(row.data, true); return; }
     var incoming = norm(row.data || {});
     var cur = get(incoming.id);
     var s = JSON.stringify(incoming);
@@ -1847,6 +1997,7 @@
   function filtered(){
     var q = ui.q.trim().toLowerCase();
     var arr = state.puppies.filter(function(p){
+      if(p.isArchive && ui.status !== 'sold') return false;   // 보관함 기록은 분양완료 탭에서만
       if(ui.branch !== '전체' && p.branch !== ui.branch) return false;
       if(ui.status !== '전체' && p.status !== ui.status) return false;
       if(ui.special){
@@ -1857,6 +2008,7 @@
       return matchQuery(p, q);
     });
     arr.sort(function(a,b){
+      if(ui.status === 'sold') return String(b.adoptedAt || '').localeCompare(String(a.adoptedAt || ''));
       if(ui.sort === 'cage' && ui.branch === '전체'){
         var bi = BRANCHES.indexOf(a.branch) - BRANCHES.indexOf(b.branch);
         if(bi !== 0) return bi;
@@ -1880,7 +2032,7 @@
   function renderTodayLine(){
     var now = new Date();
     var s = now.getFullYear() + '년 ' + (now.getMonth()+1) + '월 ' + now.getDate() + '일 ' + WEEK[now.getDay()] + '요일';
-    $('#todayLine').textContent = s + ' · 아이 ' + state.puppies.length + '마리';
+    $('#todayLine').textContent = s + ' · 아이 ' + state.puppies.filter(function(p){ return !p.isArchive; }).length + '마리';
   }
 
   function statOn(kind){
@@ -1897,22 +2049,23 @@
   }
 
   function renderStats(){
-    var active = state.puppies.filter(function(p){ return p.status !== 'sold'; });
-    var avail = state.puppies.filter(function(p){ return p.status === 'available'; }).length;
+    var active = state.puppies.filter(function(p){ return p.status !== 'sold' && !p.isArchive; });
+    var avail = state.puppies.filter(function(p){ return p.status === 'available' && !p.isArchive; }).length;
+    var total = state.puppies.filter(function(p){ return !p.isArchive; }).length;
     var needBath = active.filter(needsBath).length;
     var vacSoon = active.filter(nearVac).length;
     $('#statRow').innerHTML =
-      statBox('all', '', state.puppies.length, '전체') +
+      statBox('all', '', total, '전체') +
       statBox('avail', '', avail, '분양중') +
       statBox('bath', needBath ? 'warn' : '', needBath, '목욕 필요') +
       statBox('vac', vacSoon ? 'alert' : '', vacSoon, '접종 임박');
   }
 
   function renderBranchBar(){
-    var total = state.puppies.length;
+    var total = state.puppies.filter(function(p){ return !p.isArchive; }).length;
     var parts = ['<button class="bpill ' + (ui.branch==='전체'?'on':'') + '" data-act="branch" data-branch="전체" role="tab" aria-selected="' + (ui.branch==='전체') + '">전체 <span class="pc">' + total + '</span></button>'];
     BRANCHES.forEach(function(b){
-      var n = state.puppies.filter(function(p){ return p.branch === b; }).length;
+      var n = state.puppies.filter(function(p){ return p.branch === b && !p.isArchive; }).length;
       parts.push('<button class="bpill ' + (ui.branch===b?'on':'') + '" data-act="branch" data-branch="' + b + '" role="tab" aria-selected="' + (ui.branch===b) + '">' + b + ' <span class="pc">' + n + '</span></button>');
     });
     $('#branchBar').innerHTML = parts.join('');
@@ -1921,11 +2074,18 @@
   function renderStatusChips(){
     var q = ui.q.trim().toLowerCase();
     var pool = state.puppies.filter(function(p){
+      if(p.isArchive) return false;
       if(ui.branch !== '전체' && p.branch !== ui.branch) return false;
       return matchQuery(p, q);
     });
     var counts = { '전체': pool.length, available:0, reserved:0, sold:0 };
     pool.forEach(function(p){ counts[p.status] = (counts[p.status]||0) + 1; });
+    state.puppies.forEach(function(p){                       // 분양완료 보관함 기록도 '분양완료' 숫자에 포함
+      if(!p.isArchive) return;
+      if(ui.branch !== '전체' && p.branch !== ui.branch) return;
+      if(!matchQuery(p, q)) return;
+      counts.sold++;
+    });
     var html = '<button class="chip ' + (ui.status==='전체'?'on':'') + '" data-act="status" data-status="전체" role="tab">전체 <span class="cn">' + counts['전체'] + '</span></button>';
     STATUS_KEYS.forEach(function(k){
       html += '<button class="chip ' + (ui.status===k?'on':'') + '" data-act="status" data-status="' + k + '" role="tab">' + STATUS[k].label + ' <span class="cn">' + (counts[k]||0) + '</span></button>';
@@ -1966,7 +2126,29 @@
       '<span class="phlab">사진 준비 중</span></div>';
   }
 
+  /* 분양완료 보관함 카드 — 원래 장 번호와 자동 삭제까지 남은 날을 같이 보여줘요 */
+  function archiveCardHTML(p){
+    var adopt = adoptInfo(p);
+    var vac = p.nextVaccine ? dday(p.nextVaccine) : null;
+    var soldOn = p.adoptedAt ? fmtMD(isoYmd(p.adoptedAt)) : '';
+    var sub = [p.cage || '', p.breed || '품종 미정', p.sex === 'female' ? '여아' : '남아'].filter(Boolean).join(' · ');
+    return '<article class="card archive" data-id="' + p.id + '" tabindex="0" aria-label="' + esc(p.name) + ' 분양완료 기록 상세 보기">' +
+      '<div class="cphoto" data-act="openCard">' + photoBlock(p) +
+        '<div class="cbadges"><span class="btag ' + (p.branch==='디데이펫'?'b2':'') + '">🐾 ' + p.branch + '</span>' +
+        (p.cage ? '<span class="btag cage">' + esc(p.cage) + '</span>' : '') + '</div>' +
+        '<span class="stchip sold">분양완료</span></div>' +
+      '<div class="cbody" data-act="openCard">' +
+        '<div class="crow"><h3 class="cname">' + esc(p.name || '이름 없음') + '</h3>' +
+          '<span class="cprice">' + (p.price ? manwon(p.price) : '분양가 미정') + '</span></div>' +
+        '<div class="csub">' + esc(sub) + '</div>' +
+        (soldOn ? '<div class="cadopt' + (adopt && adopt.warn ? ' warn' : '') + '">🗂 ' + soldOn + ' 분양완료' +
+          (adopt ? ' · <b>' + adopt.text + '</b>' : '') + '</div>' : '') +
+        (vac ? '<div class="ctail' + (vac.cls === 'alert' ? ' over' : '') + '">💉 다음 접종 ' + vac.text + '</div>' : '') +
+      '</div></article>';
+  }
+
   function cardHTML(p){
+    if(p.isArchive) return archiveCardHTML(p);
     var st = STATUS[p.status] || STATUS.available;
     var bl = bathLabel(p);
     var inDays = intakeDays(p);
@@ -2079,6 +2261,7 @@
     renderList();
     renderFeed();
     renderCalendar();      // 캘린더가 열려 있을 때만 그림 (실시간 동기화 포함)
+    renderHotel();         // 호텔링 · 분양픽업 화면이 열려 있을 때만 그림
   }
 
   /* ================= 목욕 · 약욕 캘린더 (지점별) ================= */
@@ -2087,7 +2270,7 @@
   function calIsOpen(){ var w = $('#calWrap'); return !!w && !w.hidden; }
   function syncBodyLock(){
     var sheetOpen = !!($('#sheetWrap') && !$('#sheetWrap').hidden);
-    document.body.classList.toggle('lock', sheetOpen || calIsOpen());
+    document.body.classList.toggle('lock', sheetOpen || calIsOpen() || hotelIsOpen());
   }
   function calOpenInit(){
     // 목록에서 디데이펫을 보고 있었으면 디데이펫 캘린더로, 그 외에는 퍼피댕 캘린더로 열기
@@ -2101,7 +2284,7 @@
     var pre = cal.y + '-' + pad(cal.m + 1) + '-';
     var out = [];
     state.puppies.forEach(function(p){
-      if(p.branch !== cal.branch) return;
+      if(p.branch !== cal.branch || p.isArchive) return;   // 분양완료 보관함 기록은 캘린더에서 제외(중복 방지)
       (p.baths || []).forEach(function(b){
         if(!b || !isValidDate(b.date)) return;
         var d = String(b.date).slice(0, 10);
@@ -2158,7 +2341,7 @@
     $('#calSub').textContent = cal.branch + ' · ' + (cal.m + 1) + '월 목욕 ' + tot.bath + '건 · 약욕 ' + tot.yak + '건';
 
     $('#calSeg').innerHTML = BRANCHES.map(function(b){
-      var n = state.puppies.filter(function(p){ return p.branch === b; }).length;
+      var n = state.puppies.filter(function(p){ return p.branch === b && !p.isArchive; }).length;
       var on = cal.branch === b;
       return '<button type="button" class="' + (on ? 'on' : '') + '" data-act="calBranch" data-branch="' + b + '" role="tab" aria-selected="' + on + '">' +
         b + ' <span class="cc">' + n + '</span></button>';
@@ -2222,6 +2405,472 @@
         '<span class="crby">' + esc(e.by || '기록자 없음') + '</span>' +
         '<span class="crarr">›</span></button>';
     }).join('');
+  }
+
+  /* ================= 🏨 호텔링 · 분양픽업 캘린더 (목욕 캘린더와 완전히 분리) ================= */
+  var hotel = { branch:'퍼피댕', y:0, m:0, sel:'' };
+  var hd = null;      // 등록·수정 시트의 임시 값
+  var hdId = '';      // 수정 중인 일정 id ('' 이면 새 일정)
+
+  function hotelIsOpen(){ var w = $('#hotelWrap'); return !!w && !w.hidden; }
+  function nextYmd(s){
+    var t = parseYmd(s);
+    if(t === null) return s;
+    var d = new Date(t + 86400000);
+    return d.getUTCFullYear() + '-' + pad(d.getUTCMonth()+1) + '-' + pad(d.getUTCDate());
+  }
+  function schedTimeText(t){
+    var m = /^(\d{1,2}):(\d{2})$/.exec(String(t || ''));
+    return m ? pad(Number(m[1])) + ':' + m[2] : '';
+  }
+  function schedTypeName(t){ return t === 'pickup' ? '분양픽업' : '호텔링'; }
+  function schedNights(s){
+    if(!s || s.type !== 'hotel') return 0;
+    var n = daysBetween(s.inDate, s.outDate);
+    return (n && n > 0) ? n : 0;
+  }
+  function normSched(it){
+    it = it || {};
+    var type = it.type === 'pickup' ? 'pickup' : 'hotel';
+    var o = {
+      id: String(it.id || uid()),
+      type: type,
+      branch: it.branch === '디데이펫' ? '디데이펫' : '퍼피댕',
+      name: String(it.name == null ? '' : it.name).slice(0, 40).trim(),
+      breed: String(it.breed == null ? '' : it.breed).slice(0, 30).trim(),
+      guardian: String(it.guardian == null ? '' : it.guardian).slice(0, 20).trim(),
+      phone: String(it.phone == null ? '' : it.phone).slice(0, 20).trim(),
+      memo: String(it.memo == null ? '' : it.memo).slice(0, 500),
+      by: String(it.by || '').slice(0, 12),
+      createdAt: it.createdAt || new Date().toISOString(),
+      updatedAt: it.updatedAt || new Date().toISOString()
+    };
+    if(type === 'hotel'){
+      o.inDate = isValidDate(it.inDate) ? String(it.inDate).slice(0, 10) : todayStr();
+      o.outDate = isValidDate(it.outDate) ? String(it.outDate).slice(0, 10) : o.inDate;
+      if(o.outDate < o.inDate) o.outDate = o.inDate;
+      o.inTime = schedTimeText(it.inTime);
+      o.outTime = schedTimeText(it.outTime);
+      o.status = (it.status === '입실중' || it.status === '완료') ? it.status : '예정';
+      o.date = o.inDate;
+      o.time = o.inTime;
+    } else {
+      o.date = isValidDate(it.date) ? String(it.date).slice(0, 10) : todayStr();
+      o.time = schedTimeText(it.time);
+      o.status = it.status === '완료' ? '완료' : '예정';
+      o.inDate = o.date;
+      o.outDate = o.date;
+      o.inTime = o.time;
+      o.outTime = '';
+    }
+    return o;
+  }
+  function findSched(id){
+    for(var i=0;i<(state.schedules||[]).length;i++){ if(state.schedules[i].id === id) return state.schedules[i]; }
+    return null;
+  }
+  function schedPhase(s, ds){
+    if(!s || s.type !== 'hotel') return '';
+    if(s.inDate === s.outDate) return '입실·퇴실';
+    if(ds === s.inDate) return '입실';
+    if(ds === s.outDate) return '퇴실';
+    return '투숙중';
+  }
+  function schedPhaseRank(s, ds){
+    if(!s || s.type !== 'hotel') return 9;
+    if(ds === s.inDate) return 0;
+    if(ds === s.outDate) return 2;
+    return 1;
+  }
+  function pruneSchedDel(list){
+    var cutoff = Date.now() - SCHED_DEL_TTL;
+    var out = (Array.isArray(list) ? list : []).filter(function(d){
+      var t = new Date(d && d.at).getTime();
+      return d && d.id && !isNaN(t) && t >= cutoff;
+    });
+    return out.slice(0, 300);
+  }
+  function schedPayload(){ return { items: state.schedules || [], del: pruneSchedDel(state.schedDel) }; }
+  function pushSchedules(){
+    if(!isLive()){ schedDirty = true; return; }   // 연결되면 setSync('live') 에서 다시 올려요
+    sync.client.from('puppies').upsert({ id: SCHED_ID, data: schedPayload(), updated_at: new Date().toISOString() }).then(function(res){
+      if(res && res.error) handleSyncError(res.error);
+      else schedDirty = false;
+    }, function(err){ handleSyncError(err); });
+  }
+  function schedOrder(s){ return (s.type === 'hotel' ? '0' : '1') + '|' + String(s.inDate || s.date || '') + '|' + String(s.time || s.outDate || '') + '|' + String(s.name || ''); }
+  function applySchedules(data, fromRemote){
+    if(!data) return;
+    var remoteItems = (Array.isArray(data.items) ? data.items : []).map(normSched).slice(0, SCHED_MAX);
+    var remoteDel = pruneSchedDel(Array.isArray(data.del) ? data.del : []);
+    var byId = {};
+    remoteItems.forEach(function(s){ byId[s.id] = s; });
+    (state.schedules || []).forEach(function(s){
+      var cur = byId[s.id];
+      if(!cur || new Date(s.updatedAt || 0).getTime() > new Date(cur.updatedAt || 0).getTime()) byId[s.id] = s;
+    });
+    var delMap = {};
+    remoteDel.forEach(function(d){ if(!delMap[d.id] || String(d.at) > delMap[d.id]) delMap[d.id] = String(d.at); });
+    pruneSchedDel(state.schedDel).forEach(function(d){ if(!delMap[d.id] || String(d.at) > delMap[d.id]) delMap[d.id] = String(d.at); });
+    var delList = Object.keys(delMap).map(function(id){ return { id:id, at:delMap[id] }; })
+      .sort(function(a, b){ return String(b.at) > String(a.at) ? 1 : -1; }).slice(0, 300);
+    var delAt = {};
+    delList.forEach(function(d){ delAt[d.id] = new Date(d.at).getTime() || 0; });
+    var items = Object.keys(byId).map(function(k){ return byId[k]; }).filter(function(s){
+      var t = delAt[s.id];
+      return !(t && t >= new Date(s.updatedAt || 0).getTime());
+    }).sort(function(a, b){ return schedOrder(a) < schedOrder(b) ? -1 : (schedOrder(a) > schedOrder(b) ? 1 : 0); });
+    var changed = JSON.stringify(items) !== JSON.stringify(state.schedules || []) ||
+      JSON.stringify(delList) !== JSON.stringify(state.schedDel || []);
+    state.schedules = items;
+    state.schedDel = delList;
+    if(changed){ saveLocal(); renderHotel(); }
+    if(fromRemote){
+      var rItem = {}, rDel = {};
+      remoteItems.forEach(function(s){ rItem[s.id] = s.updatedAt; });
+      remoteDel.forEach(function(d){ rDel[d.id] = d.at; });
+      var need = false;
+      items.forEach(function(s){ if(rItem[s.id] !== s.updatedAt) need = true; });
+      delList.forEach(function(d){ if(rDel[d.id] !== d.at) need = true; });
+      if(need){ schedDirty = true; pushSchedules(); }   // 이 기기에만 있던 일정·삭제를 공유 행에 합쳐요
+    }
+  }
+  function saveSchedLocal(){
+    saveLocal();
+    schedDirty = true;
+    pushSchedules();
+    renderHotel();
+  }
+
+  function hotelOpenInit(){
+    // 목록에서 디데이펫을 보고 있었으면 디데이펫으로, 그 외에는 퍼피댕으로 열기
+    hotel.branch = (ui.branch === '디데이펫') ? '디데이펫' : '퍼피댕';
+    var t = new Date();
+    hotel.y = t.getFullYear();
+    hotel.m = t.getMonth();
+    hotel.sel = todayStr();
+  }
+  function openHotel(){
+    var w = $('#hotelWrap');
+    if(!w) return;
+    hotelOpenInit();
+    w.hidden = false;
+    w.scrollTop = 0;
+    document.body.classList.add('lock');
+    renderHotel();
+  }
+  function closeHotel(){
+    var w = $('#hotelWrap');
+    if(!w || w.hidden) return;
+    w.hidden = true;
+    syncBodyLock();
+  }
+  function hotelMonthRange(){
+    var first = hotel.y + '-' + pad(hotel.m + 1) + '-01';
+    var last = hotel.y + '-' + pad(hotel.m + 1) + '-' + pad(new Date(hotel.y, hotel.m + 1, 0).getDate());
+    return { first:first, last:last };
+  }
+  function hotelMonthCount(branch){
+    var r = hotelMonthRange();
+    var c = { hotel:0, pick:0 };
+    (state.schedules || []).forEach(function(s){
+      if(s.branch !== branch) return;
+      if(s.type === 'hotel'){ if(!(s.outDate < r.first || s.inDate > r.last)) c.hotel++; }
+      else if(s.date >= r.first && s.date <= r.last) c.pick++;
+    });
+    return c;
+  }
+  function hotelMap(){
+    var r = hotelMonthRange();
+    var map = {};
+    function add(ds, s){
+      var o = map[ds] || (map[ds] = { hotel:0, pick:0, list:[] });
+      if(s.type === 'hotel') o.hotel++; else o.pick++;
+      o.list.push(s);
+    }
+    (state.schedules || []).forEach(function(s){
+      if(s.branch !== hotel.branch) return;
+      if(s.type === 'hotel'){
+        var d = s.inDate, guard = 0;
+        while(d && d <= r.last && guard++ < 800){
+          if(d >= r.first) add(d, s);
+          if(d === s.outDate) break;
+          d = nextYmd(d);
+        }
+      } else if(s.date && s.date >= r.first && s.date <= r.last){
+        add(s.date, s);
+      }
+    });
+    Object.keys(map).forEach(function(ds){
+      map[ds].list.sort(function(a, b){
+        var ra = schedPhaseRank(a, ds), rb = schedPhaseRank(b, ds);
+        if(ra !== rb) return ra - rb;
+        if(a.type === 'pickup' && b.type === 'pickup'){
+          var ta = a.time || '99:99', tb = b.time || '99:99';
+          if(ta !== tb) return ta < tb ? -1 : 1;
+        }
+        return String(a.name || '').localeCompare(String(b.name || ''), 'ko');
+      });
+    });
+    return map;
+  }
+  function schedRowHTML(s, ds){
+    var isHotel = s.type === 'hotel';
+    var phase = isHotel ? schedPhase(s, ds) : '';
+    var badge = isHotel ? ('🏨 ' + phase) : ('🚗 ' + (s.time ? s.time : '픽업'));
+    var sub = [];
+    var stCls = s.status === '완료' ? 'done' : (s.status === '입실중' ? 'stay' : '');
+    if(isHotel){
+      if(phase === '입실' && s.inTime) sub.push('체크인 ' + s.inTime);
+      if(phase === '퇴실' && s.outTime) sub.push('체크아웃 ' + s.outTime);
+      if(s.breed) sub.push(s.breed);
+      sub.push(fmtShort(s.inDate) + '~' + fmtShort(s.outDate) + (schedNights(s) ? ' · ' + schedNights(s) + '박' : ' · 당일'));
+      if(s.guardian) sub.push('보호자 ' + s.guardian + (s.phone ? ' ' + s.phone : ''));
+      if(s.memo) sub.push(s.memo);
+    } else {
+      if(s.time) sub.push(s.time);
+      if(s.guardian) sub.push('예약자 ' + s.guardian + (s.phone ? ' ' + s.phone : ''));
+      if(s.memo) sub.push(s.memo);
+    }
+    return '<button type="button" class="calrow" data-act="schedOpen" data-id="' + esc(s.id) + '">' +
+      '<span class="cbdg ' + (isHotel ? 'hotel' : 'pick') + '">' + badge + '</span>' +
+      '<span class="crmain"><b>' + esc(s.name || '이름 없음') + '</b>' +
+        '<span><span class="crst ' + stCls + '">' + esc(s.status) + '</span> ' + esc(sub.filter(Boolean).join(' · ')) + '</span></span>' +
+      '<span class="crarr">›</span></button>';
+  }
+  function renderHotel(){
+    var w = $('#hotelWrap');
+    if(!w || w.hidden) return;
+    var map = hotelMap();
+    var cnt = hotelMonthCount(hotel.branch);
+    var today = todayStr();
+
+    $('#hotelSub').textContent = hotel.branch + ' · ' + (hotel.m + 1) + '월 호텔링 ' + cnt.hotel + '건 · 픽업 ' + cnt.pick + '건';
+
+    $('#hotelSeg').innerHTML = BRANCHES.map(function(b){
+      var c = hotelMonthCount(b);
+      var on = hotel.branch === b;
+      return '<button type="button" class="' + (on ? 'on' : '') + '" data-act="hotelBranch" data-branch="' + b + '" role="tab" aria-selected="' + on + '">' +
+        b + ' <span class="cc">' + (c.hotel + c.pick) + '</span></button>';
+    }).join('');
+
+    $('#hotelMonthLabel').textContent = hotel.y + '년 ' + (hotel.m + 1) + '월';
+
+    var firstDow = new Date(hotel.y, hotel.m, 1).getDay();
+    var dim = new Date(hotel.y, hotel.m + 1, 0).getDate();
+    var prevDim = new Date(hotel.y, hotel.m, 0).getDate();
+    var cells = Math.ceil((firstDow + dim) / 7) * 7;
+    var html = '';
+    for(var i = 0; i < cells; i++){
+      var day = i - firstDow + 1;
+      if(day < 1){ html += '<span class="cday out" aria-hidden="true"><span class="dn">' + (prevDim + day) + '</span></span>'; continue; }
+      if(day > dim){ html += '<span class="cday out" aria-hidden="true"><span class="dn">' + (day - dim) + '</span></span>'; continue; }
+      var ds = hotel.y + '-' + pad(hotel.m + 1) + '-' + pad(day);
+      var dow = i % 7;
+      var o = map[ds];
+      var cls = 'cday' + (dow === 0 ? ' sun' : (dow === 6 ? ' sat' : '')) + (ds === today ? ' today' : '') + (ds === hotel.sel ? ' on' : '');
+      var lab = fmtMD(ds) + (o ? ' · 호텔링 ' + o.hotel + '건 픽업 ' + o.pick + '건' : ' · 일정 없음');
+      html += '<button type="button" class="' + cls + '" data-act="hotelPick" data-date="' + ds + '" aria-label="' + lab + '" aria-pressed="' + (ds === hotel.sel) + '">' +
+        '<span class="dn">' + day + '</span>' +
+        '<span class="bd">' +
+          (o && o.hotel ? '<span class="cbd hotel"><i>🏨</i>' + o.hotel + '</span>' : '') +
+          (o && o.pick ? '<span class="cbd pick"><i>🚗</i>' + o.pick + '</span>' : '') +
+        '</span></button>';
+    }
+    $('#hotelGrid').innerHTML = html;
+
+    $('#hotelSum').innerHTML =
+      '<span class="csum">🏨 <b>' + cnt.hotel + '</b> 호텔링<span class="csx">' + (hotel.m + 1) + '월</span></span>' +
+      '<span class="csum pick">🚗 <b>' + cnt.pick + '</b> 분양픽업<span class="csx">' + (hotel.m + 1) + '월</span></span>';
+
+    var sel = hotel.sel;
+    var selDay = Number(String(sel).slice(8, 10));
+    var selDow = new Date(hotel.y, hotel.m, selDay).getDay();
+    $('#hotelDayTitle').textContent = fmtMD(sel) + ' (' + WEEK[selDow] + ')';
+    var tn = $('#hotelDayToday');
+    if(tn) tn.hidden = (sel !== today);
+
+    var dayMap = map[sel];
+    var listEl = $('#hotelList');
+    var cntEl = $('#hotelDayCount');
+    if(!dayMap || !dayMap.list.length){
+      cntEl.textContent = '일정 없음';
+      listEl.className = '';
+      listEl.innerHTML = '<div class="calnote"><span class="ce">🏨</span><b>이 날은 호텔링 · 픽업 일정이 없어요</b>' +
+        '<p>' + hotel.branch + ' ' + (hotel.m + 1) + '월은 호텔링 <b>' + cnt.hotel + '건</b> · 픽업 <b>' + cnt.pick + '건</b>이에요.</p></div>';
+      return;
+    }
+    cntEl.textContent = '호텔링 ' + dayMap.hotel + ' · 픽업 ' + dayMap.pick;
+    listEl.className = 'callist';
+    listEl.innerHTML = dayMap.list.map(function(s){ return schedRowHTML(s, sel); }).join('');
+  }
+  function updateSchedNightsHint(){
+    var el = $('#hsNights');
+    if(!el || !hd || hd.type !== 'hotel') return;
+    var a = hd.inDate, b = hd.outDate;
+    if(!isValidDate(a) || !isValidDate(b)){ el.textContent = '입실일과 퇴실일을 골라주세요'; return; }
+    var n = daysBetween(a, b);
+    if(n === null || n < 0){ el.innerHTML = '<b style="color:#B8432F">퇴실일이 입실일보다 빨라요</b>'; return; }
+    el.innerHTML = n === 0
+      ? '<b>' + fmtMD(a) + '</b> 당일 일정(입실·퇴실 같은 날)'
+      : '<b>' + fmtMD(a) + ' ~ ' + fmtMD(b) + '</b> · ' + n + '박 ' + (n + 1) + '일 동안 달력에 표시돼요';
+  }
+  function schedDogOptions(branch){
+    var list = state.puppies.filter(function(p){
+      return !p.isArchive && p.branch === branch && !isEmptySlot(p) && p.status !== 'sold';
+    });
+    list.sort(function(a, b){ return String(a.cage || '').localeCompare(String(b.cage || ''), 'ko', { numeric:true }); });
+    return list.slice(0, 12);
+  }
+  function schedSheetHTML(){
+    var s = hd;
+    var isHotel = s.type === 'hotel';
+    var isNew = !hdId;
+    var title = isNew ? '일정 추가' : (isHotel ? '호텔링 일정' : '분양픽업 일정');
+    var sub = isHotel ? '입실일 ~ 퇴실일 동안 날짜마다 표시돼요' : '픽업 날짜·시간에 맞춰 표시돼요';
+    var typeBlock = isNew
+      ? '<div class="field"><label>일정 종류</label><div class="seg" id="hsTypeSeg">' +
+          '<button type="button" data-act="hsType" data-v="hotel" class="' + (isHotel ? 'on' : '') + '">🏨 호텔링</button>' +
+          '<button type="button" data-act="hsType" data-v="pickup" class="' + (isHotel ? '' : 'on') + '">🚗 분양픽업</button>' +
+        '</div></div>'
+      : '<div class="field"><label>일정 종류</label><div><span class="hstype ' + (isHotel ? '' : 'pick') + '">' + (isHotel ? '🏨 호텔링' : '🚗 분양픽업') + '</span></div></div>';
+    var branchSeg = '<div class="field"><label>지점</label><div class="seg" id="hsBranchSeg">' +
+      BRANCHES.map(function(b){ return '<button type="button" data-act="hsBranch" data-v="' + b + '" class="' + (s.branch === b ? 'on' : '') + '">' + b + '</button>'; }).join('') +
+      '</div></div>';
+    var statuses = isHotel ? ['예정','입실중','완료'] : ['예정','완료'];
+    var statusSeg = '<div class="field"><div class="seg" id="hsStatusSeg">' +
+      statuses.map(function(v){ return '<button type="button" data-act="hsStatus" data-v="' + v + '" class="' + (s.status === v ? 'on' : '') + '">' + v + '</button>'; }).join('') +
+      '</div></div>';
+    var dogs = schedDogOptions(s.branch);
+    var dogChips = dogs.length
+      ? '<div class="dogchips">' + dogs.map(function(p){
+          var lab = (p.cage ? p.cage + ' ' : '') + (p.name || '이름 없음');
+          return '<button type="button" class="dogchip" data-act="hsDog" data-id="' + p.id + '">' + esc(lab) + '</button>';
+        }).join('') + '</div><p class="hshelp">' + s.branch + ' 강아지를 누르면 이름' + (isHotel ? '·품종이' : '이') + ' 채워져요</p>'
+      : '';
+    var dateFields = isHotel
+      ? '<div class="frow">' +
+          '<div class="field"><label>입실일 <span style="color:var(--red)">*</span></label>' +
+            '<input type="date" class="fdate" id="hsIn" data-hf="inDate" value="' + esc(s.inDate) + '" aria-label="입실일"></div>' +
+          '<div class="field"><label>퇴실일 <span style="color:var(--red)">*</span></label>' +
+            '<input type="date" class="fdate" id="hsOut" data-hf="outDate" value="' + esc(s.outDate) + '" aria-label="퇴실일"></div>' +
+        '</div>' +
+        '<div class="hint" id="hsNights" style="margin:-2px 2px 9px"></div>' +
+        '<div class="frow">' +
+          '<div class="field"><label>체크인 시간</label><input type="time" class="fdate" data-hf="inTime" value="' + esc(s.inTime) + '" aria-label="체크인 시간"></div>' +
+          '<div class="field"><label>체크아웃 시간</label><input type="time" class="fdate" data-hf="outTime" value="' + esc(s.outTime) + '" aria-label="체크아웃 시간"></div>' +
+        '</div>'
+      : '<div class="frow">' +
+          '<div class="field"><label>픽업 날짜 <span style="color:var(--red)">*</span></label>' +
+            '<input type="date" class="fdate" id="hsDate" data-hf="date" value="' + esc(s.date) + '" aria-label="픽업 날짜"></div>' +
+          '<div class="field"><label>픽업 시간</label>' +
+            '<input type="time" class="fdate" data-hf="time" value="' + esc(s.time) + '" aria-label="픽업 시간"></div>' +
+        '</div>';
+    return sheetbar(title, sub) +
+      '<div class="sheetbody">' +
+      '<div class="schednote ' + (isHotel ? '' : 'pick') + '">' + (isHotel
+        ? '🏨 <b>호텔링</b>은 입실일부터 퇴실일까지 <b>기간 전체</b>가 달력에 걸쳐 보여요.'
+        : '🚗 <b>분양픽업</b>은 예약 후 찾아가는 일정이에요. 픽업 날짜·시간에 달력에 표시돼요.') + '</div>' +
+
+      '<div class="fsec"><h3>일정 종류 · 지점</h3>' + typeBlock + branchSeg + '</div>' +
+
+      '<div class="fsec"><h3>' + (isHotel ? '아이 · 숙박 일정' : '픽업 아이 · 일정') + '</h3>' +
+        '<div class="field"><label>' + (isHotel ? '아이 이름' : '장 번호 / 아이 이름') + ' <span style="color:var(--red)">*</span></label>' +
+          '<input class="txt" id="hsName" data-hf="name" value="' + esc(s.name) + '" placeholder="' + (isHotel ? '초코' : '3번장 두부') + '" autocomplete="off"></div>' +
+        (isHotel ? '<div class="field"><label>품종 (선택)</label><input class="txt" data-hf="breed" value="' + esc(s.breed) + '" placeholder="말티푸" autocomplete="off"></div>' : '') +
+        dateFields + dogChips +
+      '</div>' +
+
+      '<div class="fsec"><h3>보호자 · 메모</h3>' +
+        '<div class="frow">' +
+          '<div class="field"><label>' + (isHotel ? '보호자 성함' : '예약자 성함') + '</label><input class="txt" data-hf="guardian" value="' + esc(s.guardian) + '" placeholder="김보호" autocomplete="off"></div>' +
+          '<div class="field"><label>연락처</label><input class="txt" data-hf="phone" inputmode="tel" value="' + esc(s.phone) + '" placeholder="010-0000-0000" autocomplete="off"></div>' +
+        '</div>' +
+        '<div class="field"><label>' + (isHotel ? '주의사항 / 메모' : '메모') + '</label>' +
+          '<textarea class="memo" data-hf="memo" placeholder="' + (isHotel ? '사료·약·산책 등 챙길 것' : '잔금·픽업 방식 등') + '">' + esc(s.memo) + '</textarea></div>' +
+      '</div>' +
+
+      '<div class="fsec"><h3>진행 상태</h3>' + statusSeg + '</div>' +
+
+      '<button class="btn primary wide" data-act="schedSave">' + (isNew ? '일정 등록' : '저장') + '</button>' +
+      (isNew ? '' : '<div class="btnrow"><button class="btn" data-act="schedDone">' + (s.status === '완료' ? '↩︎ 완료 취소' : '✓ 완료 처리') + '</button>' +
+        '<button class="btn danger" data-act="schedDelete">삭제</button></div>') +
+      '<p class="hint" style="margin:10px 2px 14px;text-align:center">저장하면 다른 직원 폰에도 바로 보여요</p>' +
+      '</div>';
+  }
+  function openSched(id){
+    var s = id ? findSched(id) : null;
+    hdId = s ? s.id : '';
+    var base = hotel.sel || todayStr();
+    hd = s ? normSched(s) : normSched({ type:'hotel', branch:hotel.branch, inDate:base, outDate:base, date:base, status:'예정', by: state.worker });
+    ui.sheet = 'sched';
+    setSheet(schedSheetHTML());
+    openSheet();
+    updateSchedNightsHint();
+  }
+  function renderSchedSheet(){
+    if(ui.sheet !== 'sched') return;
+    setSheet(schedSheetHTML(), true);
+    updateSchedNightsHint();
+  }
+  function saveSchedSheet(){
+    if(!hd) return;
+    var s = normSched(hd);
+    if(!s.name){
+      toast(s.type === 'pickup' ? '장 번호나 아이 이름을 적어주세요' : '아이 이름을 적어주세요');
+      var el = $('#hsName'); if(el) el.focus();
+      return;
+    }
+    if(s.type === 'hotel' && !isValidDate(s.inDate)){ toast('입실일을 골라주세요'); return; }
+    if(s.type === 'hotel' && !isValidDate(s.outDate)) s.outDate = s.inDate;
+    if(s.type === 'hotel' && s.outDate < s.inDate){ toast('퇴실일이 입실일보다 빨라요'); return; }
+    if(s.type === 'pickup' && !isValidDate(s.date)){ toast('픽업 날짜를 골라주세요'); return; }
+    var now = new Date().toISOString();
+    var isNew = !hdId;
+    var idx = -1;
+    for(var i=0;i<(state.schedules||[]).length;i++){ if(state.schedules[i].id === hdId){ idx = i; break; } }
+    var before = idx >= 0 ? state.schedules[idx] : null;
+    s.id = before ? before.id : s.id;
+    s.createdAt = before ? before.createdAt : now;
+    s.updatedAt = now;
+    if(isNew) s.by = state.worker;
+    if(idx >= 0) state.schedules[idx] = s; else state.schedules.push(s);
+    logActivity({ id:'', branch:s.branch, cage:'', name:s.name }, (s.type === 'hotel' ? '호텔링 일정' : '분양픽업 일정'), isNew ? '등록했습니다' : '수정했습니다');
+    closeSheet();
+    saveSchedLocal();
+    if(s.type === 'hotel'){ hotel.sel = s.inDate; }
+    else { hotel.sel = s.date; }
+    var d = parseYmd(hotel.sel);
+    if(d !== null){ hotel.y = new Date(d).getUTCFullYear(); hotel.m = new Date(d).getUTCMonth(); }
+    renderHotel();
+    toast(isNew ? (s.name + ' ' + schedTypeName(s.type) + ' 일정을 등록했어요') : '일정을 저장했어요');
+  }
+  function schedToggleDone(){
+    if(!hdId) return;
+    var s = findSched(hdId);
+    if(!s) return;
+    var wasDone = s.status === '완료';
+    s.status = wasDone ? '예정' : '완료';
+    s.updatedAt = new Date().toISOString();
+    hd.status = s.status;
+    logActivity({ id:'', branch:s.branch, cage:'', name:s.name }, schedTypeName(s.type) + (wasDone ? ' 완료 취소' : ' 완료'), '처리했습니다');
+    saveSchedLocal();
+    renderSchedSheet();
+    toast(wasDone ? '완료를 취소했어요' : (s.name + ' ' + schedTypeName(s.type) + ' 완료 처리했어요'));
+  }
+  function schedDelete(){
+    if(!hdId) return;
+    var s = findSched(hdId);
+    if(!s) return;
+    if(!window.confirm('‘' + (s.name || '일정') + '’ ' + schedTypeName(s.type) + ' 일정을 지울까요?\n지운 일정은 다른 폰에서도 함께 사라져요.')) return;
+    state.schedules = (state.schedules || []).filter(function(x){ return x.id !== s.id; });
+    state.schedDel = pruneSchedDel([{ id:s.id, at:new Date().toISOString() }].concat(state.schedDel || []));
+    logActivity({ id:'', branch:s.branch, cage:'', name:s.name }, schedTypeName(s.type) + ' 일정', '지웠습니다');
+    closeSheet();
+    saveSchedLocal();
+    hotel.sel = (s.type === 'hotel') ? s.inDate : s.date;
+    renderHotel();
+    toast('일정을 지웠어요');
   }
 
   /* ================= 시트 ================= */
@@ -2392,6 +3041,8 @@
         (done ? '✓ ' : '') + esc(t) + '</button>';
     }).join('');
 
+    var vacGrid = vaccineDateGridHTML(p);
+
     var sseg = STATUS_KEYS.map(function(k){
       return '<button class="sseg ' + STATUS[k].cls + ' ' + (p.status === k ? 'on' : '') + '" data-act="setStatus" data-status="' + k + '">' + STATUS[k].label + '</button>';
     }).join('');
@@ -2456,12 +3107,15 @@
           (vac ? '<button class="btn sm" data-act="clearNextVac">지우기</button>' : '') + '</div>' +
           (vac && p.nextVaccine ? '<div class="hint" style="margin-top:6px">' + fmtFull(p.nextVaccine) + ' · <b>' + vac.text + '</b></div>' : '') +
         '</div>' +
-        '<div style="margin-top:12px"><label class="mini">접종 기록 추가 (완료한 항목은 ✓)</label>' +
-          '<div class="vseg">' + vacChips + '</div>' +
-          '<div class="row" style="margin-bottom:7px"><input type="date" class="fdate grow" id="vacNewDate" value="' + todayStr() + '" aria-label="접종 날짜">' +
-            '<input type="text" class="finput grow" id="vacNewMemo" placeholder="메모 (선택)" aria-label="접종 메모"></div>' +
-          '<button class="btn sm primary wide" data-act="vacAdd">＋ 접종 기록 추가</button>' +
+        '<div style="margin-top:12px"><label class="mini">접종일 — 칩을 누르면 오늘로 체크, 옆 날짜로 바로 수정</label>' +
+          vacGrid +
         '</div>' +
+        '<details class="vacmore"><summary>다른 날짜로 접종 기록 추가</summary>' +
+          '<div style="margin-top:8px"><div class="vseg">' + vacChips + '</div>' +
+          '<div class="row" style="margin:7px 0"><input type="date" class="fdate grow" id="vacNewDate" value="' + todayStr() + '" aria-label="접종 날짜">' +
+            '<input type="text" class="finput grow" id="vacNewMemo" placeholder="메모 (선택)" aria-label="접종 메모"></div>' +
+          '<button class="btn sm primary wide" data-act="vacAdd">＋ 접종 기록 추가</button></div>' +
+        '</details>' +
         '<ul class="hlist">' + vacHistory + '</ul>' +
       '</section>' +
 
@@ -2482,8 +3136,68 @@
       '</div>';
   }
 
+  function archiveDetailHTML(id){
+    var p = get(id);
+    if(!p) return '<div class="sheetbody"><p class="sp">기록을 찾을 수 없어요.</p></div>';
+    var adopt = adoptInfo(p);
+    var rows = [
+      ['분양일', p.adoptedAt ? fmtFull(isoYmd(p.adoptedAt)) : '—'],
+      ['원래 장', (p.cage || '—') + ' · ' + p.branch],
+      ['품종', p.breed || '미정'],
+      ['성별', (p.sex === 'female' ? '여아' : '남아') + (p.color ? ' · ' + p.color : '')],
+      ['생일', p.birthDate ? fmtFull(p.birthDate) : '미입력'],
+      ['입소일', fmtFull(p.intakeDate)],
+      ['분양가', p.price ? manwon(p.price) : '미정'],
+      ['개체관리번호', p.regNo || '미입력'],
+      ['입양처', p.adopter || '미입력']
+    ].map(function(r){
+      return '<div class="archrow"><span class="al">' + r[0] + '</span><span>' + esc(r[1]) + '</span></div>';
+    }).join('');
+    var baths = (p.baths || []).slice().sort(function(a, b){ return String(b.date).localeCompare(String(a.date)); }).map(function(b){
+      return '<div class="archrow"><span class="al">' + (bathKind(b) === '약욕' ? '🧴 약욕' : '🛁 목욕') + '</span><span>' +
+        fmtMD(b.date) + (b.by ? ' · ' + esc(b.by) : '') + (b.memo ? ' · ' + esc(b.memo) : '') + '</span></div>';
+    }).join('');
+    var vacs = (p.vaccines || []).slice().sort(function(a, b){ return String(b.date).localeCompare(String(a.date)); }).map(function(v){
+      return '<div class="archrow"><span class="al">💉 ' + esc(vacName(v.type)) + '</span><span>' +
+        fmtMD(v.date) + (v.by ? ' · ' + esc(v.by) : '') + (v.memo ? ' · ' + esc(v.memo) : '') + '</span></div>';
+    }).join('');
+    return sheetbar('🗂 분양완료 · ' + esc(p.name || ''), esc(p.cage || '장 번호 없음') + ' · ' + p.branch) +
+      '<div class="sheetbody">' +
+      '<div class="archnote">분양완료 보관함 기록' + (adopt ? ' · <b>' + adopt.text + '</b>' : '') +
+        '<span>2주가 지나면 이 기록은 자동으로 삭제돼요. 장(' + esc(p.cage || '') + ')은 비워져 새 아이를 받을 수 있어요.</span></div>' +
+      '<section class="scard" style="margin-top:0"><div class="shead"><h3>📋 기본 정보</h3></div>' +
+        '<div class="inforows" style="display:block">' + rows + '</div></section>' +
+      (p.memo ? '<section class="scard"><div class="shead"><h3>📝 메모</h3></div><p class="sp" style="white-space:pre-wrap">' + esc(p.memo) + '</p></section>' : '') +
+      '<section class="scard"><div class="shead"><h3>🛁 목욕 · 약욕 기록</h3><span class="sbadge calm">' + ((p.baths || []).length) + '건</span></div>' +
+        (baths || '<p class="sp small">기록 없음</p>') + '</section>' +
+      '<section class="scard"><div class="shead"><h3>💉 접종 · 구충</h3><span class="sbadge calm">' + ((p.vaccines || []).length) + '건</span></div>' +
+        (vacs || '<p class="sp small">기록 없음</p>') + '</section>' +
+      '<div class="btnrow" style="margin-top:12px"><button class="btn wide danger" data-act="archiveDelete">기록 삭제</button></div>' +
+      '<p class="hint" style="text-align:center;margin:10px 0 14px">분양완료 기록은 수정하지 않고 그대로 보관돼요</p>' +
+      '</div>';
+  }
+  function archiveDelete(id){
+    var p = get(id || ui.detailId);
+    if(!p || !p.isArchive) return;
+    if(!window.confirm('‘' + p.name + '’ 분양완료 기록을 지울까요?\n되돌릴 수 없어요.')) return;
+    state.puppies = state.puppies.filter(function(x){ return x.id !== p.id; });
+    save();
+    logActivity({ id:'', branch:p.branch, cage:p.cage, name:p.name }, '분양완료 기록', '지웠습니다');
+    ui.detailId = null;
+    closeSheet();
+    renderAll();
+    toast('분양완료 기록을 지웠어요');
+  }
+
   function openDetail(id){
     if(!get(id)) return;
+    if(get(id).isArchive){
+      ui.detailId = id;
+      ui.sheet = 'detail';
+      setSheet(archiveDetailHTML(id));
+      openSheet();
+      return;
+    }
     ui.detailId = id;
     ui.vacType = VAC_PRESETS[0];
     ui.sheet = 'detail';
@@ -2493,8 +3207,9 @@
   }
   function refreshDetail(){
     if(!ui.detailId) return;
-    if(!get(ui.detailId)){ closeSheet(); renderAll(); return; }
-    setSheet(detailHTML(ui.detailId), true);
+    var cur = get(ui.detailId);
+    if(!cur){ closeSheet(); renderAll(); return; }
+    setSheet(cur.isArchive ? archiveDetailHTML(ui.detailId) : detailHTML(ui.detailId), true);
   }
 
   /* ================= 폼 ================= */
@@ -2583,6 +3298,11 @@
         '<p class="hint">한 장만 올리면 돼요. 긴 쪽 1080px · JPEG로 자동 압축해 저장해요.</p>' +
       '</div>' +
 
+      '<div class="fsec"><h3>💉 접종일</h3>' +
+        '<label class="mini">완료한 접종은 칩을 누르면 오늘 날짜로 들어가고, 옆 날짜로 바로 고칠 수 있어요</label>' +
+        vaccineDateGridHTML(d) +
+      '</div>' +
+
       '<div class="fsec"><h3>특이사항 · 건강 메모</h3>' +
         '<label class="mini">건강 · 특이사항 체크 (해당되는 항목을 누르기)</label>' +
         healthChipsHTML(d.healthFlags, true) +
@@ -2657,15 +3377,26 @@
       var keep = { id:p.id, baths:p.baths, vaccines:p.vaccines, nextVaccine:p.nextVaccine, createdAt:p.createdAt };
       var merged = norm(Object.assign({}, p, d, { updatedAt: now }));
       merged.baths = keep.baths;
-      merged.vaccines = keep.vaccines;
+      merged.vaccines = Array.isArray(d.vaccines) ? d.vaccines : keep.vaccines;
+      merged.vaccineDates = (d.vaccineDates && typeof d.vaccineDates === 'object') ? d.vaccineDates : (p.vaccineDates || {});
       merged.nextVaccine = keep.nextVaccine;
       merged.createdAt = keep.createdAt;
+      /* 폼에서 분양완료로 바꾼 경우: 수정한 정보까지 보관함 기록으로 옮기고 장은 빈 장으로 */
+      if(d.status === 'sold' && p.status !== 'sold' && !p.isArchive){
+        var arc = adoptOut(p, merged);
+        if(arc) memoLogReset(arc);
+        return;
+      }
       for(var k in merged){ p[k] = merged[k]; }
-      if(p.status === 'sold' && !p.adoptedAt) p.adoptedAt = now;   // 폼에서 분양완료로 바꿈
+      if(p.status === 'sold' && !p.adoptedAt) p.adoptedAt = now;   // 예전 방식(장 슬롯 분양완료) 호환
       saved = p;
     } else {
       var np = norm(Object.assign({}, d, { createdAt: now, updatedAt: now }));
-      if(np.status === 'sold' && !np.adoptedAt) np.adoptedAt = now;
+      if(np.status === 'sold'){
+        /* 새로 등록하면서 바로 분양완료 → 장을 차지하지 않는 보관함 기록으로 저장 (14일 뒤 자동 삭제) */
+        np.adoptedAt = now;
+        np.isArchive = true;
+      }
       state.puppies.push(np);
       saved = np;
     }
@@ -2941,13 +3672,15 @@
     toast(p.name + ' 노트를 삭제했어요');
   }
 
-  /* ================= 분양완료 2주 자동 정리 ================= */
+  /* ================= 분양완료 보관함 · 2주 자동 삭제 ================= */
   /* 장(행)은 그대로 두고 내용만 비웁니다 — 이름 '미정' + 분양중, 사진·기록 삭제 */
   function clearSlot(p){
     if(!p) return;
     p.name = '미정';
     p.status = 'available';
     p.adoptedAt = null;
+    p.isArchive = false;
+    p.archivedFrom = '';
     p.photoProfile = '';
     p.photoStore = '';
     p.breed = '';
@@ -2963,25 +3696,68 @@
     p.memo = '';
     p.baths = [];
     p.vaccines = [];
+    p.vaccineDates = {};
     p.healthFlags = [];
     p.healthDates = {};
     p.updatedAt = new Date().toISOString();
   }
   /* 남은 날(14일 뒤 자동 정리 / D-N 자동 정리) */
+  /* 분양완료로 옮길 내용이 있는지 (빈 장을 잘못 눌렀을 때 보관함을 만들지 않도록) */
+  function isEmptyRecord(p){
+    if(!p) return true;
+    return String(p.name || '미정') === '미정' && !p.photoProfile && !p.regNo && !p.adopter &&
+      !(p.baths && p.baths.length) && !(p.vaccines && p.vaccines.length) &&
+      !(p.healthFlags && p.healthFlags.length) && !String(p.memo || '').trim();
+  }
+  /* 기존 기록 전체를 보관함(아카이브) 기록으로 복사 — 원래 장 번호도 그대로 갖고 가요 */
+  function makeArchive(src, adoptedAt){
+    var a = norm(Object.assign({}, src, {
+      id: 'adopted_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6),
+      status: 'sold', adoptedAt: adoptedAt, isArchive: true,
+      archivedFrom: String(src.id || ''), updatedAt: adoptedAt
+    }));
+    a.status = 'sold';
+    a.adoptedAt = adoptedAt;
+    a.isArchive = true;
+    return a;
+  }
+  /* 분양완료 전환: 장 슬롯은 즉시 빈 장이 되고, 기록은 분양완료 보관함으로 이동 */
+  function adoptOut(slot, src){
+    if(!slot || slot.isArchive) return null;
+    var data = src || slot;
+    if(isEmptyRecord(data) || (isEmptySlot(slot) && String(data.name || '') === '미정')){
+      toast('빈 장은 분양완료로 옮길 기록이 없어요');
+      return null;
+    }
+    var now = new Date().toISOString();
+    var archive = makeArchive(data, now);
+    var cage = slot.cage;
+    state.puppies.push(archive);
+    clearSlot(slot);
+    save();
+    logActivity({ id:'', branch:archive.branch, cage:archive.cage, name:archive.name }, '분양완료', '보관함으로 옮겼습니다');
+    renderAll();
+    closeSheet();
+    toast((archive.cage ? archive.cage + ' ' : '') + archive.name + ' → 분양완료 보관함 · ' + (cage || '장') + '은 빈 장이 됐어요');
+    return archive;
+  }
   function adoptInfo(p){
     if(!p || p.status !== 'sold' || !p.adoptedAt) return null;
     var t = new Date(p.adoptedAt).getTime();
     if(!(t > 0)) return null;
     var left = ADOPT_TTL - (Date.now() - t);
     var clearDate = isoYmd(new Date(t + ADOPT_TTL).toISOString());
-    if(left <= 0) return { rem:0, text:'곧 자동 정리', day:clearDate, warn:true };
+    if(left <= 0) return { rem:0, text:(p.isArchive ? '곧 자동 삭제' : '곧 자동 정리'), day:clearDate, warn:true };
     var rem = Math.ceil(left / 86400000);
+    if(p.isArchive) return { rem:rem, text:'D-' + rem + ' 자동 삭제', day:clearDate, warn: rem <= 3 };
     return { rem:rem, text: rem >= 14 ? '14일 뒤 자동 정리' : 'D-' + rem + ' 자동 정리', day:clearDate, warn: rem <= 3 };
   }
-  /* 앱을 열 때 · 공유 목록을 불러올 때 · 로그인 후: 14일 지난 분양완료 개체를 빈 장으로 초기화 */
+  /* 앱을 열 때 · 공유 목록을 불러올 때 · 로그인 후:
+     · 분양완료 보관함 기록은 14일이 지나면 행 자체를 삭제(장 슬롯은 이미 빈 장)
+     · 예전에 장 슬롯에 남아 있던 분양완료(호환)는 14일 뒤 내용만 비움 */
   function sweepAdopted(quiet){
     if(!state || !state.puppies) return 0;
-    var now = Date.now(), cleared = 0, stamped = 0;
+    var now = Date.now(), cleared = 0, stamped = 0, purged = 0, gone = {};
     state.puppies.forEach(function(p){
       if(p.status !== 'sold') return;
       var t = p.adoptedAt ? new Date(p.adoptedAt).getTime() : NaN;
@@ -2993,32 +3769,41 @@
         t = new Date(p.adoptedAt).getTime();
       }
       if((now - t) < ADOPT_TTL) return;
-      clearSlot(p);
+      if(p.isArchive){ gone[p.id] = 1; purged++; return; }   // 보관함 기록은 삭제
+      clearSlot(p);                                          // 예전 장 슬롯 호환: 내용만 비움
       cleared++;
     });
-    if(cleared){
+    if(purged){
+      state.puppies = state.puppies.filter(function(x){ return !gone[x.id]; });
+      /* 보관함 행은 공유 목록(Supabase)에서도 바로 지웁니다 */
+      Object.keys(gone).forEach(function(id){ delete pushed[id]; delete localOnly[id]; deleteRow(id); });
+    }
+    if(cleared || purged){
+      var tot = cleared + purged;
       save();
       renderAll();
       if(ui.detailId && !get(ui.detailId)) closeSheet();
       else if(ui.sheet === 'detail' && ui.detailId) refreshDetail();
-      logActivity(null, '분양완료 2주 자동 정리' + (cleared > 1 ? ' (' + cleared + '장)' : ''), '했습니다');
-      if(!quiet) toast(cleared + '장을 비웠어요 · 분양완료 2주 경과');
+      logActivity(null, '분양완료 2주 자동 정리' + (tot > 1 ? ' (' + tot + '건)' : ''), '했습니다');
+      if(!quiet) toast(purged ? (purged + '건을 보관함에서 지웠어요 · 분양완료 2주 경과') : (cleared + '장을 비웠어요 · 분양완료 2주 경과'));
     } else if(stamped){
       save();
     }
-    return cleared;
+    return cleared + purged;
   }
 
   function setStatus(id, st){
     var p = get(id);
     if(!p || !STATUS[st]) return;
+    /* 분양완료: 이 장은 바로 빈 장이 되고, 기존 기록은 분양완료 보관함으로 이동 */
+    if(st === 'sold'){
+      if(p.isArchive) return;
+      adoptOut(p);
+      return;
+    }
     var prev = p.status;
     p.status = st;
-    if(st === 'sold'){
-      if(!p.adoptedAt) p.adoptedAt = new Date().toISOString();   // 분양완료로 바꾼 시각부터 14일
-    } else {
-      p.adoptedAt = null;                                        // 분양중·예약중으로 되돌리면 기준 비움
-    }
+    p.adoptedAt = null;                                          // 분양중·예약중으로 되돌리면 기준 비움
     p.updatedAt = new Date().toISOString();
     save();
     if(prev !== st) logActivity(p, '분양 상태', '수정했습니다');
@@ -3034,6 +3819,64 @@
   function findVac(p, vid){
     for(var i=0;i<(p.vaccines||[]).length;i++){ if(p.vaccines[i].id === vid) return p.vaccines[i]; }
     return null;
+  }
+  /* 접종일 그리드: 아이 상세와 등록·수정 폼에서 같이 써요 */
+  function vacTypesFor(list){
+    var out = VAC_PRESETS.slice();
+    (list || []).forEach(function(v){
+      var nm = vacName(v && v.type);
+      if(nm && out.indexOf(nm) < 0) out.push(nm);
+    });
+    return out;
+  }
+  function vaccineDateGridHTML(target){
+    var dates = (target && target.vaccineDates) || {};
+    var types = vacTypesFor(target && target.vaccines);
+    return '<div class="vgrid">' + types.map(function(t){
+      var ds = isValidDate(dates[t]) ? String(dates[t]).slice(0, 10) : '';
+      return '<div class="vrow' + (ds ? ' done' : '') + '">' +
+        '<button type="button" class="vchip2' + (ds ? ' on' : '') + '" data-act="vacQuick" data-type="' + esc(t) + '" aria-pressed="' + (ds ? 'true' : 'false') + '" aria-label="' + esc(t) + (ds ? ' 접종 완료 · 누르면 날짜 수정' : ' 오늘 접종으로 체크') + '">' +
+          '<i class="vck">' + (ds ? '✓' : '＋') + '</i>' + esc(t) + '</button>' +
+        '<input type="date" class="vdate" data-act="vacDateSet" data-type="' + esc(t) + '" value="' + ds + '" aria-label="' + esc(t) + ' 접종일">' +
+      '</div>';
+    }).join('') + '</div>';
+  }
+  function vacTarget(){
+    if(ui.sheet === 'form') return draft;
+    if(ui.detailId){
+      var p = get(ui.detailId);
+      if(p && !p.isArchive) return p;
+    }
+    return null;
+  }
+  function setVacDate(target, type, ds){
+    if(!target || !type || !isValidDate(ds)) return;
+    if(!target.vaccineDates || typeof target.vaccineDates !== 'object') target.vaccineDates = {};
+    target.vaccineDates[type] = String(ds).slice(0, 10);
+    if(!Array.isArray(target.vaccines)) target.vaccines = [];
+    var hit = null;
+    target.vaccines.forEach(function(v){
+      if(vacName(v.type) !== type) return;
+      if(!hit || String(v.date) < String(hit.date)) hit = v;
+    });
+    if(hit){ hit.date = String(ds).slice(0, 10); if(!hit.by) hit.by = state.worker; }
+    else target.vaccines.push({ id: uid(), type: type, date: String(ds).slice(0, 10), by: state.worker, memo: '' });
+    target.updatedAt = new Date().toISOString();
+  }
+  function commitVac(target, type, ds){
+    setVacDate(target, type, ds);
+    if(target === draft){                       // 등록·수정 폼: 폼 안에서만 바뀌고 [저장] 때 반영
+      readForm();                               // 입력 중이던 값이 사라지지 않게 먼저 담아요
+      setSheet(formHTML(), true);
+      var sc = $('#sheet .sheetbody');
+      toast(type + ' 접종일 ' + fmtMD(ds) + ' · 저장을 누르면 반영돼요');
+      return;
+    }
+    save();
+    logActivity(target, type + ' 접종', '입력했습니다');
+    renderAll();
+    refreshDetail();
+    toast(type + ' 접종일 · ' + fmtMD(ds));
   }
 
   function act(name, el, e){
@@ -3181,12 +4024,94 @@
           else toast('지금은 열 수 없는 아이 기록이에요');
         })();
         break;
+      case 'openHotel':
+        openHotel();
+        break;
+      case 'closeHotel':
+        closeHotel();
+        break;
+      case 'hotelBranch':
+        hotel.branch = el.getAttribute('data-branch') === '디데이펫' ? '디데이펫' : '퍼피댕';
+        renderHotel();
+        break;
+      case 'hotelMonth':
+        (function(){
+          var step = Number(el.getAttribute('data-delta')) || 0;
+          var d = new Date(hotel.y, hotel.m + step, 1);
+          hotel.y = d.getFullYear(); hotel.m = d.getMonth();
+          var want = hotel.sel ? Number(String(hotel.sel).slice(8, 10)) : 1;
+          var dim = new Date(hotel.y, hotel.m + 1, 0).getDate();
+          if(want > dim) want = dim;
+          if(want < 1) want = 1;
+          hotel.sel = hotel.y + '-' + pad(hotel.m + 1) + '-' + pad(want);
+          renderHotel();
+        })();
+        break;
+      case 'hotelToday':
+        (function(){
+          var t = new Date();
+          hotel.y = t.getFullYear(); hotel.m = t.getMonth(); hotel.sel = todayStr();
+          renderHotel();
+        })();
+        break;
+      case 'hotelPick':
+        hotel.sel = el.getAttribute('data-date');
+        renderHotel();
+        break;
+      case 'hotelAdd':
+        openSched(null);
+        break;
+      case 'schedOpen':
+        (function(){
+          var id = el.getAttribute('data-id');
+          if(id && findSched(id)) openSched(id);
+          else toast('지금은 열 수 없는 일정이에요');
+        })();
+        break;
+      case 'hsType':
+        if(hd){
+          hd.type = el.getAttribute('data-v') === 'pickup' ? 'pickup' : 'hotel';
+          if(hd.type === 'pickup' && hd.status === '입실중') hd.status = '예정';
+          hd = normSched(hd);
+          renderSchedSheet();
+        }
+        break;
+      case 'hsBranch':
+        if(hd){
+          hd.branch = el.getAttribute('data-v') === '디데이펫' ? '디데이펫' : '퍼피댕';
+          renderSchedSheet();
+        }
+        break;
+      case 'hsStatus':
+        if(hd){
+          hd.status = el.getAttribute('data-v');
+          renderSchedSheet();
+        }
+        break;
+      case 'hsDog':
+        (function(){
+          var p = get(el.getAttribute('data-id'));
+          if(!p || !hd) return;
+          hd.name = (p.cage ? p.cage + ' ' : '') + (p.name || '');
+          if(hd.type === 'hotel' && p.breed) hd.breed = p.breed;
+          renderSchedSheet();
+        })();
+        break;
+      case 'schedSave':
+        saveSchedSheet();
+        break;
+      case 'schedDone':
+        schedToggleDone();
+        break;
+      case 'schedDelete':
+        schedDelete();
+        break;
       case 'feedOpen':
         (function(){
           var dog = el.getAttribute('data-dog');
           closeSheet();
           if(dog && get(dog)) openDetail(dog);
-          else toast('지금은 열 수 없는 아이 기록이에요');
+          else if(dog) toast('지금은 열 수 없는 아이 기록이에요');
         })();
         break;
       case 'openForm':
@@ -3229,6 +4154,9 @@
       case 'editDog':
         openForm(ui.detailId);
         break;
+      case 'archiveDelete':
+        archiveDelete(el.getAttribute('data-id') || ui.detailId);
+        break;
       case 'deleteDog':
         deleteDog(ui.detailId);
         break;
@@ -3262,6 +4190,23 @@
           toast('목욕 기록을 지웠어요');
         })();
         break;
+      case 'vacQuick':
+        (function(){
+          var tg = vacTarget();
+          var type = el.getAttribute('data-type');
+          if(!tg || !type) return;
+          var cur = (tg.vaccineDates || {})[type];
+          if(cur){
+            var inp = el.parentNode ? el.parentNode.querySelector('.vdate') : null;
+            if(inp){
+              try { inp.focus(); if(inp.showPicker) inp.showPicker(); } catch(e){}
+            }
+            toast(type + ' 접종일은 옆 날짜에서 바꿀 수 있어요');
+            return;
+          }
+          commitVac(tg, type, todayStr());
+        })();
+        break;
       case 'vacType':
         ui.vacType = el.getAttribute('data-type');
         $$('#sheet .vchip').forEach(function(c){ c.classList.toggle('on', c === el); });
@@ -3273,7 +4218,10 @@
           var memo = $('#vacNewMemo') ? $('#vacNewMemo').value.trim() : '';
           if(!isValidDate(dt)){ toast('접종 날짜를 골라주세요'); return; }
           p.vaccines = p.vaccines || [];
+          var vtName = vacName(ui.vacType || VAC_PRESETS[0]);
           p.vaccines.push({ id: uid(), type: ui.vacType || VAC_PRESETS[0], date: dt, by: state.worker, memo: memo });
+          if(!p.vaccineDates || typeof p.vaccineDates !== 'object') p.vaccineDates = {};
+          if(!p.vaccineDates[vtName] || String(dt) > String(p.vaccineDates[vtName])) p.vaccineDates[vtName] = dt;
           p.updatedAt = new Date().toISOString();
           save();
           logActivity(p, vacName(ui.vacType || VAC_PRESETS[0]) + ' 접종', '입력했습니다');
@@ -3287,6 +4235,12 @@
           var v = findVac(p, el.getAttribute('data-id')); if(!v) return;
           if(!window.confirm(vacName(v.type) + ' 기록을 지울까요?')) return;
           p.vaccines = p.vaccines.filter(function(x){ return x.id !== v.id; });
+          var nm = vacName(v.type);
+          if(p.vaccineDates && p.vaccineDates[nm]){
+            var latest = '';
+            p.vaccines.forEach(function(x){ if(vacName(x.type) === nm && String(x.date) > latest) latest = String(x.date); });
+            if(latest) p.vaccineDates[nm] = latest; else delete p.vaccineDates[nm];
+          }
           p.updatedAt = new Date().toISOString();
           save(); renderAll(); refreshDetail();
           toast('접종 기록을 지웠어요');
@@ -3450,6 +4404,7 @@
   document.addEventListener('keydown', function(e){
     if(e.key === 'Escape'){
       if(!$('#sheetWrap').hidden) closeSheet();
+      else if(hotelIsOpen()) closeHotel();
       else if(calIsOpen()) closeCalendar();
     }
     if((e.key === 'Enter' || e.key === ' ') && document.activeElement && document.activeElement.classList.contains('card')){
@@ -3460,6 +4415,12 @@
 
   document.addEventListener('input', function(e){
     var t = e.target;
+    var hfk = t.getAttribute ? t.getAttribute('data-hf') : null;
+    if(hfk && hd && ui.sheet === 'sched'){
+      hd[hfk] = t.value;
+      if(hfk === 'inDate' || hfk === 'outDate') updateSchedNightsHint();
+      return;
+    }
     if(t.id === 'q'){
       ui.q = t.value;
       $('#qClear').hidden = !t.value;
@@ -3506,6 +4467,12 @@
   document.addEventListener('change', function(e){
     var t = e.target;
     if(t.id === 'qClear') return;
+    var hfc = t.getAttribute ? t.getAttribute('data-hf') : null;
+    if(hfc && hd && ui.sheet === 'sched'){
+      hd[hfc] = t.value;
+      if(hfc === 'inDate' || hfc === 'outDate') updateSchedNightsHint();
+      return;
+    }
     if(t.id === 'fileProfile'){
       if(t.files && t.files[0]) handlePhoto(t.files[0]);
       t.value = '';
@@ -3522,6 +4489,16 @@
       return;
     }
     var actName0 = t.getAttribute('data-act');
+    if(actName0 === 'vacDateSet'){
+      var vt = vacTarget();
+      var vtype = t.getAttribute('data-type');
+      if(vt && vtype){
+        if(isValidDate(t.value)) commitVac(vt, vtype, t.value);
+        else if(ui.sheet === 'form') setSheet(formHTML(), true);
+        else refreshDetail();
+      }
+      return;
+    }
     if(actName0 === 'healthDate'){
       var ht = healthTarget();
       var hf = t.getAttribute('data-flag');
@@ -3604,7 +4581,9 @@
   if(/[?&]debug=1/.test(location.search)){
     window.__puppy = { state: state, ui: ui, sync: sync, feed: applyRows, event: onRealtime, mode: setSync, pull: pullRemote,
       logActivity: logActivity, renderFeed: renderFeed, openFeed: openFeed, renderAll: renderAll,
-      cal: cal, openCalendar: openCalendar, renderCalendar: renderCalendar };
+      cal: cal, openCalendar: openCalendar, renderCalendar: renderCalendar,
+      hotel: hotel, openHotel: openHotel, renderHotel: renderHotel, schedules: function(){ return state.schedules; },
+      applySchedules: applySchedules };
   }
 })();
 </script>
