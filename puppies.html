@@ -139,6 +139,34 @@
   .chip.on{background:var(--tint);border-color:var(--tint-3);color:var(--brown-d)}
   .chip.on .cn{color:var(--brown)}
   .chip.done{color:var(--green);border-color:#DEE5D0;background:#F5F8EE}
+  /* 작업 활동 모달 — 날짜 필터 칩 바(세로 스크롤과 무관하게 상단 고정, 가로 스크롤) */
+  .feedchips{flex:none;padding:10px 16px;background:#FFFDFB;border-bottom:1px solid var(--line);
+    -webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .feedchips .chip{height:34px;padding:0 12px;font-size:13.5px;box-shadow:0 2px 6px rgba(122,88,52,.05)}
+  /* 카드·상세 아래 누가 언제 고쳤는지 */
+  .cauthor{font-size:11.5px;font-weight:700;color:var(--muted-2);margin-top:7px;letter-spacing:-.01em;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dauthor{text-align:center;font-size:12px;font-weight:700;color:var(--muted-2);margin-top:14px;letter-spacing:-.01em}
+  /* 상태 사진(건강 특이사항) */
+  .hphoto{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+  .hphead{display:flex;align-items:baseline;gap:7px;margin-bottom:9px}
+  .hphead b{font-size:13.5px;font-weight:800;color:var(--ink-2);letter-spacing:-.02em}
+  .hphead span{font-size:12px;font-weight:700;color:var(--muted-2)}
+  .hpgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:9px}
+  .hpitem{position:relative;border-radius:12px;overflow:hidden;background:#F7F0E7;border:1.5px solid var(--line)}
+  .hpopen{display:block;width:100%;padding:0;background:none;line-height:0}
+  .hpopen img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
+  .hpdel{position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;background:rgba(46,33,22,.62);
+    color:#fff;font-size:12px;font-weight:800;display:grid;place-items:center}
+  .hpcap{display:block;font-size:10.5px;font-weight:700;color:var(--muted-2);padding:4px 6px;letter-spacing:-.02em;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:#FFFDFB}
+  .hpempty{font-size:12.5px;font-weight:700;color:var(--muted-2);margin:0 0 9px}
+  /* 사진 크게 보기 */
+  .photoview{position:fixed;inset:0;z-index:400;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(24,16,10,.9)}
+  .photoview[hidden]{display:none}
+  .photoview img{max-width:100%;max-height:86vh;border-radius:14px;object-fit:contain;background:#000}
+  .pvclose{position:absolute;top:calc(10px + env(safe-area-inset-top));right:12px;width:42px;height:42px;border-radius:50%;
+    background:rgba(255,255,255,.16);color:#fff;font-size:18px;display:grid;place-items:center}
   .filterwrap{margin-top:12px}
   .toolrow{display:flex;align-items:center;gap:8px;margin-top:9px}
   .rcount{font-size:13.5px;font-weight:800;color:var(--muted);letter-spacing:-.02em;white-space:nowrap}
@@ -934,6 +962,11 @@
   <div class="scrim" data-act="closeSheet"></div>
   <section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="상세"></section>
 </div>
+<div class="photoview" id="photoView" hidden>
+  <div class="pvscrim" data-act="closePhotoView"></div>
+  <img id="photoViewImg" src="" alt="상태 사진 크게 보기">
+  <button type="button" class="pvclose" data-act="closePhotoView" aria-label="닫기">✕</button>
+</div>
 <div class="instwrap" id="installWrap" hidden></div>
 <div class="instwrap" id="pushWrap" hidden></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -972,8 +1005,9 @@
   var SCHED_ID = '__schedules__';      // 호텔링 · 분양픽업 일정 공유 행 (스키마 변경 없이 같은 방식으로 저장)
   var SCHED_MAX = 400;                 // 안전상한
   var SCHED_DEL_TTL = 90 * 24 * 60 * 60 * 1000;   // 삭제 표식 보관 기간
-  var ACTIVITY_MAX = 200;              // 안전상한
-  var ACTIVITY_TTL = 3 * 24 * 60 * 60 * 1000;   // 3일(72시간) 지난 활동은 자동 정리
+  var ACTIVITY_MAX = 1000;             // 안전상한(2주 치가 잘리지 않게 넉넉히)
+  var HEALTH_PHOTO_MAX = 6;            // 아이별 상태 사진 최대 장수
+  var ACTIVITY_TTL = 14 * 24 * 60 * 60 * 1000;   // 2주(14일) 지난 활동은 자동 정리
   var ADOPT_TTL = 14 * 24 * 60 * 60 * 1000;     // 분양완료 후 14일(2주) 지나면 장은 그대로 두고 내용만 비움
 
   var errs = [];
@@ -1336,8 +1370,53 @@
       nextVacManual: !!p.nextVacManual,
       memo: String(p.memo == null ? '' : p.memo).slice(0, 2000),
       createdAt: p.createdAt || new Date().toISOString(),
-      updatedAt: p.updatedAt || new Date().toISOString()
+      updatedAt: p.updatedAt || new Date().toISOString(),
+      updatedBy: String(p.updatedBy == null ? '' : p.updatedBy).slice(0, 12),
+      /* 건강 특이사항 상태 사진 (최신이 앞) */
+      healthPhotos: Array.isArray(p.healthPhotos) ? p.healthPhotos.filter(function(ph){
+        return ph && typeof ph.dataUrl === 'string' && ph.dataUrl;
+      }).slice(0, HEALTH_PHOTO_MAX).map(function(ph){
+        return { id: ph.id || uid(), dataUrl: ph.dataUrl,
+          addedAt: ph.addedAt ? String(ph.addedAt) : '',
+          addedBy: String(ph.addedBy == null ? '' : ph.addedBy).slice(0, 12),
+          label: String(ph.label == null ? '' : ph.label).slice(0, 20) };
+      }) : []
     };
+  }
+  /* 아이 기록을 고친 사람·시각을 같이 남겨요 (카드·상세 아래에 표시) */
+  function touchPuppy(p){
+    if(!p) return;
+    p.updatedAt = new Date().toISOString();
+    p.updatedBy = String(state.worker || state.staff[0] || '').slice(0, 12);
+  }
+  /* 11/25 16:37 */
+  function mdHM(iso){
+    var d = new Date(iso);
+    if(isNaN(d.getTime())) return '';
+    return (d.getMonth() + 1) + '/' + d.getDate() + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+  }
+  /* 11월 25일 (수) 16:37 */
+  function fullHM(iso){
+    var d = new Date(iso);
+    if(isNaN(d.getTime())) return '';
+    return (d.getMonth() + 1) + '월 ' + d.getDate() + '일 (' + WEEK[d.getDay()] + ') ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+  }
+  /* 목록 카드 맨 아래 — 빈 장(미정)은 숨김 */
+  function cardAuthorHTML(p){
+    if(!p || p.isArchive) return '';
+    if(String(p.name || '').trim() === '미정') return '';
+    var at = p.updatedAt ? mdHM(p.updatedAt) : '';
+    if(!at) return '';
+    var by = String(p.updatedBy || '').slice(0, 12);
+    return '<div class="cauthor">수정 · ' + (by ? esc(by) + ' · ' : '') + esc(at) + '</div>';
+  }
+  /* 상세 화면 맨 아래 */
+  function detailAuthorHTML(p){
+    if(!p) return '';
+    var at = p.updatedAt ? fullHM(p.updatedAt) : '';
+    if(!at) return '';
+    var by = String(p.updatedBy || '').slice(0, 12);
+    return '<div class="dauthor" id="detailAuthor">마지막 수정 · ' + (by ? esc(by) + ' · ' : '') + esc(at) + '</div>';
   }
 
   function samplePuppies(){
@@ -2112,8 +2191,8 @@
     }, function(err){ handleSyncError(err); });
   }
 
-  /* ================= 작업 활동 피드 (3일 보관) ================= */
-  var feed = { idx:0, timer:null, cur:'' };
+  /* ================= 작업 활동 피드 (2주 보관) ================= */
+  var feed = { idx:0, timer:null, cur:'', day:'' };   // day: '' 전체 / 'YYYY-MM-DD' 그 날짜만
 
   function josa(word){
     var s = String(word == null ? '' : word).replace(/\s+$/, '');
@@ -2144,7 +2223,7 @@
       memo: String(it.memo || '').slice(0, 60)
     };
   }
-  // 3일이 지난 활동은 읽기/쓰기 때 자동으로 걸러냅니다 (최신순 정렬)
+  // 2주가 지난 활동은 읽기/쓰기 때 자동으로 걸러냅니다 (최신순 정렬)
   function activityTs(it){
     if(!it) return 0;
     var v = (typeof it === 'object') ? it.at : it;
@@ -2325,7 +2404,7 @@
     feed.timer = setTimeout(function(){
       var cur = state.activity || [];
       var fresh = activityFresh(cur);
-      if(fresh.length !== cur.length){        // 3일 지난 활동 정리
+      if(fresh.length !== cur.length){        // 2주 지난 활동 정리
         state.activity = sortActivityDesc(fresh).slice(0, ACTIVITY_MAX);
         saveLocal();
         renderFeed(true);
@@ -2358,23 +2437,64 @@
     if(cnt) cnt.textContent = items.length > 99 ? '99+' : String(items.length);
     scheduleFeed();
   }
+  /* 날짜 칩: 하루 단위로 묶어 볼 때 쓰는 키(YYYY-MM-DD, 기기 시간 기준)와 이름 */
+  function feedDayKey(it){
+    var t = activityTs(it);
+    if(!t) return '';
+    return ymd(new Date(t));
+  }
+  function feedDayName(key){
+    if(key === todayStr()) return '오늘';
+    var p = String(key).split('-');
+    if(p.length !== 3) return String(key);
+    var d = new Date(+p[0], (+p[1]) - 1, +p[2]);
+    if(isNaN(d.getTime())) return String(key);
+    return (+p[1]) + '/' + (+p[2]) + '(' + WEEK[d.getDay()] + ')';
+  }
+  // items 는 최신순이므로 날짜 키도 최신순으로 나와요
+  function feedDays(items){
+    var keys = [], counts = {};
+    items.forEach(function(it){
+      var k = feedDayKey(it);
+      if(!k) return;
+      if(!counts[k]){ counts[k] = 0; keys.push(k); }
+      counts[k]++;
+    });
+    return { keys:keys, counts:counts };
+  }
+  function feedChipsHTML(items){
+    var d = feedDays(items);
+    var html = '<button type="button" class="chip ' + (feed.day ? '' : 'on') + '" data-act="feedDay" data-day="" role="tab" aria-selected="' + (feed.day ? 'false' : 'true') + '">전체 <span class="cn">' + items.length + '</span></button>';
+    d.keys.forEach(function(k){
+      var on = (feed.day === k);
+      html += '<button type="button" class="chip ' + (on ? 'on' : '') + '" data-act="feedDay" data-day="' + k + '" role="tab" aria-selected="' + (on ? 'true' : 'false') + '">' +
+        esc(feedDayName(k)) + ' <span class="cn">' + d.counts[k] + '</span></button>';
+    });
+    return '<div class="chips feedchips" id="feedChips" role="tablist" aria-label="날짜별로 작업 활동 보기">' + html + '</div>';
+  }
   function feedSheetHTML(){
-    var items = sortActivityDesc(activityFresh(state.activity || []));   // 최신순 고정
+    var all = sortActivityDesc(activityFresh(state.activity || []));   // 최신순 고정 (2주 보관)
+    // 보고 있던 날짜의 기록이 모두 사라졌으면 전체로 돌아와요
+    if(feed.day && !all.some(function(it){ return feedDayKey(it) === feed.day; })) feed.day = '';
+    var items = feed.day ? all.filter(function(it){ return feedDayKey(it) === feed.day; }) : all;
+    var sub = feed.day ? (feedDayName(feed.day) + ' · ' + items.length + '건') : ('최근 2주 · ' + all.length + '건');
     var rows = items.map(function(it){
       return '<button class="feedrow" data-act="feedOpen" data-dog="' + esc(it.dogId || '') + '">' +
         '<span class="fic" aria-hidden="true">' + feedIcon(it) + '</span>' +
         '<span class="fbody"><span class="fline">' + activityHTML(it) + '</span>' +
         '<span class="ftm">' + esc(activityStamp(it.at)) + '</span></span></button>';
     }).join('');
-    return sheetbar('작업 활동', '최근 3일 · ' + items.length + '건') +
+    return sheetbar('작업 활동', sub) +
+      (all.length ? feedChipsHTML(all) : '') +
       '<div class="sheetbody">' +
       (items.length
         ? '<div class="scard" style="margin-top:0;padding:2px 14px">' + rows + '</div>'
-        : '<div class="empty"><div class="ee">📣</div><h3>최근 3일 활동이 없어요</h3><p>목욕·약욕, 특이사항, 접종을 기록하면 여기에 쌓여요.</p></div>') +
-      '<p class="hint" style="text-align:center;margin-top:12px">작성한 지 3일이 지난 기록은 자동으로 사라져요 · 활동을 누르면 그 아이 상세로 이동해요</p>' +
+        : '<div class="empty"><div class="ee">📣</div><h3>최근 2주 활동이 없어요</h3><p>목욕·약욕, 특이사항, 접종을 기록하면 여기에 쌓여요.</p></div>') +
+      '<p class="hint" style="text-align:center;margin-top:12px">작성한 지 2주가 지난 기록은 자동으로 사라져요 · 활동을 누르면 그 아이 상세로 이동해요</p>' +
       '</div>';
   }
   function openFeed(){
+    feed.day = '';                 // 열 때는 항상 전체부터
     ui.sheet = 'feed';
     setSheet(feedSheetHTML());
     openSheet();
@@ -3118,6 +3238,7 @@
         '<div class="cbathrow"><span class="bathbadge ' + bl.cls + (bl.kind === '약욕' ? ' yak' : '') + '">' + bl.icon + ' ' + bl.text + '</span></div>' +
         (vac ? '<div class="ctail ' + (vac.cls === 'alert' ? 'over' : '') + '">💉 다음 접종 ' + vac.text +
           (vacDate ? ' <span style="font-weight:700;color:var(--muted-2)">(' + fmtMD(vacDate) + ')</span>' : '') + '</div>' : '') +
+        cardAuthorHTML(p) +
       '</div></article>';
   }
 
@@ -3903,12 +4024,98 @@
     if(t.healthDates) delete t.healthDates[flag];
     if(t === draft){ commitHealth(true); return; }
     grabMemo();
-    t.updatedAt = new Date().toISOString();
+    touchPuppy(t);
     save();
     logActivity(t, flag + ' 정상 회복', '입력했습니다');
     renderAll();
     refreshDetail();
     toast(flag + ' 정상 회복 처리했어요');
+  }
+
+  /* ================= 건강 상태 사진 (피부·귀 등) ================= */
+  function healthPhotosHTML(p){
+    var list = (p && p.healthPhotos) || [];
+    var grid = list.length
+      ? '<div class="hpgrid">' + list.map(function(ph){
+          var cap = '';
+          var d = ph.addedAt ? new Date(ph.addedAt) : null;
+          if(d && !isNaN(d.getTime())) cap = (d.getMonth() + 1) + '/' + d.getDate();
+          return '<div class="hpitem">' +
+            '<button type="button" class="hpopen" data-act="healthPhotoOpen" data-id="' + esc(ph.id) + '" aria-label="상태 사진 크게 보기">' +
+              '<img src="' + ph.dataUrl + '" alt="' + esc(ph.label || '상태 사진') + '" loading="lazy">' +
+            '</button>' +
+            '<span class="hpcap">' + esc(cap || '날짜 미상') + (ph.addedBy ? ' · ' + esc(ph.addedBy) : '') + '</span>' +
+            '<button type="button" class="hpdel" data-act="healthPhotoDel" data-id="' + esc(ph.id) + '" aria-label="상태 사진 삭제">✕</button>' +
+          '</div>';
+        }).join('') + '</div>'
+      : '<p class="hpempty">아직 올린 사진이 없어요 — 피부·귀·눈 상태를 사진으로 남겨두면 나중에 비교하기 쉬워요.</p>';
+    return '<div class="hphoto">' +
+      '<div class="hphead"><b>📷 상태 사진</b><span>최대 ' + HEALTH_PHOTO_MAX + '장</span></div>' +
+      grid +
+      '<input type="file" id="fileHealthPhoto" accept="image/*" multiple hidden>' +
+      '<button type="button" class="btn sm wide" data-act="healthPhotoPick">📷 상태 사진 올리기</button>' +
+      '</div>';
+  }
+  function addHealthPhotos(files){
+    var p = get(ui.detailId);
+    if(!p) return;
+    var list = Array.prototype.slice.call(files || []).filter(function(f){ return f && /^image\//.test(String(f.type || '')); });
+    if(!list.length){ toast('이미지 파일만 올릴 수 있어요.'); return; }
+    var room = HEALTH_PHOTO_MAX - ((p.healthPhotos || []).length);
+    if(room <= 0){ toast('상태 사진은 최대 ' + HEALTH_PHOTO_MAX + '장까지예요. 하나 지우고 올려주세요.'); return; }
+    var take = list.slice(0, room);
+    if(list.length > room) toast('상태 사진은 ' + HEALTH_PHOTO_MAX + '장까지라 ' + room + '장만 올릴게요');
+    var done = 0, added = 0;
+    function finish(){
+      if(done < take.length) return;
+      if(!added) return;
+      touchPuppy(p);
+      save();
+      logActivity(p, '상태 사진', added > 1 ? added + '장 추가했습니다' : '추가했습니다');
+      renderAll();
+      refreshDetail();
+      toast('상태 사진 ' + added + '장을 올렸어요');
+    }
+    take.forEach(function(f){
+      compressImage(f, function(dataURL){
+        p.healthPhotos = [{ id: uid(), dataUrl: dataURL, addedAt: new Date().toISOString(),
+          addedBy: String(state.worker || '').slice(0, 12), label: '' }].concat(p.healthPhotos || []).slice(0, HEALTH_PHOTO_MAX);
+        added++; done++;
+        finish();
+      });
+    });
+  }
+  function openHealthPhoto(id){
+    var p = get(ui.detailId);
+    if(!p || !id) return;
+    var ph = (p.healthPhotos || []).filter(function(x){ return x.id === id; })[0];
+    if(!ph) return;
+    var box = $('#photoView'), img = $('#photoViewImg');
+    if(!box || !img) return;
+    img.src = ph.dataUrl;
+    box.hidden = false;
+    document.body.classList.add('lock');
+  }
+  function closePhotoView(){
+    var box = $('#photoView');
+    if(!box || box.hidden) return;
+    box.hidden = true;
+    var img = $('#photoViewImg');
+    if(img) img.removeAttribute('src');
+    if($('#sheetWrap').hidden) document.body.classList.remove('lock');
+  }
+  function deleteHealthPhoto(id){
+    var p = get(ui.detailId);
+    if(!p || !id) return;
+    if(!(p.healthPhotos || []).some(function(x){ return x.id === id; })) return;
+    if(!window.confirm('이 상태 사진을 지울까요?\n지우면 되돌릴 수 없어요.')) return;
+    p.healthPhotos = (p.healthPhotos || []).filter(function(x){ return x.id !== id; });
+    touchPuppy(p);
+    save();
+    logActivity(p, '상태 사진', '삭제했습니다');
+    renderAll();
+    refreshDetail();
+    toast('상태 사진을 지웠어요');
   }
   /* 메모 수정도 활동 슬라이드에 한 번씩 남기기 (상세를 열 때의 메모를 기준으로 비교) */
   var memoLog = { id:'', base:'', logged:false, actId:'', preview:'', tail:'' };
@@ -3957,7 +4164,7 @@
       return;
     }
     grabMemo();
-    t.updatedAt = new Date().toISOString();
+    touchPuppy(t);
     save();
     renderList();
     refreshDetail();
@@ -4091,15 +4298,17 @@
         '<p class="sp small" style="margin:0 0 9px">해당되는 항목을 누르면 체크되고, 사진 아래에 <b>며칠째</b>인지 표시돼요. 나으면 <b>✓ 정상</b>을 누르면 배지가 사라져요. <b>탈장 · 부정교합 · 숨골</b>은 며칠째 없이 이름만 표시해요.</p>' +
         healthChipsHTML(p.healthFlags, true) +
         healthDateListHTML(p) +
+        healthPhotosHTML(p) +
       '</section>' +
 
       '<section class="scard"><div class="shead"><h3>📝 특이사항 · 건강 메모</h3><span class="saved" id="memoSaved">자동 저장</span></div>' +
         '<textarea class="memo" id="memoBox" placeholder="식욕, 배변, 성격, 손님 반응 등 자유롭게 적어두세요">' + esc(p.memo || '') + '</textarea>' +
       '</section>' +
 
-      '<div class="dmeta">등록 ' + fmtFull(isoYmd(p.createdAt)) + ' · 수정 ' + fmtFull(isoYmd(p.updatedAt)) + '</div>' +
+      '<div class="dmeta">등록 ' + fmtFull(isoYmd(p.createdAt)) + '</div>' +
       '<div class="btnrow" style="margin-top:10px"><button class="btn wide" data-act="editDog">✏️ 정보 수정</button>' +
         '<button class="btn wide danger" data-act="deleteDog">이 아이 삭제</button></div>' +
+      detailAuthorHTML(p) +
       '</div>';
   }
 
@@ -4365,9 +4574,10 @@
       if(!p) return;
       beforeFlags = (p.healthFlags || []).slice();
       beforeMemo = String(p.memo || '');
-      var keep = { id:p.id, baths:p.baths, vaccines:p.vaccines, nextVaccine:p.nextVaccine, createdAt:p.createdAt };
-      var merged = norm(Object.assign({}, p, d, { updatedAt: now }));
+      var keep = { id:p.id, baths:p.baths, vaccines:p.vaccines, nextVaccine:p.nextVaccine, createdAt:p.createdAt, healthPhotos:p.healthPhotos };
+      var merged = norm(Object.assign({}, p, d, { updatedAt: now, updatedBy: state.worker }));
       merged.baths = keep.baths;
+      merged.healthPhotos = keep.healthPhotos;
       merged.vaccines = Array.isArray(d.vaccines) ? d.vaccines : keep.vaccines;
       merged.vaccineDates = (d.vaccineDates && typeof d.vaccineDates === 'object') ? d.vaccineDates : (p.vaccineDates || {});
       /* 폼에서 접종일을 체크/수정했으면 그 값(마지막 접종일 + 2주)을 그대로 저장, 아니면 기존 예정일 유지 */
@@ -4383,7 +4593,7 @@
       if(p.status === 'sold' && !p.adoptedAt) p.adoptedAt = now;   // 예전 방식(장 슬롯 분양완료) 호환
       saved = p;
     } else {
-      var np = norm(Object.assign({}, d, { createdAt: now, updatedAt: now }));
+      var np = norm(Object.assign({}, d, { createdAt: now, updatedAt: now, updatedBy: state.worker }));
       if(np.status === 'sold'){
         /* 새로 등록하면서 바로 분양완료 → 장을 차지하지 않는 보관함 기록으로 저장 (14일 뒤 자동 삭제) */
         np.adoptedAt = now;
@@ -4670,7 +4880,7 @@
     }
     p.baths = p.baths || [];
     p.baths.push({ id: uid(), date: t, kind: kind, by: state.worker, memo:'' });
-    p.updatedAt = new Date().toISOString();
+    touchPuppy(p);
     save();
     logActivity(p, kind + '완료', '입력했습니다');
     renderAll();
@@ -4720,6 +4930,7 @@
     p.vaccineDates = {};
     p.healthFlags = [];
     p.healthDates = {};
+    p.healthPhotos = [];
     p.updatedAt = new Date().toISOString();
   }
   /* 남은 날(14일 뒤 자동 정리 / D-N 자동 정리) */
@@ -4825,7 +5036,7 @@
     var prev = p.status;
     p.status = st;
     p.adoptedAt = null;                                          // 분양중·예약중으로 되돌리면 기준 비움
-    p.updatedAt = new Date().toISOString();
+    touchPuppy(p);
     save();
     if(prev !== st) logActivity(p, '분양 상태', '수정했습니다');
     renderAll();
@@ -4882,7 +5093,7 @@
     });
     if(hit){ hit.date = String(ds).slice(0, 10); if(!hit.by) hit.by = state.worker; }
     else target.vaccines.push({ id: uid(), type: type, date: String(ds).slice(0, 10), by: state.worker, memo: '' });
-    target.updatedAt = new Date().toISOString();
+    touchPuppy(target);
     syncNextVac(target);     // 다음 접종 예정일 = 가장 최근 접종일 + 2주(14일)
   }
   function commitVac(target, type, ds){
@@ -4994,7 +5205,7 @@
           var p = get(ui.detailId); if(!p) return;
           var b = findBath(p, el.getAttribute('data-id')); if(!b) return;
           b.kind = bathKind(b) === '약욕' ? '목욕' : '약욕';
-          p.updatedAt = new Date().toISOString();
+          touchPuppy(p);
           save(); renderAll(); refreshDetail();
           toast('기록을 ‘' + b.kind + '’(으)로 바꿨어요');
         })();
@@ -5127,6 +5338,29 @@
       case 'schedDelete':
         schedDelete();
         break;
+      case 'feedDay':
+        (function(){
+          var key2 = el.getAttribute('data-day') || '';
+          if(key2 === feed.day) return;
+          feed.day = key2;
+          var bar0 = $('#feedChips'), sl0 = bar0 ? bar0.scrollLeft : 0;
+          setSheet(feedSheetHTML());
+          var bar1 = $('#feedChips');
+          if(bar1) bar1.scrollLeft = sl0;     // 칩 가로 스크롤 위치 유지
+        })();
+        break;
+      case 'healthPhotoPick':
+        (function(){ var inp = $('#fileHealthPhoto'); if(inp) inp.click(); })();
+        break;
+      case 'healthPhotoOpen':
+        openHealthPhoto(el.getAttribute('data-id'));
+        break;
+      case 'healthPhotoDel':
+        deleteHealthPhoto(el.getAttribute('data-id'));
+        break;
+      case 'closePhotoView':
+        closePhotoView();
+        break;
       case 'feedOpen':
         (function(){
           var dog = el.getAttribute('data-dog');
@@ -5212,7 +5446,7 @@
           p.baths = p.baths || [];
           if(p.baths.some(function(b){ return b.date === dt && bathKind(b) === kind; })){ toast('그 날짜는 이미 ' + kind + ' 기록이 있어요'); return; }
           p.baths.push({ id: uid(), date: dt, kind: kind, by: state.worker, memo:'' });
-          p.updatedAt = new Date().toISOString();
+          touchPuppy(p);
           save();
           logActivity(p, (dt === todayStr() ? '' : fmtMD(dt) + ' ') + kind + '완료', '입력했습니다');
           renderAll(); refreshDetail();
@@ -5225,7 +5459,7 @@
           var b = findBath(p, el.getAttribute('data-id')); if(!b) return;
           if(!window.confirm(fmtMD(b.date) + ' 목욕 기록을 지울까요?')) return;
           p.baths = p.baths.filter(function(x){ return x.id !== b.id; });
-          p.updatedAt = new Date().toISOString();
+          touchPuppy(p);
           save(); renderAll(); refreshDetail();
           toast('목욕 기록을 지웠어요');
         })();
@@ -5262,7 +5496,7 @@
           p.vaccines.push({ id: uid(), type: ui.vacType || VAC_PRESETS[0], date: dt, by: state.worker, memo: memo });
           if(!p.vaccineDates || typeof p.vaccineDates !== 'object') p.vaccineDates = {};
           if(!p.vaccineDates[vtName] || String(dt) > String(p.vaccineDates[vtName])) p.vaccineDates[vtName] = dt;
-          p.updatedAt = new Date().toISOString();
+          touchPuppy(p);
           syncNextVac(p);            // 다음 접종 예정일 = 가장 최근 접종일 + 2주(14일)
           save();
           logActivity(p, vacName(ui.vacType || VAC_PRESETS[0]) + ' 접종', '입력했습니다');
@@ -5282,7 +5516,7 @@
             p.vaccines.forEach(function(x){ if(vacName(x.type) === nm && String(x.date) > latest) latest = String(x.date); });
             if(latest) p.vaccineDates[nm] = latest; else delete p.vaccineDates[nm];
           }
-          p.updatedAt = new Date().toISOString();
+          touchPuppy(p);
           if((p.vaccines || []).length) syncNextVac(p);   // 남은 기록의 마지막 접종일 + 2주로 다시 계산
           save(); renderAll(); refreshDetail();
           toast('접종 기록을 지웠어요' + vacToastSuffix(p));
@@ -5296,7 +5530,7 @@
           var nx = addDaysYmd(last, VAC_INTERVAL_DAYS);
           p.nextVaccine = nx;
           p.nextVacManual = false;
-          p.updatedAt = new Date().toISOString();
+          touchPuppy(p);
           save(); renderAll(); refreshDetail();
           toast('마지막 접종 ' + fmtMD(last) + ' + 2주 → ' + fmtMD(nx) + '(으)로 맞췄어요');
         })();
@@ -5306,7 +5540,7 @@
           var p = get(ui.detailId); if(!p) return;
           p.nextVaccine = '';
           p.nextVacManual = false;
-          p.updatedAt = new Date().toISOString();
+          touchPuppy(p);
           save(); renderAll(); refreshDetail();
           toast('다음 접종 예정일을 지웠어요' + (lastVacDate(p) ? ' · 접종 기록이 있어 마지막 접종일 + 2주로 다시 계산돼요' : ''));
         })();
@@ -5464,7 +5698,8 @@
 
   document.addEventListener('keydown', function(e){
     if(e.key === 'Escape'){
-      if($('#installWrap') && !$('#installWrap').hidden) closeInstallGuide();
+      if($('#photoView') && !$('#photoView').hidden) closePhotoView();
+      else if($('#installWrap') && !$('#installWrap').hidden) closeInstallGuide();
       else if(!$('#sheetWrap').hidden) closeSheet();
       else if(hotelIsOpen()) closeHotel();
       else if(calIsOpen()) closeCalendar();
@@ -5521,7 +5756,7 @@
       var p = get(ui.detailId);
       if(!p) return;
       p.memo = t.value;
-      p.updatedAt = new Date().toISOString();
+      touchPuppy(p);
       var sv = $('#memoSaved');
       if(sv){ sv.textContent = '저장 중…'; sv.classList.remove('on'); }
       if(window.__memoT) clearTimeout(window.__memoT);
@@ -5529,6 +5764,8 @@
         save();
         var s2 = $('#memoSaved');
         if(s2){ s2.textContent = '저장됨 ✓'; s2.classList.add('on'); }
+        var da = $('#detailAuthor');
+        if(da) da.innerHTML = detailAuthorHTML(p);   // 마지막 수정 줄도 바로 갱신
         logMemoIfChanged(p);   // 메모도 누가 썼는지 활동 슬라이드에 표시
       }, 500);
     }
@@ -5545,6 +5782,11 @@
     }
     if(t.id === 'fileProfile'){
       if(t.files && t.files[0]) handlePhoto(t.files[0]);
+      t.value = '';
+      return;
+    }
+    if(t.id === 'fileHealthPhoto'){
+      if(t.files && t.files.length) addHealthPhotos(t.files);
       t.value = '';
       return;
     }
@@ -5587,7 +5829,7 @@
       var b = findBath(p, t.getAttribute('data-id'));
       if(b && isValidDate(t.value)){
         b.date = t.value;
-        p.updatedAt = new Date().toISOString();
+        touchPuppy(p);
         save(); renderAll(); refreshDetail();
         toast(fmtMD(b.date) + '(으)로 고쳤어요');
       }
@@ -5608,7 +5850,7 @@
           if(!p.vaccineDates || typeof p.vaccineDates !== 'object') p.vaccineDates = {};
           p.vaccineDates[vnm] = vlatest;      // 접종일 그리드도 같은 날짜로 맞춤
         }
-        p.updatedAt = new Date().toISOString();
+        touchPuppy(p);
         syncNextVac(p);                        // 다음 접종 예정일 = 가장 최근 접종일 + 2주(14일)
         save(); renderAll(); refreshDetail();
         toast('접종 날짜를 고쳤어요' + vacToastSuffix(p));
@@ -5619,7 +5861,7 @@
       var v2 = findVac(p, t.getAttribute('data-id'));
       if(v2){
         v2.memo = t.value.trim();
-        p.updatedAt = new Date().toISOString();
+        touchPuppy(p);
         save();
         toast('메모를 저장했어요');
       }
@@ -5629,12 +5871,12 @@
       if(isValidDate(t.value)){
         p.nextVaccine = t.value;
         p.nextVacManual = true;
-        p.updatedAt = new Date().toISOString();
+        touchPuppy(p);
         save(); renderAll(); refreshDetail();
         toast('다음 접종일을 ' + fmtMD(t.value) + '(으)로 저장했어요 · 새 접종을 기록하면 다시 2주로 계산돼요');
       } else if(t.value === ''){
         p.nextVaccine = '';
-        p.updatedAt = new Date().toISOString();
+        touchPuppy(p);
         save(); renderAll(); refreshDetail();
       }
       return;
