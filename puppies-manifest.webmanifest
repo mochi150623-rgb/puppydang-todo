@@ -1,0 +1,35 @@
+{
+  "id": "/puppydang-todo/puppies.html",
+  "name": "퍼피댕 아이들 관리",
+  "short_name": "퍼피댕 노트",
+  "description": "퍼피댕·디데이펫 강아지·고양이 개체·목욕·접종·분양 관리 노트",
+  "lang": "ko",
+  "dir": "ltr",
+  "start_url": "/puppydang-todo/puppies.html",
+  "scope": "/puppydang-todo/puppies.html",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "background_color": "#FAF6F0",
+  "theme_color": "#5C4033",
+  "icons": [
+    {
+      "src": "puppies-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "puppies-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "puppies-icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

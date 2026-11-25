@@ -7,8 +7,15 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="description" content="퍼피댕·디데이펫 강아지 개체·목욕·접종·분양 관리 노트">
 <title>퍼피댕 · 디데이펫 — 강아지 관리 노트</title>
+<link rel="manifest" href="puppies-manifest.webmanifest">
 <link rel="icon" href="puppies-icon.png" type="image/png">
-<link rel="apple-touch-icon" href="puppies-icon.png">
+<link rel="icon" href="puppies-icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="puppies-icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="퍼피댕 노트">
+<meta name="application-name" content="퍼피댕 노트">
 <meta property="og:image" content="puppies-logo.png">
 <style>
   *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -2064,12 +2071,32 @@
     };
   }
   // 3일이 지난 활동은 읽기/쓰기 때 자동으로 걸러냅니다 (최신순 정렬)
+  function activityTs(it){
+    if(!it) return 0;
+    var v = (typeof it === 'object') ? it.at : it;
+    if(v instanceof Date){ var t0 = v.getTime(); return isNaN(t0) ? 0 : t0; }
+    if(typeof v === 'number'){ return isFinite(v) ? v : 0; }
+    var t = new Date(v).getTime();
+    return isNaN(t) ? 0 : t;
+  }
+  // 항상 최근 시간이 맨 위(b.ts - a.ts). 같은 시각이면 들어온 순서를 그대로 유지해요.
+  function sortActivityDesc(list){
+    return (Array.isArray(list) ? list : []).slice().sort(function(a, b){
+      return activityTs(b) - activityTs(a);
+    });
+  }
   function activityFresh(list){
     var cutoff = Date.now() - ACTIVITY_TTL;
-    return (Array.isArray(list) ? list : []).filter(function(it){
-      var t = new Date(it.at).getTime();
-      return !isNaN(t) && t >= cutoff;
-    }).sort(function(a, b){ return new Date(b.at).getTime() - new Date(a.at).getTime(); });
+    return sortActivityDesc((Array.isArray(list) ? list : []).filter(function(it){
+      var t = activityTs(it);
+      return t > 0 && t >= cutoff;
+    }));
+  }
+  // "2026년 11월 25일 (수) · 12시 24분" — 목록 순서를 눈으로 확인할 수 있게 시각까지
+  function activityStamp(iso){
+    var day = iso ? fmtFull(isoYmd(iso)) : '—';
+    var hm = timeHM(iso);
+    return hm ? day + ' · ' + hm : day;
   }
   function activityHTML(it){
     var when = timeHM(it.at);
@@ -2108,7 +2135,7 @@
       act: act,
       tail: tail || '입력했습니다'
     });
-    state.activity = activityFresh([item].concat(state.activity || [])).slice(0, ACTIVITY_MAX);
+    state.activity = sortActivityDesc(activityFresh([item].concat(state.activity || []))).slice(0, ACTIVITY_MAX);
     saveLocal();
     activityDirty = true;
     pushActivity();
@@ -2130,8 +2157,7 @@
       seen[it.id] = 1;
       out.push(it);
     });
-    out.sort(function(a, b){ return new Date(b.at).getTime() - new Date(a.at).getTime(); });
-    out = activityFresh(out).slice(0, ACTIVITY_MAX);
+    out = sortActivityDesc(activityFresh(out)).slice(0, ACTIVITY_MAX);
     var before = JSON.stringify(state.activity || []);
     state.activity = out;
     if(before !== JSON.stringify(out)){ saveLocal(); renderFeed(!!fromRemote); }
@@ -2160,7 +2186,7 @@
       var cur = state.activity || [];
       var fresh = activityFresh(cur);
       if(fresh.length !== cur.length){        // 3일 지난 활동 정리
-        state.activity = fresh.slice(0, ACTIVITY_MAX);
+        state.activity = sortActivityDesc(fresh).slice(0, ACTIVITY_MAX);
         saveLocal();
         renderFeed(true);
         return;
@@ -2176,7 +2202,7 @@
   function renderFeed(fresh){
     var wrap = $('#feedWrap');
     if(!wrap) return;
-    var items = activityFresh(state.activity || []);
+    var items = sortActivityDesc(activityFresh(state.activity || []));
     if(!items.length){
       wrap.hidden = true;
       feed.cur = '';
@@ -2193,12 +2219,12 @@
     scheduleFeed();
   }
   function feedSheetHTML(){
-    var items = activityFresh(state.activity || []);
+    var items = sortActivityDesc(activityFresh(state.activity || []));   // 최신순 고정
     var rows = items.map(function(it){
       return '<button class="feedrow" data-act="feedOpen" data-dog="' + esc(it.dogId || '') + '">' +
         '<span class="fic" aria-hidden="true">' + feedIcon(it) + '</span>' +
         '<span class="fbody"><span class="fline">' + activityHTML(it) + '</span>' +
-        '<span class="ftm">' + fmtFull(isoYmd(it.at)) + '</span></span></button>';
+        '<span class="ftm">' + esc(activityStamp(it.at)) + '</span></span></button>';
     }).join('');
     return sheetbar('작업 활동', '최근 3일 · ' + items.length + '건') +
       '<div class="sheetbody">' +
@@ -4988,6 +5014,16 @@
       applySchedules: applySchedules };
   }
 })();
+</script>
+<script>
+/* 퍼피댕 아이들 관리 — 전용 서비스 워커 등록 (puppies.html 범위만) */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){
+    try {
+      navigator.serviceWorker.register('puppies-sw.js', { scope: '/puppydang-todo/puppies.html' }).catch(function(){});
+    } catch(e){}
+  });
+}
 </script>
 </body>
 </html>
