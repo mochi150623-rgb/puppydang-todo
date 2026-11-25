@@ -2275,9 +2275,17 @@
     return hay.indexOf(q) >= 0;
   }
 
+  /* 아이 사진이 들어간 장인지 — 사진 없는 빈 장(미정)은 목욕 필요 집계·필터에서 제외 */
+  function hasKidPhoto(p){
+    return !!(p && p.photoProfile && String(p.photoProfile).trim());
+  }
   function needsBath(p){
     var d = bathDays(p);
     return d === null || d >= 7;
+  }
+  /* 목욕 필요 대상: 아이 사진이 있는 장 + 목욕한 지 7일 이상(기록 없음 포함) */
+  function bathNeeded(p){
+    return hasKidPhoto(p) && needsBath(p);
   }
 
   function nearVac(p){
@@ -2295,7 +2303,7 @@
       if(ui.status !== '전체' && p.status !== ui.status) return false;
       if(ui.special){
         if(p.status === 'sold') return false;
-        if(ui.special === 'bath' && !needsBath(p)) return false;
+        if(ui.special === 'bath' && !bathNeeded(p)) return false;
         if(ui.special === 'vac' && !nearVac(p)) return false;
       }
       return matchQuery(p, q);
@@ -2345,7 +2353,7 @@
     var active = state.puppies.filter(function(p){ return p.status !== 'sold' && !p.isArchive; });
     var avail = state.puppies.filter(function(p){ return p.status === 'available' && !p.isArchive; }).length;
     var total = state.puppies.filter(function(p){ return !p.isArchive; }).length;
-    var needBath = active.filter(needsBath).length;
+    var needBath = active.filter(bathNeeded).length;
     var vacSoon = active.filter(nearVac).length;
     $('#statRow').innerHTML =
       statBox('all', '', total, '전체') +
