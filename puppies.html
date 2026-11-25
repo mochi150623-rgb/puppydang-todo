@@ -67,6 +67,12 @@
   .wopt.on .wdel{background:rgba(255,255,255,.24);color:#fff}
   .wadd{display:flex;gap:7px;margin-top:10px}
   .wmem{display:flex;align-items:center;gap:8px;margin-top:14px;padding:10px 12px;border-radius:13px;background:#FBF6EF;font-size:13px;font-weight:700;color:var(--muted);line-height:1.5;letter-spacing:-.02em}
+  .pushcard{display:flex;align-items:center;gap:10px;margin-top:13px;padding:12px 13px;border-radius:15px;border:1.5px solid var(--line);background:#fff;box-shadow:0 4px 14px rgba(122,88,52,.04)}
+  .pushcard.on{background:#F3FAF0;border-color:#CBE6BF}
+  .pushcard>div:first-child{flex:1;min-width:0}
+  .pushcard b{display:block;font-size:14px;font-weight:800;letter-spacing:-.02em;color:var(--brown-d)}
+  .pushcard span{display:block;font-size:12px;font-weight:650;color:var(--muted);margin-top:2px;line-height:1.45;letter-spacing:-.02em}
+  .pushcard .pushbtn{flex:none;white-space:nowrap}
   .wlogout{width:100%;margin-top:16px;height:46px;border-radius:13px;border:1.5px solid var(--line);background:#FBF6EF;
     font-size:13.5px;font-weight:800;color:var(--muted);letter-spacing:-.02em}
   .wlogout:active{transform:scale(.985)}
@@ -930,6 +936,7 @@
   <section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="상세"></section>
 </div>
 <div class="instwrap" id="installWrap" hidden></div>
+<div class="instwrap" id="pushWrap" hidden></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <!-- 실시간 동기화 (Supabase) -->
@@ -1498,6 +1505,7 @@
 
   var sync = { mode:'local', client:null, channel:null, lastAt:null, err:null, busy:false };
   var auth = { user:null, offline:false, staffDirty:false, meName:'', workerSet:false, purgeName:'' };
+  var sessionToken = '';   // 로그인 세션 토큰 (알림 발송·구독 저장 요청에 사용, 없으면 anon 키)
   var pushed = {};      // id -> 마지막으로 DB에 있는 것으로 확인된 스냅샷
   var localOnly = {};   // 이 기기에만 있는(아직 공유 목록에 없는) id
   var activityDirty = false;   // 이 기기에만 있는 활동이 있어 공유 목록에 합쳐야 함
@@ -1884,13 +1892,15 @@
     showLock('checking');
     if(!initClient()){ showLock('offline'); return; }
     try {
-      sync.client.auth.onAuthStateChange(function(evt){
+      sync.client.auth.onAuthStateChange(function(evt, sess){
+        sessionToken = (sess && sess.access_token) || '';
         if(evt === 'SIGNED_OUT' && (auth.user || !document.body.classList.contains('locked'))) lockApp();
       });
     } catch(e){}
     try {
       sync.client.auth.getSession().then(function(res){
         var s = res && res.data && res.data.session;
+        sessionToken = (s && s.access_token) || '';
         if(s && s.user) unlock(s.user);
         else showLock('login');
       }, function(){ showLock('offline'); });
@@ -1981,6 +1991,7 @@
       if(r.id === META_ID){ applyStaff(r.data); return; }
       if(r.id === ACTIVITY_ID){ applyActivity(r.data, true); return; }
       if(r.id === SCHED_ID){ applySchedules(r.data, true); return; }
+      if(r.id === PUSH_ID) return;               // 알림 구독 목록 행은 아이 기록이 아니에요
       try { remote.push(norm(r.data || {})); } catch(e){}
     });
     var remoteIds = {}, snap = {}, merged = [], pushAfter = [];
@@ -2017,7 +2028,7 @@
     if(!payload || payload.table !== 'puppies') return;
     if(payload.eventType === 'DELETE'){
       var oldId = payload.old && payload.old.id;
-      if(!oldId || oldId === META_ID || oldId === ACTIVITY_ID || oldId === SCHED_ID) return;
+      if(!oldId || oldId === META_ID || oldId === ACTIVITY_ID || oldId === SCHED_ID || oldId === PUSH_ID) return;
       var gone = get(oldId);
       if(!gone) return;
       state.puppies = state.puppies.filter(function(x){ return x.id !== oldId; });
@@ -2032,6 +2043,7 @@
     if(row.id === META_ID){ applyStaff(row.data); return; }
     if(row.id === ACTIVITY_ID){ applyActivity(row.data, true); return; }
     if(row.id === SCHED_ID){ applySchedules(row.data, true); return; }
+    if(row.id === PUSH_ID) return;               // 알림 구독 목록 행은 아이 기록이 아니에요
     var incoming = norm(row.data || {});
     var cur = get(incoming.id);
     var s = JSON.stringify(incoming);
@@ -2243,6 +2255,8 @@
     activityDirty = true;
     pushActivity();
     renderFeed(true);
+    /* 다른 직원 폰의 잠금화면 알림 — 기기 자동 정리 같은 시스템 기록은 보내지 않아요 */
+    if(!/자동 정리/.test(String(act || ''))) queuePush(pushTextOf(item), 0);
     return item;
   }
   /* 같은 메모를 이어서 고치는 동안에는 줄을 새로 만들지 않고 방금 남긴 줄의 내용만 갱신해요 */
@@ -2261,6 +2275,7 @@
       activityDirty = true;
       pushActivity();
       renderFeed(false);
+      queuePush(pushTextOf(list[i]), 2500);   // 메모를 고치는 동안은 잠깐 모아 마지막 내용만 알림
       return true;
     }
     return false;
@@ -2613,6 +2628,274 @@
       }
     }catch(e){}
     fail();
+  }
+
+  /* ================= 🔔 잠금화면 알림 (Web Push) =================
+     · 구독 목록은 새 테이블 없이 public.puppies 의 특수 행 id='__push_subs__' 에 저장해요.
+       data = { subs: [ { endpoint, keys:{p256dh,auth}, worker, ua, updatedAt } ] }
+     · 기록이 생기면 Supabase Edge Function(send-push)이 나를 뺀 다른 기기로 알림을 보내요. */
+  var PUSH_ID = '__push_subs__';
+  var PUSH_FN = 'https://hrhvpihzuerwjzcqebfs.supabase.co/functions/v1/send-push';
+  var PUSH_TITLE = '퍼피댕 노트';
+  var VAPID_PUBLIC_KEY = 'BLCEQ_S-38Rb0EEfUfWa-pX3F6ebahmoo4OMZi5S3TV-l9odbu6CLolydGzNSmEUgC7uRvyS2rCk-cp7pDdcH-Q';
+  var push = { busy:false, sub:null, endpoint:'', on:false, checked:false, saved:0, lastBody:'', lastAt:0 };
+  var pushTimer = null, pushPending = '';
+
+  function pushSupported(){
+    try {
+      return !!(navigator.serviceWorker && window.PushManager && window.Notification) && window.isSecureContext !== false;
+    } catch(e){ return false; }
+  }
+  /* 이 화면에서는 알림을 켤 수 없는 이유 (없으면 '') */
+  function pushBlockReason(){
+    if(isAndroidAppWebView()) return 'APK 앱 대신 크롬/사파리에서 홈 화면에 추가한 앱에서 알림을 켤 수 있어요!';
+    if(isIOSDevice() && !isStandaloneApp()) return '아이폰은 먼저 홈 화면에 추가한 앱에서 열어야 알림을 켤 수 있어요!';
+    var inapp = inAppBrowserName();
+    if(inapp) return inapp + ' 안에서는 알림을 켤 수 없어요. 크롬·사파리로 열어 주세요!';
+    if(!pushSupported()) return '이 브라우저에서는 잠금화면 알림을 켤 수 없어요. 크롬·사파리 최신 버전에서 홈 화면에 추가한 앱으로 열어 주세요!';
+    return '';
+  }
+  function urlBase64ToUint8Array(base64String){
+    var padding = new Array(((4 - (base64String.length % 4)) % 4) + 1).join('=');
+    var base64 = (String(base64String) + padding).replace(/-/g, '+').replace(/_/g, '/');
+    var raw = atob(base64);
+    var out = new Uint8Array(raw.length);
+    for(var i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+    return out;
+  }
+  /* 페이지에서 이미 등록해 둔 전용 서비스 워커가 준비될 때까지 (최대 8초) */
+  function pushSW(){
+    return new Promise(function(resolve, reject){
+      if(!('serviceWorker' in navigator)){ reject(new Error('service worker 없음')); return; }
+      var done = false;
+      var timer = setTimeout(function(){
+        if(done) return;
+        done = true; reject(new Error('service worker 준비 시간 초과'));
+      }, 8000);
+      navigator.serviceWorker.ready.then(function(reg){
+        if(done) return;
+        done = true; clearTimeout(timer); resolve(reg);
+      }, function(err){
+        if(done) return;
+        done = true; clearTimeout(timer); reject(err || new Error('service worker 준비 실패'));
+      });
+    });
+  }
+  function pushAuthHead(){
+    return { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + (sessionToken || SB_KEY), 'Content-Type': 'application/json' };
+  }
+  function pushLoadSubs(){
+    return fetch(SB_URL + '/rest/v1/puppies?id=eq.' + encodeURIComponent(PUSH_ID) + '&select=data', { headers: pushAuthHead(), cache:'no-store' }).then(function(r){
+      if(!r.ok) throw new Error('구독 목록 불러오기 실패 (' + r.status + ')');
+      return r.json();
+    }).then(function(rows){
+      var d = (rows && rows[0] && rows[0].data) || {};
+      return Array.isArray(d.subs) ? d.subs : [];
+    });
+  }
+  function pushSaveSubs(subs){
+    var body = JSON.stringify([{ id: PUSH_ID, data: { subs: subs || [] }, updated_at: new Date().toISOString() }]);
+    return fetch(SB_URL + '/rest/v1/puppies?on_conflict=id', {
+      method: 'POST',
+      headers: Object.assign(pushAuthHead(), { 'Prefer': 'resolution=merge-duplicates,return=minimal' }),
+      body: body
+    }).then(function(r){
+      if(!r.ok) throw new Error('구독 목록 저장 실패 (' + r.status + ')');
+      return subs || [];
+    });
+  }
+  function pushSubInfo(sub){
+    var j = {};
+    try { j = sub.toJSON ? sub.toJSON() : { endpoint: sub.endpoint, keys: sub.keys }; } catch(e){ j = {}; }
+    var keys = j.keys || {};
+    return {
+      endpoint: j.endpoint || sub.endpoint || '',
+      keys: { p256dh: keys.p256dh || '', auth: keys.auth || '' },
+      worker: state.worker || '',
+      ua: uaText().slice(0, 140),
+      updatedAt: new Date().toISOString()
+    };
+  }
+  /* 이 기기 구독을 목록에 넣고(같은 endpoint 는 최신 정보로 교체) 저장 */
+  function pushUpsert(sub){
+    var info = pushSubInfo(sub);
+    if(!info.endpoint) return Promise.reject(new Error('구독 주소가 없어요'));
+    return pushLoadSubs().then(function(subs){
+      var kept = (subs || []).filter(function(s){ return s && s.endpoint && s.endpoint !== info.endpoint; });
+      kept.push(info);
+      if(kept.length > 40) kept = kept.slice(kept.length - 40);   // 안전 상한
+      return pushSaveSubs(kept);
+    }).then(function(subs){ push.saved = subs.length; return subs; });
+  }
+  function pushRemoveSub(endpoint){
+    if(!endpoint) return Promise.resolve([]);
+    return pushLoadSubs().then(function(subs){
+      return pushSaveSubs((subs || []).filter(function(s){ return s && s.endpoint !== endpoint; }));
+    }).then(function(subs){ push.saved = subs.length; return subs; });
+  }
+  function pushPermission(){
+    try { return (window.Notification && Notification.permission) || 'default'; } catch(e){ return 'default'; }
+  }
+  function pushSameKey(sub){
+    try {
+      var cur = sub && sub.options && sub.options.applicationServerKey;
+      if(!cur) return false;
+      var want = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
+      var got = new Uint8Array(cur);
+      if(got.length !== want.length) return false;
+      for(var i = 0; i < want.length; i++){ if(got[i] !== want[i]) return false; }
+      return true;
+    } catch(e){ return false; }
+  }
+  function pushStateText(){
+    if(push.on) return '알림 켜짐 · 다른 직원이 기록하면 잠금화면에 떠요';
+    if(pushBlockReason()) return '이 화면에서는 켤 수 없어요 · 눌러서 방법 보기';
+    return '껐음 · 다른 직원의 활동을 잠금화면에서 받아요';
+  }
+  function pushRowHTML(){
+    var on = !!push.on;
+    return '<div class="pushcard' + (on ? ' on' : '') + '">' +
+      '<div><b>🔔 잠금화면 알림</b><span>' + esc(pushStateText()) + '</span></div>' +
+      '<button class="btn sm pushbtn' + (on ? '' : ' primary') + '" data-act="togglePush" aria-pressed="' + on + '"' + (push.busy ? ' disabled' : '') + '>' +
+        (push.busy ? '처리 중…' : (on ? '🔔 알림 켜짐 (끄기)' : '🔔 알림 켜기')) + '</button></div>';
+  }
+  /* 지금 열려 있는 작업자·설정 시트의 버튼 상태만 다시 그리기 */
+  function renderPushUI(){
+    if(ui.sheet === 'worker') setSheet(workerHTML(), true);
+    else if(ui.sheet === 'settings') setSheet(settingsHTML(), true);
+  }
+  function refreshPushState(){
+    push.checked = false;
+    if(!pushSupported()){ push.on = false; push.checked = true; renderPushUI(); return; }
+    pushSW().then(function(reg){ return reg.pushManager.getSubscription(); }).then(function(sub){
+      push.sub = sub || null;
+      push.endpoint = sub ? sub.endpoint : '';
+      push.on = !!sub && pushPermission() === 'granted';
+      push.checked = true;
+      renderPushUI();
+    }, function(){
+      push.on = false; push.checked = true; renderPushUI();
+    });
+  }
+  function showPushNote(msg, title){
+    var w = $('#pushWrap');
+    if(!w){ toast(msg); return; }
+    w.innerHTML = '<div class="instscrim" data-act="closePush"></div>' +
+      '<div class="instcard" role="dialog" aria-modal="true" aria-label="잠금화면 알림 안내">' +
+      '<div class="insthead"><div class="insttitle">🔔 ' + esc(title || '잠금화면 알림') + '</div>' +
+      '<button class="instx" data-act="closePush" aria-label="알림 안내 닫기">✕</button></div>' +
+      '<div class="instwarn"><div class="wt">알림을 켜려면 이렇게 해 주세요</div><p>' + msg + '</p></div>' +
+      '<p class="instsub" style="margin-top:12px">설정을 마친 뒤 이 화면에서 <b>🔔 알림 켜기</b>를 다시 눌러 주세요.</p>' +
+      '<button class="instclose" data-act="closePush">확인했어요</button></div>';
+    w.hidden = false;
+    document.body.classList.add('lock');
+  }
+  function closePushNote(){
+    var w = $('#pushWrap');
+    if(!w || w.hidden) return;
+    w.hidden = true;
+    var sheetHidden = !$('#sheetWrap') || $('#sheetWrap').hidden;
+    var instHidden = !$('#installWrap') || $('#installWrap').hidden;
+    if(sheetHidden && instHidden) document.body.classList.remove('lock');
+  }
+  function enablePush(){
+    if(push.busy) return;
+    var why = pushBlockReason();
+    if(why){ showPushNote(why); return; }
+    push.busy = true; renderPushUI();
+    function fin(){ push.busy = false; renderPushUI(); }
+    var ask = pushPermission() === 'granted'
+      ? Promise.resolve('granted')
+      : new Promise(function(resolve){
+          try { Notification.requestPermission().then(function(p){ resolve(p || 'denied'); }, function(){ resolve('denied'); }); }
+          catch(e){ resolve('denied'); }
+        });
+    ask.then(function(perm){
+      if(perm !== 'granted'){ fin(); toast('알림 권한을 허용해야 잠금화면에 떠요'); return null; }
+      return pushSW().then(function(reg){
+        return reg.pushManager.getSubscription().then(function(old){
+          if(old && !pushSameKey(old)) return old.unsubscribe().then(function(){ return null; });   // 예전 키 구독은 새로
+          return old;
+        }).then(function(old){
+          if(old) return old;
+          return reg.pushManager.subscribe({ userVisibleOnly:true, applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY) });
+        });
+      }).then(function(sub){
+        push.sub = sub || null;
+        push.endpoint = sub ? sub.endpoint : '';
+        push.on = !!sub;
+        push.checked = true;
+        return pushUpsert(sub);
+      }).then(function(){
+        fin();
+        toast('🔔 잠금화면 알림을 켰어요 · 다른 직원이 기록하면 알려드려요');
+      });
+    }).catch(function(err){
+      fin();
+      toast('알림을 켜지 못했어요 · ' + String((err && err.message) || err).slice(0, 60));
+    });
+  }
+  function disablePush(){
+    if(push.busy) return;
+    push.busy = true; renderPushUI();
+    var ep = push.endpoint || '';
+    pushSW().then(function(reg){ return reg.pushManager.getSubscription(); }).then(function(sub){
+      if(!sub) return null;
+      ep = sub.endpoint || ep;
+      return sub.unsubscribe();
+    }).catch(function(){ return null; }).then(function(){
+      return pushRemoveSub(ep).catch(function(){});
+    }).then(function(){
+      push.sub = null; push.endpoint = ''; push.on = false; push.busy = false;
+      renderPushUI();
+      toast('🔔 잠금화면 알림을 껐어요');
+    });
+  }
+  function togglePush(){
+    if(push.busy) return;
+    if(push.on){ disablePush(); return; }
+    enablePush();
+  }
+
+  /* 활동 한 줄을 알림 문구로 (예: 원지원님 · 퍼피댕 3번장 두부 메모 수정 "식사 잘함") */
+  function pushTextOf(it){
+    if(!it) return '';
+    var parts = [];
+    if(it.by) parts.push(it.by + '님');
+    var where = [it.branch, it.cage].filter(Boolean).join(' ');
+    if(where) parts.push(where);
+    if(it.name) parts.push(it.name);
+    var act = String(it.act || ''), tail = String(it.tail || '');
+    var label = act || '활동';
+    if(/메모/.test(act)) label = /비|지웠/.test(tail) ? '메모 비움' : (/수정/.test(tail) ? '메모 수정' : '메모 입력');
+    parts.push(label);
+    if(it.memo) parts.push('"' + it.memo + '"');
+    return parts.join(' · ');
+  }
+  /* 실패해도 앱 동작에는 아무 지장이 없도록 조용히 보내요 */
+  function sendPushNow(text){
+    if(!text) return;
+    if(navigator.onLine === false) return;
+    if(text === push.lastBody && Date.now() - push.lastAt < 8000) return;   // 같은 내용 중복 방지
+    push.lastBody = text; push.lastAt = Date.now();
+    try {
+      fetch(PUSH_FN, {
+        method: 'POST',
+        keepalive: true,
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (sessionToken || SB_KEY) },
+        body: JSON.stringify({ title: PUSH_TITLE, body: text, url: INSTALL_URL, senderEndpoint: push.endpoint || '' })
+      }).then(function(){}, function(){});
+    } catch(e){}
+  }
+  /* 연달아 고치는 메모는 잠깐 모았다가 마지막 내용만 보냄 */
+  function queuePush(text, delay){
+    pushPending = text || '';
+    if(pushTimer) clearTimeout(pushTimer);
+    pushTimer = setTimeout(function(){
+      var t = pushPending;
+      pushPending = ''; pushTimer = null;
+      sendPushNow(t);
+    }, delay || 0);
   }
 
   /* ================= 목록 ================= */
@@ -4217,6 +4500,7 @@
       '<div class="wgrid">' + list + '</div>' +
       addRow +
       '<div class="wmem"><span>👤</span><span>여기서 고른 이름으로 목욕·접종 기록에 <b style="color:var(--brown-d)">누가 했는지</b>가 함께 남아요. ' + (isLive() ? '기록은 공유 목록에 바로 저장돼요.' : '지금은 이 기기에만 저장돼요.') + '</span></div>' +
+      pushRowHTML() +
       installRow +
       logout +
       '</div>';
@@ -4291,6 +4575,13 @@
         '<p class="sp">홈 화면에 앱 아이콘으로 추가하면 주소창 없이 앱처럼 열려요. 직원 폰에서도 같은 방법으로 설치할 수 있어요.</p>' +
         '<div class="btnrow"><button class="btn primary" data-act="installApp">📲 내 폰에 앱으로 설치</button></div>' +
       '</section>' : '') +
+      '<section class="scard">' +
+        '<h3 class="sh3">🔔 잠금화면 알림</h3>' +
+        '<div class="settingrow"><div><b>' + (push.on ? '🔔 알림 켜짐' : '🔔 알림 꺼짐') + '</b><span>' + esc(pushStateText()) + '</span></div>' +
+          '<button class="btn sm' + (push.on ? '' : ' primary') + '" data-act="togglePush" aria-pressed="' + (!!push.on) + '"' + (push.busy ? ' disabled' : '') + '>' +
+            (push.busy ? '처리 중…' : (push.on ? '끄기' : '켜기')) + '</button></div>' +
+        '<p class="sp small">다른 직원이 기록(목욕·접종·메모 등)을 남기면 내 폰 잠금화면에 알림이 떠요. 내가 한 기록은 내 폰에 울리지 않아요. 아이폰은 <b>홈 화면에 추가한 앱</b>에서만 켜져요.</p>' +
+      '</section>' +
       '<section class="scard">' +
         '<h3 class="sh3">👤 작업자 · 안내</h3>' +
         '<div class="settingrow"><div><b>지금 작업자: ' + esc(state.worker) + '</b><span>목욕·접종 기록에 누가 했는지 남아요</span></div>' +
@@ -4879,6 +5170,12 @@
       case 'installApp':
         installApp();
         break;
+      case 'togglePush':
+        togglePush();
+        break;
+      case 'closePush':
+        closePushNote();
+        break;
       case 'installOs':
         instOs = el.getAttribute('data-os') === 'ios' ? 'ios' : 'android';
         renderInstallGuide();
@@ -5378,7 +5675,8 @@
     }catch(e){}
   }
   syncInstallUI();
-  document.addEventListener('visibilitychange', function(){ if(document.hidden) return; verifyAccount(); try { sweepAdopted(true); } catch(e){} });
+  refreshPushState();   // 이 기기의 알림 구독 상태 확인
+  document.addEventListener('visibilitychange', function(){ if(document.hidden) return; refreshPushState(); verifyAccount(); try { sweepAdopted(true); } catch(e){} });
 
   initStore(function(){
     bootAuth();
