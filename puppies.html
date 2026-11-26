@@ -1000,6 +1000,36 @@
   .gpts .gptrow em{font-style:normal;color:var(--muted-2);font-weight:700;font-size:12.5px}
   .gpts .gptrow b{font-weight:900;color:var(--brown-d)}
 
+  /* ---------- 📊 매장 현황 요약 (품종 · 모색 · 빈장 · 카톡 복붙) ---------- */
+  .sumbtn{height:33px;padding:0 9px;border-radius:10px;display:inline-flex;align-items:center;gap:4px;
+    background:#FBF3E6;border:1.5px solid #E9D6B8;color:#7A4E17;font-size:12.5px;font-weight:900;
+    letter-spacing:-.02em;white-space:nowrap}
+  .sumbtn:active{transform:scale(.97)}
+  .sumbtn .sbi{font-size:13px;line-height:1}
+  .sumtabs{margin-top:0}
+  .sumtabs .sseg{height:36px;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:4px;min-width:0}
+  .sumtabs .sseg b{font-size:10.5px;font-weight:900;background:#EFE3D1;color:#8C5C2E;border-radius:6px;padding:1px 4px;letter-spacing:-.01em}
+  .sumtabs .sseg.on{color:var(--brown-d)}
+  .sumtabs .sseg.on b{background:#F4E4CC}
+  .sumbadges{display:flex;gap:6px;margin-top:11px}
+  .sumbadge{flex:1 1 0;min-width:0;background:#fff;border:1.5px solid var(--line);border-radius:14px;
+    padding:9px 8px 8px;box-shadow:0 3px 10px rgba(122,88,52,.05);text-align:center}
+  .sumbadge .k{display:block;font-size:11px;font-weight:800;color:var(--muted-2);letter-spacing:-.02em;white-space:nowrap;
+    overflow:hidden;text-overflow:ellipsis}
+  .sumbadge .v{display:block;margin-top:2px;font-size:18px;font-weight:900;color:var(--brown-d);letter-spacing:-.04em;line-height:1.15}
+  .sumbadge .v small{font-size:11.5px;font-weight:800;color:var(--muted);letter-spacing:-.02em;margin-left:1px}
+  .sumres{margin-top:8px;display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:10px;
+    background:#FDF3E3;border:1px solid #F0DDBB;color:#A05E12;font-size:12px;font-weight:800;letter-spacing:-.02em}
+  .sumchat{margin-top:12px;background:#FFFDF7;border:1.5px solid #EADFCB;border-radius:18px;padding:12px 13px 13px;
+    box-shadow:0 4px 14px rgba(122,88,52,.05)}
+  .sumchat .scl{display:flex;align-items:center;gap:5px;font-size:11.5px;font-weight:900;color:#9A8B6E;letter-spacing:-.02em}
+  .sumchat pre{margin-top:9px;font-family:inherit;font-size:13.5px;line-height:1.7;font-weight:700;color:var(--ink);
+    white-space:pre-wrap;word-break:break-word;letter-spacing:-.02em;-webkit-user-select:text;user-select:text}
+  .sumhint{margin-top:10px;font-size:11.5px;font-weight:700;color:var(--muted-2);line-height:1.5;letter-spacing:-.02em}
+  .sumfoot{flex:none;padding:9px 16px calc(11px + env(safe-area-inset-bottom));border-top:1px solid var(--line);
+    background:rgba(255,253,251,.98)}
+  .sumfoot .btn{width:100%;height:50px;font-size:15.5px;border-radius:15px}
+
   /* ---------- 하단 바: 캘린더 · 호텔픽업 · 새 아이 · 설정 ---------- */
   .bottombar{gap:7px;padding-left:12px;padding-right:12px}
   @media (max-width:380px){
@@ -1007,6 +1037,9 @@
     .sidebtn,.sidebtn.calbtn,.sidebtn.hotelbtn{width:50px;height:48px;font-size:16px}
     .sidebtn.calbtn .cl,.sidebtn.hotelbtn .cl{font-size:9px}
     .addbtn{height:48px;font-size:14px;letter-spacing:-.03em}
+    .sumbtn{padding:0 7px;font-size:12px}
+    .gamebtn{padding:0 6px;font-size:12px}
+    .sortsel{font-size:12px;padding:0 4px}
   }
 </style>
 </head>
@@ -1039,7 +1072,7 @@
   <header>
     <div class="topline">
       <div class="brand"><img class="blogo" src="puppies-icon.png" alt="퍼피댕 로고" width="30" height="30">
-        <span class="brandtext"><span class="brandname">퍼피댕 · 디데이펫</span><span class="brandver">퍼피댕 V1.5</span></span></div>
+        <span class="brandtext"><span class="brandname">퍼피댕 · 디데이펫</span><span class="brandver">퍼피댕 V1.6</span></span></div>
       <div class="topact">
         <button class="wpill" data-act="openWorker" aria-label="작업자 선택">👤 <b id="workerName">—</b><span class="chev">▾</span></button>
         <button class="gbtn adminonly" data-act="openSettings" aria-label="설정">⚙️</button>
@@ -1059,6 +1092,7 @@
       <div class="toolrow">
         <span class="rcount" id="resultCount"></span>
         <div class="tools">
+          <button class="sumbtn" id="sumBtn" data-act="openSummary" aria-label="매장 현황 요약 열기"><span class="sbi" aria-hidden="true">📊</span>현황</button>
           <button class="gamebtn" id="gameBtn" data-act="openGame" aria-label="퍼피댕 케어 게임 열기"><span class="gbi" aria-hidden="true">🎮</span>게임 <b class="gbadge">🎯 0/3</b></button>
           <select class="sortsel" id="sortSel" aria-label="정렬">
             <option value="cage">장 번호순</option>
@@ -4062,6 +4096,7 @@
     renderList();
     renderFeed();
     renderGameBits();      // 🎮 오늘 미션 진행률 · 게임 버튼
+    renderSummary();       // 📊 현황 요약 창이 열려 있으면 집계를 다시 그림
     renderCalendar();      // 캘린더가 열려 있을 때만 그림 (실시간 동기화 포함)
     renderHotel();         // 호텔링 · 분양픽업 화면이 열려 있을 때만 그림
   }
@@ -4702,6 +4737,209 @@
   function sheetbar(title, sub, rightHTML, closeLabel){
     return '<div class="sheetbar"><button class="ibtn" data-act="' + (closeLabel === 'back' ? 'backToList' : 'closeSheet') + '" aria-label="' + (closeLabel === 'back' ? '뒤로' : '닫기') + '">' + (closeLabel === 'back' ? '‹' : '✕') + '</button>' +
       '<div class="stitle"><b>' + title + '</b><span>' + sub + '</span></div>' + (rightHTML || '') + '</div>';
+  }
+
+  /* ================= 📊 매장 현황 요약 · 카톡 복붙 =================
+     분양완료 보관함(isArchive)은 빼고, 이름이 비었거나 ‘미정’인 장을 빈장으로 세요. */
+  var SUM_SCOPES = ['퍼피댕', '디데이펫', '전체'];
+  var summary = { scope: null };
+
+  function sumDefaultScope(){
+    return ui.branch === '디데이펫' ? '디데이펫' : '퍼피댕';
+  }
+
+  /* 빈장: 이름이 없거나 ‘미정’인 장 */
+  function sumIsEmptySlot(p){
+    if(!p) return false;
+    var nm = String(p.name == null ? '' : p.name).trim();
+    return nm === '' || nm === '미정';
+  }
+
+  function sumSexTxt(male, female){
+    var t = [];
+    if(male) t.push('남아 ' + male);
+    if(female) t.push('여아 ' + female);
+    return t.join(' ');
+  }
+
+  /* 탭에 쓰는 지점별 마릿수 — 보고 있는 탭과 상관없이 늘 두 지점을 같이 세요 */
+  function sumBranchHeld(){
+    var c = { '퍼피댕':0, '디데이펫':0 };
+    (state.puppies || []).forEach(function(p){
+      if(!p || p.isArchive || sumIsEmptySlot(p)) return;
+      if(p.status !== 'available' && p.status !== 'reserved') return;
+      if(p.branch === '디데이펫') c['디데이펫']++; else c['퍼피댕']++;
+    });
+    return c;
+  }
+
+  /* 품종별 → 모색별 남아/여아 집계 (많은 순 → 이름 순) */
+  function sumGroups(list){
+    var map = {}, order = [];
+    list.forEach(function(p){
+      var b = String(p.breed == null ? '' : p.breed).trim() || '품종 미입력';
+      var g = map[b];
+      if(!g){
+        g = map[b] = { breed:b, male:0, female:0, total:0, colors:{}, colorOrder:[], ncMale:0, ncFemale:0, colorRows:[] };
+        order.push(b);
+      }
+      var fem = p.sex === 'female';
+      g.total++; if(fem) g.female++; else g.male++;
+      var c = String(p.color == null ? '' : p.color).trim();
+      if(!c){ if(fem) g.ncFemale++; else g.ncMale++; return; }
+      var cg = g.colors[c];
+      if(!cg){ cg = g.colors[c] = { color:c, male:0, female:0, total:0 }; g.colorOrder.push(c); }
+      cg.total++; if(fem) cg.female++; else cg.male++;
+    });
+    var out = order.map(function(b){
+      var g = map[b];
+      g.colorRows = g.colorOrder.map(function(c){ return g.colors[c]; }).sort(function(x, y){
+        return (y.total - x.total) || String(x.color).localeCompare(String(y.color), 'ko');
+      });
+      return g;
+    });
+    out.sort(function(x, y){
+      return (y.total - x.total) || String(x.breed).localeCompare(String(y.breed), 'ko');
+    });
+    return out;
+  }
+
+  /* 지점별 집계 한 번에 */
+  function summaryData(scope){
+    scope = SUM_SCOPES.indexOf(scope) >= 0 ? scope : sumDefaultScope();
+    var d = { scope:scope, dogs:0, cats:0, male:0, female:0, reserved:0, emptyDogs:0, emptyCats:0,
+      perBranch:{ '퍼피댕':0, '디데이펫':0 }, dogGroups:[], catGroups:[] };
+    var dogList = [], catList = [];
+    (state.puppies || []).forEach(function(p){
+      if(!p || p.isArchive) return;                                   // 분양완료 보관함 제외
+      if(scope !== '전체' && p.branch !== scope) return;
+      var cat = isCat(p);
+      if(sumIsEmptySlot(p)){ if(cat) d.emptyCats++; else d.emptyDogs++; return; }
+      if(p.status !== 'available' && p.status !== 'reserved') return;  // 보유 아이만
+      if(p.branch === '디데이펫') d.perBranch['디데이펫']++; else d.perBranch['퍼피댕']++;
+      if(p.sex === 'female') d.female++; else d.male++;
+      if(p.status === 'reserved') d.reserved++;
+      (cat ? catList : dogList).push(p);
+    });
+    d.dogs = dogList.length; d.cats = catList.length;
+    d.dogGroups = sumGroups(dogList);
+    d.catGroups = sumGroups(catList);
+    return d;
+  }
+
+  function sumBreedBlock(groups, lines){
+    groups.forEach(function(g){
+      lines.push(g.breed + ' ' + sumSexTxt(g.male, g.female));
+      if(!g.colorRows.length) return;                                  // 모색이 하나도 없으면 생략
+      lines.push('[' + g.breed + ']');
+      g.colorRows.forEach(function(c){ lines.push(c.color + ' ' + sumSexTxt(c.male, c.female)); });
+      if(g.ncMale || g.ncFemale) lines.push('모색 미입력 ' + sumSexTxt(g.ncMale, g.ncFemale));
+    });
+  }
+
+  /* 카톡에 그대로 붙여넣을 글 */
+  function summaryText(scope){
+    var d = summaryData(scope);
+    var now = new Date();
+    var label = d.scope === '전체' ? '퍼피댕·디데이펫' : d.scope;
+    var total = d.dogs + d.cats;
+    var empt = d.emptyDogs + d.emptyCats;
+    var L = [];
+    L.push('📊 ' + label + ' 현황 · ' + (now.getMonth() + 1) + '/' + now.getDate() + ' (' + WEEK[now.getDay()] + ')');
+    if(d.scope === '전체'){
+      var bcAll = sumBranchHeld();
+      L.push('퍼피댕 ' + bcAll['퍼피댕'] + '마리 · 디데이펫 ' + bcAll['디데이펫'] + '마리');
+    }
+    if(!total && !empt){
+      L.push('아직 등록된 아이가 없어요');
+      return L.join('\n');
+    }
+    L.push('총 ' + total + '마리' + (d.reserved ? ' (예약중 ' + d.reserved + ')' : '') + ' · 빈장 ' + empt + '개');
+    if(total) L.push('남아 ' + d.male + ' · 여아 ' + d.female);
+    if(d.dogs){
+      L.push('');
+      L.push('🐶 강아지');
+      sumBreedBlock(d.dogGroups, L);
+    }
+    if(d.cats || d.emptyCats){
+      L.push('');
+      L.push('🐱 고양이');
+      if(d.cats) sumBreedBlock(d.catGroups, L);
+      if(d.emptyCats) L.push('고양이 빈장 ' + d.emptyCats + '개');
+    }
+    return L.join('\n');
+  }
+
+  function summaryHTML(){
+    var d = summaryData(summary.scope);
+    var bc = sumBranchHeld();
+    var total = d.dogs + d.cats;
+    var empt = d.emptyDogs + d.emptyCats;
+    var tabs = SUM_SCOPES.map(function(s){
+      var on = d.scope === s;
+      var n = s === '전체' ? (bc['퍼피댕'] + bc['디데이펫']) : bc[s];
+      return '<button type="button" class="sseg' + (on ? ' on' : '') + '" data-act="sumScope" data-scope="' + s + '"' +
+        ' role="tab" aria-selected="' + (on ? 'true' : 'false') + '">' + s + ' <b>' + n + '</b></button>';
+    }).join('');
+    return sheetbar('📊 매장 현황 요약', '품종 · 모색 · 남아/여아 · 빈장 자동 집계') +
+      '<div class="sheetbody">' +
+        '<div class="statusseg sumtabs" role="tablist" aria-label="현황 지점 선택">' + tabs + '</div>' +
+        '<div class="sumbadges">' +
+          '<div class="sumbadge"><span class="k">총</span><span class="v">' + total + '<small>마리</small></span></div>' +
+          '<div class="sumbadge"><span class="k">빈장</span><span class="v">' + empt + '<small>개</small></span></div>' +
+          '<div class="sumbadge"><span class="k">남아 / 여아</span><span class="v">' + d.male + ' / ' + d.female + '</span></div>' +
+        '</div>' +
+        (d.reserved ? '<div class="sumres">🟡 예약중 <b>' + d.reserved + '마리</b></div>' : '') +
+        '<div class="sumchat"><div class="scl">💬 카톡에 이렇게 붙어요</div>' +
+          '<pre id="sumPrev">' + esc(summaryText(d.scope)) + '</pre></div>' +
+        '<p class="sumhint">분양완료 보관함은 빼고 셉니다 · 빈장은 이름이 비었거나 ‘미정’인 장이에요 · 예약중도 총 마리에 들어가요.</p>' +
+      '</div>' +
+      '<div class="sumfoot"><button type="button" class="btn primary" data-act="sumCopy">📋 카톡 복붙하기</button></div>';
+  }
+
+  function renderSummary(){
+    if(ui.sheet !== 'summary') return;
+    setSheet(summaryHTML(), true);
+  }
+
+  function openSummary(){
+    ui.detailId = null;
+    ui.sheet = 'summary';
+    summary.scope = sumDefaultScope();
+    setSheet(summaryHTML());
+    openSheet();
+  }
+
+  /* 복사 — navigator.clipboard 먼저, 안 되면 execCommand('copy') 로 대신 */
+  function copyToClipboard(text, okMsg){
+    function ok(){ toast(okMsg || '복사했어요'); }
+    function fallback(){
+      try{
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.setAttribute('readonly', '');
+        ta.style.cssText = 'position:fixed;top:0;left:-9999px;opacity:0';
+        document.body.appendChild(ta);
+        ta.select();
+        try{ ta.setSelectionRange(0, text.length); }catch(e){}
+        var done = false;
+        try{ done = document.execCommand('copy'); }catch(e){}
+        document.body.removeChild(ta);
+        if(done){ ok(); return; }
+      }catch(e){}
+      toast('복사가 안 되면 미리보기 글자를 길게 눌러 복사해 주세요');
+    }
+    try{
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(ok, fallback);
+        return;
+      }
+    }catch(e){}
+    fallback();
+  }
+
+  function sumCopy(){
+    copyToClipboard(summaryText(summary.scope), '카톡에 붙여넣기 할 수 있게 복사했어요!');
   }
 
   /* ================= 상세 ================= */
@@ -5769,7 +6007,7 @@
         '<div class="settingrow"><div><b>전체 비우기</b><span>모든 노트를 지워요 · 되돌릴 수 없어요</span></div>' +
           '<button class="btn sm danger" data-act="wipeAll">비우기</button></div>' +
       '</section>' +
-      '<div class="sfoot"><img src="puppies-logo.png" alt="퍼피댕" style="width:132px;display:block;margin:0 auto 7px;border-radius:7px">퍼피댕 V1.5 · 디데이펫 관리 노트</div>' +
+      '<div class="sfoot"><img src="puppies-logo.png" alt="퍼피댕" style="width:132px;display:block;margin:0 auto 7px;border-radius:7px">퍼피댕 V1.6 · 디데이펫 관리 노트</div>' +
       '</div>';
   }
 
@@ -6299,6 +6537,16 @@
         break;
       case 'openGame':
         openGame();
+        break;
+      case 'openSummary':
+        openSummary();
+        break;
+      case 'sumScope':
+        summary.scope = el.getAttribute('data-scope');
+        setSheet(summaryHTML(), true);
+        break;
+      case 'sumCopy':
+        sumCopy();
         break;
       case 'gameTab':
         game.tab = el.getAttribute('data-tab') === 'rank' ? 'rank' : 'mission';
@@ -7095,7 +7343,9 @@
       applySchedules: applySchedules,
       game: game, openGame: openGame, gameHTML: gameHTML, gameMissions: gameMissions, gameRows: gameRows,
       gamify: function(){ return state.gamify; }, applyGamify: applyGamify, gamifySeed: gamifySeed,
-      gamifyPayload: gamifyPayload, gPoints: gPoints, gStreak: gStreak, gLevel: gLevel, confettiBurst: confettiBurst };
+      gamifyPayload: gamifyPayload, gPoints: gPoints, gStreak: gStreak, gLevel: gLevel, confettiBurst: confettiBurst,
+      summary: summary, openSummary: openSummary, summaryHTML: summaryHTML, summaryText: summaryText,
+      summaryData: summaryData, sumCopy: sumCopy, copyToClipboard: copyToClipboard };
   }
 })();
 </script>
