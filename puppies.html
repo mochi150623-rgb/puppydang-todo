@@ -1232,7 +1232,7 @@
   <header>
     <div class="topline">
       <div class="brand"><img class="blogo" src="puppies-icon.png" alt="퍼피댕 로고" width="30" height="30">
-        <span class="brandtext"><span class="brandname">퍼피댕 · 디데이펫</span><span class="brandver">퍼피댕 V2.2</span></span></div>
+        <span class="brandtext"><span class="brandname">퍼피댕 · 디데이펫</span><span class="brandver">퍼피댕 V2.3</span></span></div>
       <div class="topact">
         <button class="wpill" data-act="openWorker" aria-label="작업자 선택">👤 <b id="workerName">—</b><span class="chev">▾</span></button>
         <button class="gbtn adminonly" data-act="openSettings" aria-label="설정">⚙️</button>
@@ -1413,6 +1413,7 @@
     sold:{label:'분양완료', cls:'sold'}
   };
   var STATUS_KEYS = ['available','reserved','sold'];
+  var FILTER_STATUS_KEYS = ['available','reserved'];   // 메인 필터에 '분양완료' 칩은 없어요(보관함은 🏡 분양완료 캘린더에서)
   /* 기본 접종은 3차까지 — 4차·5차는 이제 새로 고르지 않지만, 예전 기록은 그대로 보여요 */
   var VAC_PRESETS = ['1차 종합백신','2차 종합백신','3차 종합백신','심장사상충','원구충'];
   var VAC_COURSE_LAST = '3차 종합백신';   // 이걸 맞으면 기본 접종 끝 → D-day 자동 계산 종료
@@ -2583,15 +2584,29 @@
         merged.push(rp);
       }
     });
-    var keep = [];
+    var keep = [], rescue = 0;
     state.puppies.forEach(function(p){
-      if(remoteIds[p.id]) return;
+      if(remoteIds[p.id]) return;                     // 공유 목록에 있는 행은 위에서 이미 합쳤어요
+      /* 이 기기에서 새로 생겨 아직 서버에 없는 행(분양완료 adopted_ 기록 포함)은
+         localOnly에 가두지 않고 바로 서버로 올려요 — 예전엔 여기서 갇혀 영영 안 올라갔어요. */
+      var freshLocal = !pushed[p.id] && !localOnly[p.id];
+      /* 예전 버그로 localOnly에 갇혀 있던 14일 이내 보관함 기록도 한 번 구제해요 */
+      var stuckArchive = !pushed[p.id] && adoptFresh(p);
+      if(freshLocal || stuckArchive){
+        if(stuckArchive) rescue++;
+        keep.push(p);                                 // 화면에는 그대로 남기고
+        pushAfter.push(p);                            // 서버로는 바로 올려요
+        return;
+      }
+      /* 이미 서버에 있었는데 다른 기기에서 지운 행(pushed는 있는데 공유 목록에 없음)은 그대로 버려요 */
       if(localOnly[p.id] || !pushed[p.id]) keep.push(p);
     });
     state.puppies = merged.concat(keep);
     pushed = snap;
     localOnly = {};
-    keep.forEach(function(p){ localOnly[p.id] = 1; });
+    var uploading = {};
+    pushAfter.forEach(function(p){ uploading[p.id] = 1; });
+    keep.forEach(function(p){ if(!uploading[p.id]) localOnly[p.id] = 1; });
     applyMe();
     saveLocal();
     try { gamifySeed(); } catch(e){}   // 게임 점수 행이 없으면 기존 활동 기록으로 한 번만 채워요
@@ -2599,6 +2614,7 @@
     sweepAdopted(true);          // 공유 목록을 끌어온 직후에도 2주 지난 분양완료 장 정리
     try { soldLogSync(); } catch(e){}   // 분양완료 기록을 캘린더 색인에도 한 번 모아 둬요
     pushAfter.forEach(function(p){ pushed[p.id] = JSON.stringify(p); upsertPuppy(p); });
+    if(rescue) toast('보관함 기록 ' + rescue + '건을 공유 목록에 다시 올렸어요');
     if(ui.sheet === 'detail' && ui.detailId && !get(ui.detailId)) closeSheet();
     else if(ui.sheet === 'detail' && ui.detailId) refreshDetail();
   }
@@ -4055,7 +4071,7 @@
   function filtered(){
     var q = ui.q.trim().toLowerCase();
     var arr = state.puppies.filter(function(p){
-      if(p.isArchive && ui.status !== 'sold') return false;   // 보관함 기록은 분양완료 탭에서만
+      if(p.isArchive) return false;                           // 보관함 기록은 🏡 분양완료 캘린더에서만 열어요
       if(ui.branch !== '전체' && p.branch !== ui.branch) return false;
       if(ui.status === 'cat'){
         if(!isCat(p)) return false;                          // 🐱 고양이 탭: 고양이 아이들만
@@ -4133,23 +4149,18 @@
 
   function renderStatusChips(){
     var q = ui.q.trim().toLowerCase();
+    if(ui.status === 'sold') ui.status = '전체';             // V2.3: 분양완료 칩 제거 — 남아 있던 선택은 풀어요
     var pool = state.puppies.filter(function(p){
       if(p.isArchive) return false;
       if(ui.branch !== '전체' && p.branch !== ui.branch) return false;
       return matchQuery(p, q);
     });
-    var counts = { '전체': pool.length, available:0, reserved:0, sold:0 };
-    pool.forEach(function(p){ counts[p.status] = (counts[p.status]||0) + 1; });
-    state.puppies.forEach(function(p){                       // 분양완료 보관함 기록도 '분양완료' 숫자에 포함
-      if(!p.isArchive) return;
-      if(ui.branch !== '전체' && p.branch !== ui.branch) return;
-      if(!matchQuery(p, q)) return;
-      counts.sold++;
-    });
+    var counts = { '전체': pool.length, available:0, reserved:0 };
+    pool.forEach(function(p){ if(counts[p.status] !== undefined) counts[p.status]++; });
     var catCount = pool.filter(isCat).length;
     if(!catCount && ui.status === 'cat') ui.status = '전체';   // 보이는 고양이가 없으면 탭도 풀기
     var html = '<button class="chip ' + (ui.status==='전체'?'on':'') + '" data-act="status" data-status="전체" role="tab">전체 <span class="cn">' + counts['전체'] + '</span></button>';
-    STATUS_KEYS.forEach(function(k){
+    FILTER_STATUS_KEYS.forEach(function(k){
       html += '<button class="chip ' + (ui.status===k?'on':'') + '" data-act="status" data-status="' + k + '" role="tab">' + STATUS[k].label + ' <span class="cn">' + (counts[k]||0) + '</span></button>';
     });
     if(catCount){                                            // 분양완료 오른쪽에 🐱 고양이 탭
@@ -4466,7 +4477,7 @@
     var bt = $('#calBarTitle');
     if(bt) bt.textContent = '🏡 분양완료 캘린더';
     var cf = $('#calFoot');
-    if(cf) cf.textContent = '분양일은 분양완료 기록 기준이에요 · 기록을 누르면 그 아이 보관함 상세가 열려요';
+    if(cf) cf.textContent = '분양일은 분양완료 기록 기준이에요 · 기록을 누르면 그 아이 정보가 열려요';
 
     $('#calSub').textContent = cal.branch + ' · ' + (cal.m + 1) + '월 분양완료 ' + tot + '건';
 
@@ -6769,6 +6780,46 @@
       '<p class="hint" style="text-align:center;margin:10px 0 14px">분양완료 기록은 수정하지 않고 그대로 보관돼요</p>' +
       '</div>';
   }
+  /* 분양완료 캘린더에서 눌렀는데 보관함(adopted_) 행이 이 기기에 아직 없을 때 —
+     다른 기기가 새로고침 전(보관함 동기화 대기)이거나 2주가 지나 정리된 기록이에요.
+     지점·장 번호·이름·품종·성별·분양일·담당자를 요약 카드로 보여 줘요. */
+  function soldInfoHTML(e){
+    var t = new Date(e.adoptedAt).getTime();
+    var left = ADOPT_TTL - (Date.now() - t);
+    var fresh = left > 0;
+    var rem = Math.max(0, Math.ceil(left / 86400000));
+    var note = fresh
+      ? '<b>보관함 동기화 대기</b><span>다른 기기가 아직 새로고침 전이라 보관함 기록이 공유 목록에 올라오는 중이에요. 그 폰이 V2.3으로 새로고침되면 보관함 상세로 이어져요.</span>'
+      : '<b>2주가 지나 정리된 기록</b><span>보관함 기록은 자동 삭제됐고, 분양일과 담당자는 분양완료 캘린더에 남아 있어요.</span>';
+    var rows = [
+      ['지점', e.branch || '—'],
+      ['장 번호', e.cage || '—'],
+      ['이름', e.name || '이름 없음'],
+      ['품종', e.breed || '품종 미정'],
+      ['성별', e.sex === 'female' ? '여아' : '남아'],
+      ['분양일', fmtFull(isoYmd(e.adoptedAt))],
+      ['담당', e.adoptedBy ? e.adoptedBy : '담당 미지정'],
+      ['보관', fresh ? ('D-' + rem + ' 자동 삭제') : '정리 완료']
+    ].map(function(r){
+      return '<div class="archrow"><span class="al">' + r[0] + '</span><span>' + esc(r[1]) + '</span></div>';
+    }).join('');
+    return sheetbar('🏡 분양완료 · ' + esc(e.name || ''), esc(e.cage || '장 번호 없음') + ' · ' + esc(e.branch || '')) +
+      '<div class="sheetbody">' +
+      '<div class="archnote">' + note + '</div>' +
+      '<section class="scard" style="margin-top:0"><div class="shead"><h3>📋 분양 정보</h3></div>' +
+        '<div class="inforows" style="display:block">' + rows + '</div></section>' +
+      '<div class="btnrow" style="margin-top:12px"><button class="btn wide" data-act="closeSheet">닫기</button></div>' +
+      '</div>';
+  }
+  function openSoldInfo(e){
+    if(!e) return;
+    ui.detailId = null;
+    ui.hpNote = null;
+    ui.sheet = 'soldinfo';
+    setSheet(soldInfoHTML(e));
+    openSheet();
+  }
+
   function archiveDelete(id){
     var p = get(id || ui.detailId);
     if(!p || !p.isArchive) return;
@@ -7247,7 +7298,7 @@
         '<div class="settingrow"><div><b>전체 비우기</b><span>모든 노트를 지워요 · 되돌릴 수 없어요</span></div>' +
           '<button class="btn sm danger" data-act="wipeAll">비우기</button></div>' +
       '</section>' +
-      '<div class="sfoot"><img src="puppies-logo.png" alt="퍼피댕" style="width:132px;display:block;margin:0 auto 7px;border-radius:7px">퍼피댕 V2.2 · 디데이펫 관리 노트</div>' +
+      '<div class="sfoot"><img src="puppies-logo.png" alt="퍼피댕" style="width:132px;display:block;margin:0 auto 7px;border-radius:7px">퍼피댕 V2.3 · 디데이펫 관리 노트</div>' +
       '</div>';
   }
 
@@ -7487,6 +7538,12 @@
     var cb = a.cb;
     closeAdoptAsk();
     if(cb) cb(who);
+  }
+  /* 14일(2주) 안에 분양완료된 보관함 기록인지 — 예전 동기화 버그로 갇힌 기록을 구제할 때 써요 */
+  function adoptFresh(p){
+    if(!p || !p.isArchive || p.status !== 'sold' || !p.adoptedAt) return false;
+    var t = new Date(p.adoptedAt).getTime();
+    return t > 0 && (Date.now() - t) < ADOPT_TTL;
   }
   function adoptInfo(p){
     if(!p || p.status !== 'sold' || !p.adoptedAt) return null;
@@ -7855,8 +7912,7 @@
           var e = null;
           (state.soldLog || []).forEach(function(x){ if(x.id === id) e = x; });
           if(!e){ toast('분양완료 기록을 찾을 수 없어요'); return; }
-          toast((e.cage ? e.cage + ' ' : '') + e.name + ' · ' + fmtMD(isoYmd(e.adoptedAt)) + ' 분양완료' +
-            (e.adoptedBy ? ' · 담당 ' + e.adoptedBy : '') + ' · 보관함 기록은 2주 뒤 정리돼요');
+          openSoldInfo(e);   // 보관함 행이 아직 안 올라왔거나 2주가 지나 정리됐을 때 — 요약 정보 카드
         })();
         break;
       case 'openClean':
@@ -8708,6 +8764,8 @@
       cleanList: cleanList, cleanState: cleanState, applyCleaning: applyCleaning, cleanAdd: cleanAdd,
       CLEAN_TTL: CLEAN_TTL, soldLog: function(){ return state.soldLog; }, soldLogSync: soldLogSync,
       applySoldLog: applySoldLog, renderSoldCalendar: renderSoldCalendar, soldMap: soldMap,
+      get localOnly(){ return localOnly; }, get pushed(){ return pushed; },
+      adoptOut: adoptOut, adoptInfo: adoptInfo, adoptFresh: adoptFresh, soldInfoHTML: soldInfoHTML, openSoldInfo: openSoldInfo,
       sumIsEmptySlot: sumIsEmptySlot };
   }
 })();
