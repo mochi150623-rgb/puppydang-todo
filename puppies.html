@@ -152,21 +152,49 @@
   .hphead{display:flex;align-items:baseline;gap:7px;margin-bottom:9px}
   .hphead b{font-size:13.5px;font-weight:800;color:var(--ink-2);letter-spacing:-.02em}
   .hphead span{font-size:12px;font-weight:700;color:var(--muted-2)}
-  .hpgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:9px}
+  .hpgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:9px}
   .hpitem{position:relative;border-radius:12px;overflow:hidden;background:#F7F0E7;border:1.5px solid var(--line)}
   .hpopen{display:block;width:100%;padding:0;background:none;line-height:0}
   .hpopen img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
   .hpdel{position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;background:rgba(46,33,22,.62);
     color:#fff;font-size:12px;font-weight:800;display:grid;place-items:center}
-  .hpcap{display:block;font-size:10.5px;font-weight:700;color:var(--muted-2);padding:4px 6px;letter-spacing:-.02em;
+  .hpcap{display:block;font-size:10.5px;font-weight:700;color:var(--muted-2);padding:4px 6px 2px;letter-spacing:-.02em;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:#FFFDFB}
   .hpempty{font-size:12.5px;font-weight:700;color:var(--muted-2);margin:0 0 9px}
+  /* 사진 코멘트 */
+  .hpnote{display:flex;align-items:flex-start;gap:3px;width:100%;padding:2px 6px 5px;background:#FFFDFB;
+    font-size:10px;font-weight:800;color:var(--muted-2);letter-spacing:-.02em;line-height:1.3;text-align:left}
+  .hpnote .hpnx{flex:1;min-width:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:keep-all;overflow-wrap:anywhere}
+  .hpnote.has{color:#5A381E}
+  .hpnote .hpnp{flex:none;font-size:9px;opacity:.7}
+  .hpnote:active{background:#FBF4EA}
+  .hpne{margin:0 0 9px;border-radius:14px;border:1.5px solid #E9D9C2;background:#FDF8F1;padding:9px 10px;box-shadow:0 4px 12px rgba(122,88,52,.06)}
+  .hpne .hpnhead{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .hpne .hpnhead img{width:34px;height:34px;border-radius:9px;object-fit:cover;display:block;border:1px solid #E6D6C2;background:#EFE5DA;flex:none}
+  .hpne .hpnhead b{display:block;font-size:12.5px;font-weight:800;color:var(--brown-d);letter-spacing:-.02em}
+  .hpne .hpnhead span{display:block;font-size:10.5px;font-weight:700;color:var(--muted-2);margin-top:1px}
+  .hpnrow{display:flex;gap:6px}
+  .hpnoteinput{flex:1;min-width:0;height:38px;border-radius:10px;border:1.5px solid var(--line);background:#fff;padding:0 9px;
+    font-size:13.5px;font-weight:700;letter-spacing:-.01em}
+  .hpnoteinput:focus{outline:none;border-color:var(--tint-3);box-shadow:0 0 0 3px rgba(168,120,74,.12)}
+  .hpnb{height:38px;padding:0 11px;border-radius:10px;border:1.5px solid var(--line);background:#fff;font-size:12.5px;font-weight:800;color:var(--ink-2);flex:none}
+  .hpnb.save{background:linear-gradient(140deg,#8C5C2E,#5A381E);border-color:transparent;color:#fff}
+  .hpnquick{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+  .hpnquick button{height:28px;padding:0 8px;border-radius:8px;background:#fff;border:1px solid #E7D8C5;font-size:11px;font-weight:800;color:var(--muted);letter-spacing:-.02em}
+  .hpnquick button:active{background:#F6EBDC}
   /* 사진 크게 보기 */
   .photoview{position:fixed;inset:0;z-index:400;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(24,16,10,.9)}
   .photoview[hidden]{display:none}
   .photoview img{max-width:100%;max-height:86vh;border-radius:14px;object-fit:contain;background:#000}
   .pvclose{position:absolute;top:calc(10px + env(safe-area-inset-top));right:12px;width:42px;height:42px;border-radius:50%;
     background:rgba(255,255,255,.16);color:#fff;font-size:18px;display:grid;place-items:center}
+  .photoview img{max-height:74vh}
+  .pvfoot{position:absolute;left:14px;right:14px;bottom:calc(14px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:9px}
+  .pvnote{max-width:100%;padding:9px 13px;border-radius:13px;background:rgba(255,255,255,.16);color:#fff;
+    font-size:13.5px;font-weight:800;letter-spacing:-.02em;line-height:1.45;text-align:center}
+  .pvnote.none{color:rgba(255,255,255,.72);font-weight:700}
+  .pvbtn{height:38px;padding:0 15px;border-radius:12px;background:#fff;color:#5A381E;font-size:13px;font-weight:800;
+    box-shadow:0 4px 14px rgba(0,0,0,.24)}
   .filterwrap{margin-top:12px}
   .toolrow{display:flex;align-items:center;gap:8px;margin-top:9px}
   .rcount{font-size:13.5px;font-weight:800;color:var(--muted);letter-spacing:-.02em;white-space:nowrap}
@@ -502,6 +530,107 @@
   .meterbar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#D4A373,#8C5C2E)}
   .meterlab{display:flex;justify-content:space-between;margin-top:5px;font-size:12px;font-weight:800;color:var(--muted-2);letter-spacing:-.02em}
   .sfoot{margin:16px 0 4px;text-align:center;font-size:12px;font-weight:700;color:var(--muted-2);letter-spacing:-.02em}
+
+  /* ---------- 🎮 케어 게임 ---------- */
+  .gamebtn{height:33px;padding:0 8px;border-radius:10px;display:inline-flex;align-items:center;gap:4px;
+    background:linear-gradient(140deg,#FFF7EA,#F7E3C2);border:1.5px solid #EFD9B5;font-size:12.5px;font-weight:800;
+    color:#7A4E17;letter-spacing:-.02em;white-space:nowrap;box-shadow:0 2px 6px rgba(122,88,52,.06)}
+  .gamebtn:active{transform:scale(.97)}
+  .gamebtn .gbi{font-size:13px;line-height:1}
+  .gamebtn .gbadge{background:#fff;border-radius:7px;padding:1px 5px;font-size:11px;font-weight:900;color:#8C5C2E;letter-spacing:-.01em}
+  .gamebtn.clear{background:linear-gradient(140deg,#EFF7E5,#DDEBCC);border-color:#CBDEB2;color:#4F7A4A}
+  .gamebtn.clear .gbadge{background:#fff;color:#4F7A4A}
+
+  .greward{margin-top:2px;border-radius:18px;padding:12px 13px;display:flex;align-items:center;gap:11px;
+    background:linear-gradient(135deg,#FFF5DF 0%,#FBE7BE 55%,#F7DCA4 100%);border:1.5px solid #EBCE92;
+    box-shadow:0 7px 20px rgba(196,146,60,.17)}
+  .greward .grico{flex:none;width:46px;height:46px;border-radius:15px;display:grid;place-items:center;font-size:24px;
+    background:#fff;box-shadow:0 4px 12px rgba(160,110,40,.2)}
+  .greward .gtx{flex:1;min-width:0}
+  .greward .gtx b{display:block;font-size:14.5px;font-weight:900;color:#63401E;letter-spacing:-.03em;line-height:1.35}
+  .greward .gtx .gsub{display:block;margin-top:3px;font-size:12px;font-weight:800;color:#95703B;letter-spacing:-.02em;line-height:1.4}
+  .greward .gtx .gsub b{display:inline;font-size:12px;font-weight:900;color:#7A4E17}
+
+  .gsegs{display:flex;gap:6px;background:#F5EEE5;border:1.5px solid #EDE1D2;border-radius:14px;padding:4px;margin-top:12px}
+  .gseg{flex:1;height:40px;border-radius:11px;font-size:14px;font-weight:800;color:var(--muted);letter-spacing:-.02em;
+    display:inline-flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap}
+  .gseg.on{background:#fff;color:var(--brown-d);box-shadow:0 2px 8px rgba(90,56,30,.13)}
+  .gseg b{font-size:11.5px;font-weight:900;background:#F1E4D2;color:#8C5C2E;border-radius:6px;padding:1px 5px;letter-spacing:-.01em}
+  .gseg b.on{background:#E6F1DA;color:#4F7A4A}
+  .gseg.on b{background:#F6E7D2}
+  .gseg.on b.on{background:#E6F1DA;color:#4F7A4A}
+
+  .gperiod{display:flex;gap:5px;margin-top:11px;background:#F8F2E9;border-radius:12px;padding:3px;border:1px solid #F0E5D6}
+  .gper{flex:1;height:34px;border-radius:9px;font-size:12.5px;font-weight:800;color:var(--muted);letter-spacing:-.02em}
+  .gper.on{background:#fff;color:var(--brown-d);box-shadow:0 2px 6px rgba(90,56,30,.12)}
+
+  .gcard{margin-top:12px;background:#fff;border:1.5px solid var(--line);border-radius:18px;padding:13px;box-shadow:0 4px 14px rgba(122,88,52,.04)}
+  .gcard h3{font-size:14.5px;font-weight:900;letter-spacing:-.03em;color:var(--ink);display:flex;align-items:center;gap:6px}
+  .gcard h3 em{font-style:normal;font-size:12px;font-weight:900;color:#8C5C2E;background:#F6E9D6;border-radius:7px;padding:1px 7px;letter-spacing:-.01em}
+  .gmi{display:flex;gap:10px;align-items:flex-start;padding:12px 0 11px;border-bottom:1px dashed #F1E6D8}
+  .gmi:last-child{border-bottom:0;padding-bottom:0}
+  .gmiico{flex:none;width:38px;height:38px;border-radius:12px;background:#FBF3E8;display:grid;place-items:center;font-size:18px}
+  .gmi.done .gmiico{background:#EDF6E4}
+  .gmibody{flex:1;min-width:0}
+  .gmitop{display:flex;align-items:baseline;gap:6px}
+  .gmitop b{flex:1;min-width:0;font-size:14px;font-weight:800;letter-spacing:-.025em;color:var(--ink)}
+  .gminum{font-size:12.5px;font-weight:900;color:var(--brown);white-space:nowrap;letter-spacing:-.01em}
+  .gmi.done .gminum{color:#4F7A4A}
+  .gmibar{height:7px;border-radius:99px;background:#F1E7DA;overflow:hidden;margin-top:7px}
+  .gmibar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#E7B975,#B88456);transition:width .3s ease}
+  .gmi.done .gmibar i{background:linear-gradient(90deg,#9FC47F,#5F8B4A)}
+  .gmisub{margin-top:5px;font-size:11.5px;font-weight:700;color:var(--muted-2);letter-spacing:-.01em}
+  .gmichk{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;
+    border:1.5px dashed #E2D5C4;color:#C4B29C;font-weight:900;margin-top:3px}
+  .gmi.done .gmichk{background:#5F8B4A;border:1.5px solid #5F8B4A;color:#fff}
+
+  .gclear{margin-top:12px;border-radius:17px;padding:14px 13px 12px;text-align:center;
+    background:linear-gradient(135deg,#FEF4DE,#F8E4B6);border:1.5px solid #EBCE92;box-shadow:0 7px 20px rgba(196,146,60,.15)}
+  .gclear b{display:block;font-size:16px;font-weight:900;color:#63401E;letter-spacing:-.03em}
+  .gclear span{display:block;margin-top:4px;font-size:12.5px;font-weight:800;color:#95703B;letter-spacing:-.02em;line-height:1.45}
+  .gclear button{margin-top:10px;height:36px;padding:0 14px;border-radius:12px;background:#fff;font-size:12.5px;font-weight:800;
+    color:#7A4E17;box-shadow:0 3px 10px rgba(160,110,40,.18)}
+
+  .mystrip{margin-top:12px;border-radius:16px;padding:11px 12px;background:#FBF6EF;border:1.5px solid #EFE2D1;display:flex;align-items:center;gap:10px}
+  .mystrip .myava{flex:none;width:38px;height:38px;border-radius:12px;background:#fff;display:grid;place-items:center;font-size:18px;box-shadow:0 2px 8px rgba(122,88,52,.08)}
+  .mystrip .mytx{flex:1;min-width:0}
+  .mystrip .mytx b{display:block;font-size:13.5px;font-weight:900;letter-spacing:-.03em;color:var(--brown-d)}
+  .mystrip .mytx span{display:block;margin-top:2px;font-size:11.5px;font-weight:800;color:var(--muted);letter-spacing:-.01em;line-height:1.4}
+  .mystrip .mynext{flex:none;text-align:right;font-size:10.5px;font-weight:800;color:var(--muted-2);line-height:1.35;letter-spacing:-.01em}
+  .mystrip .mynext b{font-size:13px;font-weight:900;color:var(--brown)}
+
+  .glist{margin-top:4px}
+  .gitem{display:flex;align-items:center;gap:10px;padding:11px 11px;border-radius:15px;border:1.5px solid var(--line);background:#fff;margin-top:8px;box-shadow:0 3px 10px rgba(122,88,52,.04)}
+  .gitem.top{background:linear-gradient(135deg,#FFFDF6,#FFF7E7);border-color:#F0DFC0}
+  .gitem.me{border-color:#CBAA80;background:#FFFBF4;box-shadow:0 5px 16px rgba(140,92,46,.15)}
+  .grank{flex:none;width:26px;text-align:center;font-size:17px;font-weight:900;color:var(--muted-2);letter-spacing:-.02em}
+  .gmain{flex:1;min-width:0}
+  .gline1{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+  .gline1 b{font-size:14.5px;font-weight:900;letter-spacing:-.03em;color:var(--ink)}
+  .glv{font-size:10.5px;font-weight:900;color:#8C5C2E;background:#F8EBD8;border-radius:7px;padding:1.5px 6px;letter-spacing:-.01em;white-space:nowrap}
+  .gme{font-size:10px;font-weight:900;color:#fff;background:var(--brown);border-radius:6px;padding:1px 5px;letter-spacing:-.01em}
+  .gcrown{font-size:10.5px;font-weight:900;color:#7A4E17;background:#FCEBC8;border:1px solid #EFD8A8;border-radius:7px;padding:1px 6px;letter-spacing:-.01em;white-space:nowrap}
+  .gpt .gprizeico{font-size:11px;font-weight:800;color:var(--muted-2);letter-spacing:-.01em}
+  .gcnt{margin-top:4px;font-size:11.5px;font-weight:800;color:var(--muted);letter-spacing:-.01em}
+  .gbadges{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+  .gbadges i{font-style:normal;font-size:10.5px;font-weight:800;color:#4F7A4A;background:#F0F6E8;border:1px solid #DDE9CC;border-radius:7px;padding:1px 5px;letter-spacing:-.01em}
+  .gbadges .gnone{font-size:10.5px;font-weight:700;color:var(--muted-2)}
+  .gpt{flex:none;text-align:right;min-width:48px}
+  .gpt b{display:block;font-size:19px;font-weight:900;color:var(--brown-d);letter-spacing:-.045em;line-height:1.1}
+  .gpt span{font-size:10.5px;font-weight:800;color:var(--muted-2)}
+
+  .gowner{display:flex;align-items:center;gap:6px;margin:13px auto 0;padding:6px 10px;border-radius:10px;font-size:12px;font-weight:800;color:var(--muted);letter-spacing:-.02em}
+  .gowner .gbox{width:17px;height:17px;border-radius:5px;border:1.5px solid #DCCBB4;display:grid;place-items:center;font-size:10px;font-weight:900;color:#fff;background:#fff}
+  .gowner.on .gbox{background:var(--brown);border-color:var(--brown)}
+  .gfoot{margin:14px 2px 0;font-size:11.5px;font-weight:700;color:var(--muted-2);text-align:center;letter-spacing:-.01em;line-height:1.6}
+
+  .confetti-layer{position:fixed;inset:0;pointer-events:none;z-index:130;overflow:hidden}
+  .confetti{position:absolute;top:-16px;border-radius:2px;opacity:.95;animation:confettiFall linear forwards}
+  @keyframes confettiFall{
+    0%{transform:translate3d(0,-20px,0) rotate(0deg);opacity:0}
+    10%{opacity:1}
+    100%{transform:translate3d(var(--drift,0px),108vh,0) rotate(760deg);opacity:.85}
+  }
 
   /* ---------- toast ---------- */
   .toast{position:fixed;z-index:120;left:50%;transform:translate(-50%,14px);bottom:calc(86px + env(safe-area-inset-bottom));
@@ -874,7 +1003,7 @@
   <header>
     <div class="topline">
       <div class="brand"><img class="blogo" src="puppies-icon.png" alt="퍼피댕 로고" width="30" height="30">
-        <span class="brandtext"><span class="brandname">퍼피댕 · 디데이펫</span><span class="brandver">퍼피댕 V1.2</span></span></div>
+        <span class="brandtext"><span class="brandname">퍼피댕 · 디데이펫</span><span class="brandver">퍼피댕 V1.3</span></span></div>
       <div class="topact">
         <button class="wpill" data-act="openWorker" aria-label="작업자 선택">👤 <b id="workerName">—</b><span class="chev">▾</span></button>
         <button class="gbtn adminonly" data-act="openSettings" aria-label="설정">⚙️</button>
@@ -894,6 +1023,7 @@
       <div class="toolrow">
         <span class="rcount" id="resultCount"></span>
         <div class="tools">
+          <button class="gamebtn" id="gameBtn" data-act="openGame" aria-label="퍼피댕 케어 게임 열기"><span class="gbi" aria-hidden="true">🎮</span>게임 <b class="gbadge">🎯 0/3</b></button>
           <select class="sortsel" id="sortSel" aria-label="정렬">
             <option value="cage">장 번호순</option>
             <option value="intake">최근 입소순</option>
@@ -986,6 +1116,10 @@
 <div class="photoview" id="photoView" hidden>
   <div class="pvscrim" data-act="closePhotoView"></div>
   <img id="photoViewImg" src="" alt="상태 사진 크게 보기">
+  <div class="pvfoot">
+    <div class="pvnote" id="photoViewNote"></div>
+    <button type="button" class="pvbtn" id="photoViewNoteBtn" data-act="healthPhotoNoteEdit">✏️ 코멘트 달기</button>
+  </div>
   <button type="button" class="pvclose" data-act="closePhotoView" aria-label="닫기">✕</button>
 </div>
 <div class="instwrap" id="installWrap" hidden></div>
@@ -1023,11 +1157,12 @@
   function healthShowsDays(f){ return HEALTH_NO_DAYS.indexOf(String(f || '').trim()) < 0; }
   var BATH_KINDS = ['목욕','약욕'];
   /* 💊 투약 · 주사 빠른 입력 칩 — 누를 때마다 1회씩 쌓여요(하루 2회 약도 두 번 누르면 2회) */
-  var MED_KINDS = ['피부약','감기약','설사약','귀약','안약','연고','주사','오메크린','코로나약','핑크알약','셉트린'];
+  var MED_KINDS = ['피부약','감기약','설사약','귀약','안약','연고','주사','오메크린','코로나약','핑크알약','셉트린','귀청소','오리더밀'];
   var MED_MAX = 300;                   // 아이별 투약 기록 안전상한(최근 것부터 보관)
   var MED_LIST_MAX = 15;               // 상세 화면 최근 기록 표시 개수
   var ACTIVITY_ID = '__activity__';    // public.puppies 의 활동 메타 행 (__staff__ 와 같은 방식)
   var SCHED_ID = '__schedules__';      // 호텔링 · 분양픽업 일정 공유 행 (스키마 변경 없이 같은 방식으로 저장)
+  var GAMIFY_ID = '__gamify__';        // 🎮 직원 케어 게임(포인트 · 랭킹) 공유 행 — 아이 기록이 아니에요
   var SCHED_MAX = 400;                 // 안전상한
   var SCHED_DEL_TTL = 90 * 24 * 60 * 60 * 1000;   // 삭제 표식 보관 기간
   var ACTIVITY_MAX = 1000;             // 안전상한(2주 치가 잘리지 않게 넉넉히)
@@ -1531,7 +1666,8 @@
 
   function blankState(){
     return { v:2, worker:DEFAULT_STAFF[0], staff:DEFAULT_STAFF.slice(), hintDismissed:false, autoStaffPurged:true,
-      puppies: [], activity: [], schedules: [], schedDel: [], seeded:false, createdAt:new Date().toISOString() };
+      puppies: [], activity: [], schedules: [], schedDel: [], gamify: { users:{}, seeded:false },
+      seeded:false, createdAt:new Date().toISOString() };
   }
 
   // 작업자 목록 정규화: 공백/중복/길이 정리 + '대표님' 제외 + 비면 기본 목록
@@ -1590,6 +1726,7 @@
       activity: activityFresh((Array.isArray(data.activity) ? data.activity : []).map(normActivity)).slice(0, ACTIVITY_MAX),
       schedules: (Array.isArray(data.schedules) ? data.schedules : []).map(normSched).slice(0, SCHED_MAX),
       schedDel: (Array.isArray(data.schedDel) ? data.schedDel : []).filter(function(d){ return d && d.id; }).slice(0, 300),
+      gamify: normGamify(data.gamify),
       seeded: !!data.seeded,
       createdAt: data.createdAt || new Date().toISOString()
     };
@@ -1598,7 +1735,7 @@
   var state = loadState();
   var ui = {
     branch:'전체', status:'전체', q:'', sort:'cage', special:'', prevSort:'cage', bathKind:'목욕',
-    detailId:null,
+    detailId:null, hpNote:null, hpNoteId:'',
     vacType: VAC_PRESETS[0], formEdit:false, formId:null, sheet:null
   };
   var draft = null;
@@ -1802,6 +1939,7 @@
       if(auth.staffDirty){ auth.staffDirty = false; pushMeta(); }
       if(activityDirty) pushActivity();
       if(schedDirty) pushSchedules();
+      if(gamifyDirty) pushGamify(true);
     }
     renderSyncBadge();
     if(ui.sheet === 'sync') setSheet(syncHTML(), true);
@@ -1862,6 +2000,10 @@
     var on = isAdmin();
     document.body.classList.toggle('is-admin', on);
     if(!on && ui.sheet === 'settings') closeSheet();
+    /* 📱 안드로이드 앱(WebView): 대표 화면만 캡처 허용, 직원 화면은 FLAG_SECURE 로 보호 */
+    try {
+      if(window.PuppyDangBridge && typeof window.PuppyDangBridge.setSecure === 'function') window.PuppyDangBridge.setSecure(!on);
+    } catch(e){}
   }
   function accountWorker(user){
     var lp = accountLocal(user);
@@ -1913,7 +2055,7 @@
   }
   function lockApp(){
     auth.user = null; auth.meName = ''; auth.workerSet = false; auth.purgeName = '';
-    document.body.classList.remove('is-admin');
+    syncAdminUI();          // 로그아웃 · 세션 없음 → 대표 화면 아님(앱은 캡처 금지)
     ui.sheet = null; ui.detailId = null; ui.formId = null; draft = null;
     var sw = $('#sheetWrap'); if(sw) sw.hidden = true;
     var cw = $('#calWrap'); if(cw) cw.hidden = true;
@@ -2117,6 +2259,7 @@
       if(r.id === META_ID){ applyStaff(r.data); return; }
       if(r.id === ACTIVITY_ID){ applyActivity(r.data, true); return; }
       if(r.id === SCHED_ID){ applySchedules(r.data, true); return; }
+      if(r.id === GAMIFY_ID){ applyGamify(r.data, true); return; }   // 🎮 게임 점수 행은 아이 기록이 아니에요
       if(r.id === PUSH_ID) return;               // 알림 구독 목록 행은 아이 기록이 아니에요
       try { remote.push(norm(r.data || {})); } catch(e){}
     });
@@ -2143,6 +2286,7 @@
     keep.forEach(function(p){ localOnly[p.id] = 1; });
     applyMe();
     saveLocal();
+    try { gamifySeed(); } catch(e){}   // 게임 점수 행이 없으면 기존 활동 기록으로 한 번만 채워요
     renderAll();
     sweepAdopted(true);          // 공유 목록을 끌어온 직후에도 2주 지난 분양완료 장 정리
     pushAfter.forEach(function(p){ pushed[p.id] = JSON.stringify(p); upsertPuppy(p); });
@@ -2154,7 +2298,7 @@
     if(!payload || payload.table !== 'puppies') return;
     if(payload.eventType === 'DELETE'){
       var oldId = payload.old && payload.old.id;
-      if(!oldId || oldId === META_ID || oldId === ACTIVITY_ID || oldId === SCHED_ID || oldId === PUSH_ID) return;
+      if(!oldId || oldId === META_ID || oldId === ACTIVITY_ID || oldId === SCHED_ID || oldId === GAMIFY_ID || oldId === PUSH_ID) return;
       var gone = get(oldId);
       if(!gone) return;
       state.puppies = state.puppies.filter(function(x){ return x.id !== oldId; });
@@ -2169,6 +2313,7 @@
     if(row.id === META_ID){ applyStaff(row.data); return; }
     if(row.id === ACTIVITY_ID){ applyActivity(row.data, true); return; }
     if(row.id === SCHED_ID){ applySchedules(row.data, true); return; }
+    if(row.id === GAMIFY_ID){ applyGamify(row.data, true); return; }
     if(row.id === PUSH_ID) return;               // 알림 구독 목록 행은 아이 기록이 아니에요
     var incoming = norm(row.data || {});
     var cur = get(incoming.id);
@@ -2384,6 +2529,12 @@
     renderFeed(true);
     /* 다른 직원 폰의 잠금화면 알림 — 기기 자동 정리 같은 시스템 기록은 보내지 않아요 */
     if(!/자동 정리/.test(String(act || ''))) queuePush(pushTextOf(item), 0);
+    /* 🎮 케어 게임 — 기록을 남기면 점수가 쌓이고 오늘 미션도 함께 올라가요 */
+    try {
+      gamifyAward(item);
+      renderGameBits();
+      gameCheckClear();
+    } catch(e){}
     return item;
   }
   /* 같은 메모를 이어서 고치는 동안에는 줄을 새로 만들지 않고 방금 남긴 줄의 내용만 갱신해요 */
@@ -2433,6 +2584,7 @@
       var missing = out.some(function(it){ return !remoteIds[it.id]; });
       if(missing){ activityDirty = true; pushActivity(); }   // 이 기기에만 있던 활동을 공유 목록에도 합쳐요
     }
+    try { renderGameBits(); } catch(e){}   // 다른 직원 기록으로도 오늘 미션이 올라가요
   }
   function feedShow(it, animate){
     var vp = $('#feedText');
@@ -2547,6 +2699,474 @@
     ui.sheet = 'feed';
     setSheet(feedSheetHTML());
     openSheet();
+  }
+
+  /* ================= 🎮 케어 게임 (포인트 · 랭킹 · 미션) =================
+     public.puppies 의 __gamify__ 행 하나에 직원별 누적·월간·일간 점수를 모아 둡니다.
+     직원 폰끼리 같은 점수를 보고, 같은 이름은 더 새 기록이 이깁니다. */
+  var GAMIFY_COOL_MS = 60 * 1000;   // 같은 작업자가 같은 아이에게 같은 기록을 연타해도 60초에 한 번만
+  var GAME_OWNER = '김혜진';        // 대표님은 기본 랭킹에서 빼요 (아래 체크로 볼 수는 있어요)
+  var GAME_REWARD = '이번 달 1등 보상 · 치킨 쿠폰';
+  var GAME_LEVELS = [
+    { lv:1, name:'새싹', min:0 },
+    { lv:2, name:'꼬마 돌봄이', min:80 },
+    { lv:3, name:'케어 달인', min:200 },
+    { lv:4, name:'베테랑 케어', min:450 },
+    { lv:5, name:'퍼피댕 수호자', min:900 }
+  ];
+  var GAME_BADGES = [
+    { key:'bath',   ico:'🛁', name:'버블 장인', need:10 },
+    { key:'med',    ico:'💊', name:'투약 지킴이', need:20 },
+    { key:'photo',  ico:'📸', name:'포토그래퍼', need:10 },
+    { key:'note',   ico:'📝', name:'기록왕', need:20 },
+    { key:'streak', ico:'🔥', name:'연속 출석', need:3 }
+  ];
+  var game = { tab:'mission', period:'month', owner:false };
+  var gamifyCool = {};
+  var gamifyPushT = null;
+  var gamifyDirty = false;
+
+  function blankGamifyUser(){
+    return { totalPts:0, monthly:{}, daily:{}, counts:{ bath:0, med:0, photo:0, vaccine:0, note:0 }, days:[], updatedAt:'' };
+  }
+  function gState(){
+    if(!state.gamify || typeof state.gamify !== 'object') state.gamify = { users:{}, seeded:false };
+    if(!state.gamify.users || typeof state.gamify.users !== 'object') state.gamify.users = {};
+    return state.gamify;
+  }
+  function normGamifyUser(raw){
+    raw = (raw && typeof raw === 'object') ? raw : {};
+    var out = blankGamifyUser();
+    out.totalPts = Math.max(0, Math.round(Number(raw.totalPts) || 0));
+    if(raw.counts && typeof raw.counts === 'object'){
+      Object.keys(out.counts).forEach(function(k){
+        out.counts[k] = Math.max(0, Math.round(Number(raw.counts[k]) || 0));
+      });
+    }
+    if(raw.monthly && typeof raw.monthly === 'object'){
+      Object.keys(raw.monthly).forEach(function(m){
+        if(!/^\d{4}-\d{2}$/.test(m)) return;
+        var v = Math.max(0, Math.round(Number(raw.monthly[m]) || 0));
+        if(v) out.monthly[m] = v;
+      });
+    }
+    if(raw.daily && typeof raw.daily === 'object'){
+      Object.keys(raw.daily).forEach(function(d){
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(d)) return;
+        var v = Math.max(0, Math.round(Number(raw.daily[d]) || 0));
+        if(v) out.daily[d] = v;
+      });
+    }
+    var days = Array.isArray(raw.days) ? raw.days : Object.keys(out.daily);
+    var seen = {};
+    days.forEach(function(d){
+      d = String(d || '');
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(d) || seen[d]) return;
+      seen[d] = 1;
+      out.days.push(d);
+    });
+    out.days.sort();
+    if(out.days.length > 120) out.days = out.days.slice(-120);
+    out.updatedAt = String(raw.updatedAt || '');
+    return out;
+  }
+  function normGamify(raw){
+    raw = (raw && typeof raw === 'object') ? raw : {};
+    var out = { users:{}, seeded: !!raw.seeded };
+    var rows = (raw.users && typeof raw.users === 'object') ? raw.users : {};
+    Object.keys(rows).forEach(function(n){
+      var nm = String(n || '').trim().slice(0, 12);
+      if(nm) out.users[nm] = normGamifyUser(rows[n]);
+    });
+    return out;
+  }
+
+  /* 어떤 기록이 몇 점인지 — 지운 기록이나 시스템 자동 정리는 점수가 없어요 */
+  function gamifyKind(act, tail){
+    var a = String(act || '');
+    var t = String(tail || '');
+    if(!a || /자동 정리/.test(a)) return null;
+    if(/삭제|지웠/.test(t)) return null;
+    if(/^(목욕|약욕)완료$/.test(a)) return { kind:'bath', pts:10 };
+    if(/접종/.test(a)) return { kind:'vaccine', pts:10 };
+    if(/급여/.test(a)) return { kind:'med', pts:5 };
+    if(a === '상태 사진') return { kind:'photo', pts:5 };
+    if(a === '정보' || a === '메모' || a === '노트') return { kind:'note', pts:3 };
+    if(/체크|해제|회복/.test(a)) return { kind:'note', pts:3 };
+    return null;
+  }
+
+  function gamifyAward(item, seed){
+    if(!item) return null;
+    var hit = gamifyKind(item.act, item.tail);
+    if(!hit) return null;
+    var who = String(item.by || '').trim().slice(0, 12);
+    if(!who) return null;
+    var at = new Date(item.at || Date.now());
+    if(isNaN(at.getTime())) at = new Date();
+    var tag = who + '|' + String(item.dogId || item.name || '') + '|' + hit.kind;
+    var now = Date.now();
+    if(!seed){
+      if(gamifyCool[tag] && now - gamifyCool[tag] < GAMIFY_COOL_MS) return null;
+      gamifyCool[tag] = now;
+    }
+    var g = gState();
+    var u = g.users[who] || (g.users[who] = blankGamifyUser());
+    var day = ymd(at), ym = day.slice(0, 7);
+    u.totalPts += hit.pts;
+    u.monthly[ym] = (u.monthly[ym] || 0) + hit.pts;
+    u.daily[day] = (u.daily[day] || 0) + hit.pts;
+    u.counts[hit.kind] = (u.counts[hit.kind] || 0) + 1;
+    if(u.days.indexOf(day) < 0){
+      u.days.push(day);
+      u.days.sort();
+      if(u.days.length > 120) u.days = u.days.slice(-120);
+    }
+    if(seed){
+      var its = String(item.at || '');           // 채워 넣을 때는 그 기록 시각을 ‘마지막 수정’으로
+      if(its && its > u.updatedAt) u.updatedAt = its;
+    } else {
+      u.updatedAt = new Date().toISOString();
+      gamifyDirty = true;
+      try { saveLocal(); } catch(e){}
+      pushGamify();
+    }
+    g.seeded = true;
+    return u;
+  }
+
+  /* __gamify__ 행이 비어 있으면 지난 활동 기록으로 점수를 한 번만 채워 둡니다 */
+  function gamifySeed(){
+    var g = gState();
+    if(g.seeded) return false;
+    var items = (state.activity || []).slice().sort(function(a, b){ return activityTs(a) - activityTs(b); });
+    for(var i = 0; i < items.length; i++) gamifyAward(items[i], true);
+    g.seeded = true;
+    gamifyDirty = true;
+    try { saveLocal(); } catch(e){}
+    pushGamify();
+    renderGameBits();
+    return true;
+  }
+
+  function gamifyPayload(){
+    var g = gState();
+    var users = {};
+    Object.keys(g.users).forEach(function(n){
+      var u = g.users[n];
+      var daily = {}, keys = Object.keys(u.daily || {}).sort();
+      if(keys.length > 90) keys = keys.slice(-90);
+      keys.forEach(function(k){ daily[k] = u.daily[k]; });
+      users[n] = { totalPts: u.totalPts || 0, monthly: u.monthly || {}, daily: daily,
+        counts: u.counts || {}, days: (u.days || []).slice(-90), updatedAt: u.updatedAt || '' };
+    });
+    return { users: users, seeded: !!g.seeded, updatedAt: new Date().toISOString() };
+  }
+  function pushGamify(immediate){
+    gamifyDirty = true;
+    if(!isLive()) return;                 // 연결되면 setSync('live') 에서 다시 올려요
+    if(gamifyPushT){ clearTimeout(gamifyPushT); gamifyPushT = null; }
+    if(immediate) return gamifyPushNow();
+    gamifyPushT = setTimeout(gamifyPushNow, 600);
+  }
+  function gamifyPushNow(){
+    gamifyPushT = null;
+    if(!isLive() || !gamifyDirty) return;
+    sync.client.from('puppies').upsert({ id: GAMIFY_ID, data: gamifyPayload(), updated_at: new Date().toISOString() }).then(function(res){
+      if(res && res.error) handleSyncError(res.error);
+      else gamifyDirty = false;
+    }, function(err){ handleSyncError(err); });
+  }
+  function applyGamify(data, fromRemote){
+    if(!data) return;
+    var g = gState();
+    var incoming = (data.users && typeof data.users === 'object') ? data.users : {};
+    var changed = false;
+    Object.keys(incoming).forEach(function(n){
+      var name = String(n || '').trim().slice(0, 12);
+      if(!name) return;
+      var inc = normGamifyUser(incoming[name]);
+      var cur = g.users[name];
+      if(!cur){ g.users[name] = inc; changed = true; return; }
+      var ti = new Date(inc.updatedAt || 0).getTime() || 0;
+      var tc = new Date(cur.updatedAt || 0).getTime() || 0;
+      if(ti > tc){ g.users[name] = inc; changed = true; }
+      else if(tc > ti) gamifyDirty = true;    // 이 기기 기록이 더 새로우면 나중에 올려요
+    });
+    if(Object.keys(incoming).length && !g.seeded){ g.seeded = true; changed = true; }
+    if(data.seeded && !g.seeded){ g.seeded = true; changed = true; }
+    if(changed){ try { saveLocal(); } catch(e){} }
+    if(fromRemote) renderGameBits();
+  }
+
+  /* ---------- 점수 계산 · 레벨 · 뱃지 ---------- */
+  function gToday(){ return todayStr(); }
+  function gWeekStart(){
+    var d = new Date();
+    d.setHours(12, 0, 0, 0);
+    d.setDate(d.getDate() - ((d.getDay() + 6) % 7));   // 월요일 시작
+    return ymd(d);
+  }
+  function gPoints(u, mode){
+    if(!u) return 0;
+    if(mode === 'total') return u.totalPts || 0;
+    if(mode === 'month') return (u.monthly || {})[gToday().slice(0, 7)] || 0;
+    var from = gWeekStart(), sum = 0;
+    for(var d in (u.daily || {})){ if(d >= from && d <= gToday()) sum += u.daily[d]; }
+    return sum;
+  }
+  function gLevel(pts){
+    pts = Math.max(0, Number(pts) || 0);
+    var cur = GAME_LEVELS[0];
+    GAME_LEVELS.forEach(function(l){ if(pts >= l.min) cur = l; });
+    return cur;
+  }
+  function gStreak(u){
+    if(!u || !u.days || !u.days.length) return 0;
+    var set = {};
+    u.days.forEach(function(d){ set[d] = 1; });
+    var d = new Date();
+    d.setHours(12, 0, 0, 0);
+    if(!set[ymd(d)]) d.setDate(d.getDate() - 1);   // 오늘 아직 기록 전이면 어제부터 세요
+    var n = 0;
+    while(set[ymd(d)] && n < 400){ n++; d.setDate(d.getDate() - 1); }
+    return n;
+  }
+  function gameAllDone(){ return gameDone(gameMissions()) >= 3; }
+
+  /* ---------- 오늘의 매장 공동 미션 ---------- */
+  function gameMissions(){
+    var t = gToday();
+    var bathSet = {}, bathN = 0, healthN = 0, allN = 0;
+    (state.activity || []).forEach(function(it){
+      if(isoYmd(it.at) !== t) return;
+      var a = String(it.act || '');
+      if(!a || /자동 정리/.test(a)) return;
+      allN++;
+      if(/^(목욕|약욕)완료$/.test(a)){
+        var k = it.dogId || it.name || it.id;
+        if(!bathSet[k]){ bathSet[k] = 1; bathN++; }
+        return;
+      }
+      if(/급여/.test(a) || a === '상태 사진' || /체크|해제|회복/.test(a)) healthN++;
+    });
+    return [
+      { key:'bath',   ico:'🛁', name:'오늘 목욕 · 약욕 케어',     now:bathN,   goal:3, sub:'서로 다른 아이 3마리' },
+      { key:'health', ico:'💊', name:'오늘 투약 · 건강 챙기기',   now:healthN, goal:2, sub:'투약 · 상태 사진 · 특이사항 2건' },
+      { key:'team',   ico:'📝', name:'오늘 팀 케어 기록',         now:allN,    goal:5, sub:'전체 활동 5건' }
+    ];
+  }
+  function gameDone(ms){
+    var n = 0;
+    (ms || gameMissions()).forEach(function(m){ if(m.now >= m.goal) n++; });
+    return n;
+  }
+
+  /* ---------- 랭킹 ---------- */
+  function gameRows(){
+    var g = gState();
+    var names = [];
+    (state.staff || []).forEach(function(n){ if(n && names.indexOf(n) < 0) names.push(n); });
+    Object.keys(g.users || {}).forEach(function(n){ if(n && names.indexOf(n) < 0) names.push(n); });
+    names = names.filter(function(n){ return game.owner || n !== GAME_OWNER; });
+    var rows = names.map(function(n){
+      var u = g.users[n] || null;
+      return { name:n, u:u, pts:gPoints(u, game.period), total:(u && u.totalPts) || 0 };
+    });
+    rows.sort(function(a, b){
+      if(b.pts !== a.pts) return b.pts - a.pts;
+      if(b.total !== a.total) return b.total - a.total;
+      return a.name < b.name ? -1 : (a.name > b.name ? 1 : 0);
+    });
+    return rows;
+  }
+  function gameLeader(){
+    var g = gState();
+    var best = null;
+    Object.keys(g.users || {}).forEach(function(n){
+      if(!game.owner && n === GAME_OWNER) return;
+      var pts = gPoints(g.users[n], 'month');
+      if(pts <= 0) return;
+      if(!best || pts > best.pts) best = { name:n, pts:pts };
+    });
+    return best;
+  }
+
+  function gameRewardHTML(){
+    var best = gameLeader();
+    return '<div class="greward">' +
+      '<span class="grico" aria-hidden="true">🍗</span>' +
+      '<div class="gtx"><b>' + GAME_REWARD + '</b>' +
+        '<span class="gsub">' + (best
+          ? '👑 이번 달 현재 1등 · ' + esc(best.name) + ' <b>' + best.pts + '점</b>'
+          : '아직 1등이 없어요 · 오늘 첫 기록으로 1등을 잡아 보세요!') + '</span>' +
+      '</div></div>';
+  }
+
+  function gameRowHTML(r, i, best){
+    var u = r.u;
+    var rank = i + 1;
+    var lv = gLevel(u ? u.totalPts : 0);
+    var st = gStreak(u);
+    var counts = (u && u.counts) || {};
+    var badges = GAME_BADGES.filter(function(b){
+      return b.key === 'streak' ? st >= b.need : (counts[b.key] || 0) >= b.need;
+    });
+    var medal = r.pts > 0 ? (rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '') : '';
+    var isTop = r.pts > 0 && rank === 1;
+    var isMe = r.name === state.worker;
+    var crown = '';
+    if(isTop && game.period === 'month') crown = '<span class="gcrown">👑 현재 1등</span>';
+    else if(isTop) crown = '<span class="gcrown">👑 1등</span>';
+    var badgeHTML = badges.length
+      ? badges.map(function(b){ return '<i>' + b.ico + ' ' + b.name + '</i>'; }).join('')
+      : '<span class="gnone">아직 뱃지 없음</span>';
+    return '<div class="gitem' + (isTop ? ' top' : '') + (isMe ? ' me' : '') + '">' +
+      '<span class="grank">' + (medal || rank) + '</span>' +
+      '<div class="gmain">' +
+        '<div class="gline1"><b>' + esc(r.name) + '</b>' + (isMe ? '<span class="gme">나</span>' : '') +
+          '<span class="glv">Lv.' + lv.lv + ' ' + lv.name + '</span>' + crown + '</div>' +
+        '<div class="gcnt">🛁 ' + (counts.bath || 0) + ' · 💊 ' + (counts.med || 0) + ' · 📸 ' + (counts.photo || 0) + ' · 📝 ' + (counts.note || 0) + '</div>' +
+        '<div class="gbadges">' + badgeHTML + '</div>' +
+      '</div>' +
+      '<div class="gpt"><b>' + r.pts + '</b><span>점' + (isTop && game.period === 'month' ? ' 🍗' : '') + '</span></div>' +
+    '</div>';
+  }
+
+  function gameRankHTML(){
+    var rows = gameRows();
+    var best = gameLeader();
+    var per = '<div class="gperiod" role="tablist" aria-label="랭킹 기간">' +
+      [['week','이번 주'],['month','이번 달'],['total','전체']].map(function(p){
+        var on = game.period === p[0];
+        return '<button type="button" class="gper' + (on ? ' on' : '') + '" data-act="gamePeriod" data-p="' + p[0] + '" role="tab" aria-selected="' + on + '">' + p[1] + '</button>';
+      }).join('') + '</div>';
+    var list = '<div class="glist">' + rows.map(function(r, i){ return gameRowHTML(r, i, best); }).join('') + '</div>';
+    var owner = '<button type="button" class="gowner' + (game.owner ? ' on' : '') + '" data-act="gameOwner" aria-pressed="' + (!!game.owner) + '">' +
+      '<span class="gbox" aria-hidden="true">' + (game.owner ? '✓' : '') + '</span>대표님 포함</button>';
+    return per + list + owner;
+  }
+
+  function gameMineHTML(){
+    var g = gState();
+    var u = g.users[state.worker] || null;
+    var today = (u && u.daily[gToday()]) || 0;
+    var lv = gLevel(u ? u.totalPts : 0);
+    var next = null;
+    GAME_LEVELS.forEach(function(l){
+      if(l.min > (u ? u.totalPts : 0) && (!next || l.min < next.min)) next = l;
+    });
+    var st = gStreak(u);
+    return '<div class="mystrip">' +
+      '<span class="myava" aria-hidden="true">🐾</span>' +
+      '<div class="mytx"><b>' + esc(state.worker) + ' · Lv.' + lv.lv + ' ' + lv.name + '</b>' +
+        '<span>오늘 +' + today + '점 · 이번 달 ' + gPoints(u, 'month') + '점' + (st >= 2 ? ' · 🔥 ' + st + '일 연속' : '') + '</span></div>' +
+      '<div class="mynext">' + (next ? '다음 Lv.' + next.lv + '까지<br><b>' + (next.min - (u ? u.totalPts : 0)) + '점</b>' : '최고 레벨 🎉') + '</div>' +
+    '</div>';
+  }
+
+  function gameMissionHTML(){
+    var ms = gameMissions();
+    var done = gameDone(ms);
+    var rows = ms.map(function(m){
+      var ok = m.now >= m.goal;
+      var pct = Math.min(100, Math.round(m.now / m.goal * 100));
+      return '<div class="gmi' + (ok ? ' done' : '') + '">' +
+        '<span class="gmiico" aria-hidden="true">' + m.ico + '</span>' +
+        '<div class="gmibody">' +
+          '<div class="gmitop"><b>' + m.name + '</b><span class="gminum">' + m.now + '/' + m.goal + '</span></div>' +
+          '<div class="gmibar"><i style="width:' + pct + '%"></i></div>' +
+          '<div class="gmisub">' + m.sub + '</div>' +
+        '</div>' +
+        '<span class="gmichk" aria-hidden="true">' + (ok ? '✓' : '') + '</span>' +
+      '</div>';
+    }).join('');
+    var banner = done >= 3
+      ? '<div class="gclear"><b>🎉 오늘 매장 미션 올클리어!</b><span>세 가지 미션을 모두 채웠어요 · 내일 또 새로 시작해요</span>' +
+        '<button type="button" data-act="gameConfetti">🎉 컨페티 한 번 더</button></div>'
+      : '';
+    return '<div class="gcard"><h3>🎯 오늘의 매장 공동 미션 <em>' + done + '/3</em></h3>' + rows + '</div>' + banner + gameMineHTML();
+  }
+
+  function gameHTML(){
+    var tab = game.tab === 'rank' ? 'rank' : 'mission';
+    var done = gameDone();
+    var on = done >= 3;
+    return sheetbar('🎮 퍼피댕 케어 게임', '오늘의 미션 · 직원 랭킹') +
+      '<div class="sheetbody">' +
+      gameRewardHTML() +
+      '<div class="gsegs" role="tablist" aria-label="게임 화면">' +
+        '<button type="button" class="gseg' + (tab === 'mission' ? ' on' : '') + '" data-act="gameTab" data-tab="mission" role="tab" aria-selected="' + (tab === 'mission') + '">🎯 오늘의 미션 <b class="' + (on ? 'on' : '') + '">' + done + '/3</b></button>' +
+        '<button type="button" class="gseg' + (tab === 'rank' ? ' on' : '') + '" data-act="gameTab" data-tab="rank" role="tab" aria-selected="' + (tab === 'rank') + '">🏆 랭킹</button>' +
+      '</div>' +
+      (tab === 'rank' ? gameRankHTML() : gameMissionHTML()) +
+      '<p class="gfoot">포인트는 목욕 · 투약 · 접종 · 사진 · 기록을 남길 때 자동으로 쌓여요<br>기록을 지우면 점수는 오르지 않아요</p>' +
+      '</div>';
+  }
+
+  function openGame(){
+    ui.detailId = null;
+    ui.sheet = 'game';
+    setSheet(gameHTML());
+    openSheet();
+    setTimeout(function(){ try { gameCheckClear(); } catch(e){} }, 380);
+  }
+
+  function renderGameBits(){
+    var el = document.getElementById('gameBtn');
+    if(el){
+      var done = gameDone();
+      var on = done >= 3;
+      el.classList.toggle('clear', on);
+      var badge = el.querySelector('.gbadge');
+      if(badge){
+        badge.textContent = on ? '🎉 올클리어' : '🎯 ' + done + '/3';
+        badge.classList.toggle('on', on);
+      }
+      el.setAttribute('aria-label', on ? '퍼피댕 케어 게임 · 오늘 미션 올클리어' : '퍼피댕 케어 게임 · 오늘 미션 ' + done + '/3');
+    }
+    if(ui.sheet === 'game') setSheet(gameHTML(), true);
+  }
+
+  /* ---------- 컨페티 · 올클리어 축하 ---------- */
+  function confettiBurst(count){
+    var layer = document.getElementById('confettiLayer');
+    if(!layer){
+      layer = document.createElement('div');
+      layer.id = 'confettiLayer';
+      layer.className = 'confetti-layer';
+      document.body.appendChild(layer);
+    }
+    var colors = ['#C9973F','#6B4423','#E5A24A','#8FAE66','#D96B5A','#F3C86B','#B88456','#9FC47F'];
+    var n = count || 60;
+    for(var i = 0; i < n; i++){
+      var s = document.createElement('span');
+      s.className = 'confetti';
+      var dur = 1.7 + Math.random() * 1.4;
+      var delay = Math.random() * 0.4;
+      s.style.left = Math.round(Math.random() * 100) + 'vw';
+      s.style.background = colors[i % colors.length];
+      s.style.animationDuration = dur.toFixed(2) + 's';
+      s.style.animationDelay = delay.toFixed(2) + 's';
+      s.style.width = (5 + Math.round(Math.random() * 5)) + 'px';
+      s.style.height = (8 + Math.round(Math.random() * 8)) + 'px';
+      s.style.setProperty('--drift', Math.round(Math.random() * 140 - 70) + 'px');
+      layer.appendChild(s);
+      (function(el, ms){ setTimeout(function(){ if(el && el.parentNode) el.parentNode.removeChild(el); }, ms); })(s, (dur + delay) * 1000 + 300);
+    }
+  }
+  /* 하루에 한 번만 축하해요 (미션은 자정에 새로 시작) */
+  function gameCheckClear(){
+    if(!gameAllDone()) return false;
+    var key = 'pd_game_clear_' + todayStr();
+    try {
+      if(localStorage.getItem(key)) return false;
+      localStorage.setItem(key, '1');
+    } catch(e){}
+    confettiBurst(80);
+    if(ui.sheet !== 'game') setTimeout(function(){ toast('🎉 오늘 매장 미션 올클리어! 모두 수고했어요'); }, 700);
+    if(ui.sheet === 'game') setSheet(gameHTML(), true);
+    return true;
   }
 
   function timeText(d){
@@ -3374,6 +3994,7 @@
     renderNotice();
     renderList();
     renderFeed();
+    renderGameBits();      // 🎮 오늘 미션 진행률 · 게임 버튼
     renderCalendar();      // 캘린더가 열려 있을 때만 그림 (실시간 동기화 포함)
     renderHotel();         // 호텔링 · 분양픽업 화면이 열려 있을 때만 그림
   }
@@ -4000,6 +4621,7 @@
     ui.detailId = null;
     ui.formId = null;
     ui.sheet = null;
+    ui.hpNote = null;
     draft = null;
     syncBodyLock();   // 캘린더가 열려 있으면 배경 스크롤을 다시 잠가요
   }
@@ -4090,11 +4712,15 @@
           var cap = '';
           var d = ph.addedAt ? new Date(ph.addedAt) : null;
           if(d && !isNaN(d.getTime())) cap = (d.getMonth() + 1) + '/' + d.getDate();
+          var cmt = String(ph.label || '').trim();
           return '<div class="hpitem">' +
             '<button type="button" class="hpopen" data-act="healthPhotoOpen" data-id="' + esc(ph.id) + '" aria-label="상태 사진 크게 보기">' +
-              '<img src="' + ph.dataUrl + '" alt="' + esc(ph.label || '상태 사진') + '" loading="lazy">' +
+              '<img src="' + ph.dataUrl + '" alt="' + esc(cmt || '상태 사진') + '" loading="lazy">' +
             '</button>' +
             '<span class="hpcap">' + esc(cap || '날짜 미상') + (ph.addedBy ? ' · ' + esc(ph.addedBy) : '') + '</span>' +
+            '<button type="button" class="hpnote' + (cmt ? ' has' : '') + '" data-act="healthPhotoNote" data-id="' + esc(ph.id) + '" aria-label="사진 코멘트 ' + (cmt ? '수정' : '입력') + '">' +
+              '<span class="hpnx">' + (cmt ? '💬 ' + esc(cmt) : '＋ 코멘트') + '</span><span class="hpnp" aria-hidden="true">✏️</span>' +
+            '</button>' +
             '<button type="button" class="hpdel" data-act="healthPhotoDel" data-id="' + esc(ph.id) + '" aria-label="상태 사진 삭제">✕</button>' +
           '</div>';
         }).join('') + '</div>'
@@ -4102,9 +4728,73 @@
     return '<div class="hphoto">' +
       '<div class="hphead"><b>📷 상태 사진</b><span>최대 ' + HEALTH_PHOTO_MAX + '장</span></div>' +
       grid +
+      healthPhotoNoteEditorHTML(p) +
       '<input type="file" id="fileHealthPhoto" accept="image/*" multiple hidden>' +
       '<button type="button" class="btn sm wide" data-act="healthPhotoPick">📷 상태 사진 올리기</button>' +
       '</div>';
+  }
+  /* 사진 한 장에 한 줄 코멘트 — 예) “11/26 많이 좋아짐” */
+  function healthPhotoNoteEditorHTML(p){
+    if(!ui.hpNote) return '';
+    var ph = ((p && p.healthPhotos) || []).filter(function(x){ return x.id === ui.hpNote; })[0];
+    if(!ph) return '';
+    var cmt = String(ph.label || '').trim();
+    var d = ph.addedAt ? new Date(ph.addedAt) : null;
+    var cap = (d && !isNaN(d.getTime())) ? (d.getMonth() + 1) + '/' + d.getDate() : '';
+    return '<div class="hpne">' +
+      '<div class="hpnhead">' +
+        '<img src="' + ph.dataUrl + '" alt="">' +
+        '<div><b>💬 사진 코멘트</b><span>' + [cap, ph.addedBy].filter(Boolean).map(esc).join(' · ') + ' 사진</span></div>' +
+      '</div>' +
+      '<div class="hpnrow">' +
+        '<input class="hpnoteinput" id="hpNoteInput" type="text" maxlength="40" autocomplete="off" value="' + esc(cmt) + '" placeholder="예) 11/26 많이 좋아짐">' +
+        '<button type="button" class="hpnb save" data-act="healthPhotoNoteSave">저장</button>' +
+        '<button type="button" class="hpnb" data-act="healthPhotoNoteCancel" aria-label="코멘트 입력 취소">✕</button>' +
+      '</div>' +
+      '<div class="hpnquick">' + ['많이 좋아짐','조금 좋아짐','그대로예요','조금 심해짐'].map(function(q){
+        return '<button type="button" data-act="healthPhotoNoteQuick" data-v="' + esc(q) + '">' + esc(q) + '</button>';
+      }).join('') + '</div>' +
+    '</div>';
+  }
+  function healthPhotoNoteStart(id){
+    var p = get(ui.detailId);
+    if(!p || !id) return;
+    if(!(p.healthPhotos || []).some(function(x){ return x.id === id; })) return;
+    ui.hpNote = id;
+    refreshDetail();
+    setTimeout(focusHealthPhotoNote, 70);
+  }
+  function focusHealthPhotoNote(){
+    var el = $('#hpNoteInput');
+    if(!el) return;
+    try {
+      el.scrollIntoView({ block:'center', behavior:'smooth' });
+      el.focus({ preventScroll:true });
+      el.setSelectionRange(el.value.length, el.value.length);
+    } catch(e){ try { el.focus(); } catch(e2){} }
+  }
+  function healthPhotoNoteCancel(){
+    ui.hpNote = null;
+    refreshDetail();
+  }
+  function healthPhotoNoteSave(id, value){
+    var p = get(ui.detailId);
+    if(!p) return;
+    id = id || ui.hpNote;
+    var ph = (p.healthPhotos || []).filter(function(x){ return x.id === id; })[0];
+    if(!ph) return;
+    var inp = $('#hpNoteInput');
+    var v = (value != null) ? String(value) : (inp ? String(inp.value || '') : '');
+    v = v.replace(/\s+/g, ' ').trim().slice(0, 40);
+    ph.label = v;
+    ph.noteBy = String(state.worker || '').slice(0, 12);
+    ph.noteAt = new Date().toISOString();
+    ui.hpNote = null;
+    touchPuppy(p);
+    save();
+    renderAll();
+    refreshDetail();
+    toast(v ? '사진 코멘트를 저장했어요 · ' + v : '사진 코멘트를 지웠어요');
   }
   function addHealthPhotos(files){
     var p = get(ui.detailId);
@@ -4122,9 +4812,12 @@
       touchPuppy(p);
       save();
       logActivity(p, '상태 사진', added > 1 ? added + '장 추가했습니다' : '추가했습니다');
+      /* 한 장만 올렸으면 바로 코멘트를 적을 수 있게 열어줘요 */
+      if(added === 1 && (p.healthPhotos || [])[0]) ui.hpNote = p.healthPhotos[0].id;
       renderAll();
       refreshDetail();
-      toast('상태 사진 ' + added + '장을 올렸어요');
+      toast('상태 사진 ' + added + '장을 올렸어요' + (added === 1 ? ' · 코멘트를 남겨보세요' : ''));
+      if(ui.hpNote) setTimeout(focusHealthPhotoNote, 120);
     }
     take.forEach(function(f){
       compressImage(f, function(dataURL){
@@ -4143,8 +4836,29 @@
     var box = $('#photoView'), img = $('#photoViewImg');
     if(!box || !img) return;
     img.src = ph.dataUrl;
+    img.alt = (String(ph.label || '').trim() || '상태 사진') + ' 크게 보기';
+    ui.hpNoteId = id;
+    var note = $('#photoViewNote');
+    if(note){
+      var cmt = String(ph.label || '').trim();
+      var d = ph.addedAt ? new Date(ph.addedAt) : null;
+      var cap = (d && !isNaN(d.getTime())) ? (d.getMonth() + 1) + '/' + d.getDate() : '';
+      note.textContent = cmt || ((cap ? cap + ' · ' : '') + '아직 코멘트가 없어요');
+      note.className = 'pvnote' + (cmt ? '' : ' none');
+    }
+    var nb = $('#photoViewNoteBtn');
+    if(nb) nb.textContent = String(ph.label || '').trim() ? '✏️ 코멘트 수정' : '✏️ 코멘트 달기';
     box.hidden = false;
     document.body.classList.add('lock');
+  }
+  /* 라이트박스에서 바로 코멘트 입력으로 */
+  function healthPhotoNoteFromView(){
+    var id = ui.hpNoteId;
+    closePhotoView();
+    if(!id) return;
+    ui.hpNote = id;
+    refreshDetail();
+    setTimeout(focusHealthPhotoNote, 120);
   }
   function closePhotoView(){
     var box = $('#photoView');
@@ -4532,12 +5246,14 @@
     if(!get(id)) return;
     if(get(id).isArchive){
       ui.detailId = id;
+      ui.hpNote = null;
       ui.sheet = 'detail';
       setSheet(archiveDetailHTML(id));
       openSheet();
       return;
     }
     ui.detailId = id;
+    ui.hpNote = null;
     ui.vacType = VAC_PRESETS[0];
     ui.sheet = 'detail';
     /* 예전 기록 보정 — 3차까지 맞았으면 자동 D-day 를 비우고, 아니면 마지막 접종일 + 2주로 채워요 */
@@ -4968,7 +5684,7 @@
         '<div class="settingrow"><div><b>전체 비우기</b><span>모든 노트를 지워요 · 되돌릴 수 없어요</span></div>' +
           '<button class="btn sm danger" data-act="wipeAll">비우기</button></div>' +
       '</section>' +
-      '<div class="sfoot"><img src="puppies-logo.png" alt="퍼피댕" style="width:132px;display:block;margin:0 auto 7px;border-radius:7px">퍼피댕 V1.2 · 디데이펫 관리 노트</div>' +
+      '<div class="sfoot"><img src="puppies-logo.png" alt="퍼피댕" style="width:132px;display:block;margin:0 auto 7px;border-radius:7px">퍼피댕 V1.3 · 디데이펫 관리 노트</div>' +
       '</div>';
   }
 
@@ -4983,7 +5699,7 @@
   function exportJSON(){
     var data = {
       app: 'puppydang-puppies', version: 2, exportedAt: new Date().toISOString(),
-      worker: state.worker, staff: state.staff, puppies: state.puppies, activity: state.activity
+      worker: state.worker, staff: state.staff, puppies: state.puppies, activity: state.activity, gamify: gamifyPayload()
     };
     try {
       var blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
@@ -5020,6 +5736,7 @@
         state.staff = cleanStaff(data.staff);
       }
       if(typeof data.worker === 'string' && state.staff.indexOf(data.worker) >= 0) state.worker = data.worker;
+      if(data.gamify) state.gamify = normGamify(data.gamify);
       if(state.staff.indexOf(state.worker) < 0) state.worker = state.staff[0];
       save();
       renderAll();
@@ -5426,6 +6143,25 @@
       case 'openFeed':
         openFeed();
         break;
+      case 'openGame':
+        openGame();
+        break;
+      case 'gameTab':
+        game.tab = el.getAttribute('data-tab') === 'rank' ? 'rank' : 'mission';
+        setSheet(gameHTML());
+        break;
+      case 'gamePeriod':
+        game.period = el.getAttribute('data-p') || 'month';
+        setSheet(gameHTML(), true);
+        break;
+      case 'gameOwner':
+        game.owner = !game.owner;
+        setSheet(gameHTML(), true);
+        break;
+      case 'gameConfetti':
+        confettiBurst(70);
+        toast('🎉 퍼피댕! 오늘도 수고했어요');
+        break;
       case 'openCalendar':
         openCalendar();
         break;
@@ -5570,6 +6306,26 @@
         break;
       case 'healthPhotoDel':
         deleteHealthPhoto(el.getAttribute('data-id'));
+        break;
+      case 'healthPhotoNote':
+        healthPhotoNoteStart(el.getAttribute('data-id'));
+        break;
+      case 'healthPhotoNoteSave':
+        healthPhotoNoteSave(el.getAttribute('data-id'));
+        break;
+      case 'healthPhotoNoteCancel':
+        healthPhotoNoteCancel();
+        break;
+      case 'healthPhotoNoteQuick':
+        (function(){
+          var inp = $('#hpNoteInput');
+          if(!inp) return;
+          inp.value = el.getAttribute('data-v') || '';
+          try { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); } catch(e){}
+        })();
+        break;
+      case 'healthPhotoNoteEdit':
+        healthPhotoNoteFromView();
         break;
       case 'closePhotoView':
         closePhotoView();
@@ -5910,7 +6666,13 @@
   });
 
   document.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' && document.activeElement && document.activeElement.id === 'hpNoteInput'){
+      e.preventDefault();
+      healthPhotoNoteSave();
+      return;
+    }
     if(e.key === 'Escape'){
+      if(document.activeElement && document.activeElement.id === 'hpNoteInput'){ healthPhotoNoteCancel(); return; }
       if($('#photoView') && !$('#photoView').hidden) closePhotoView();
       else if($('#installWrap') && !$('#installWrap').hidden) closeInstallGuide();
       else if(!$('#sheetWrap').hidden) closeSheet();
@@ -6133,6 +6895,7 @@
   document.addEventListener('visibilitychange', function(){ if(document.hidden) return; refreshPushState(); verifyAccount(); try { sweepAdopted(true); } catch(e){} });
 
   initStore(function(){
+    try { gamifySeed(); } catch(e){}   // 처음 켤 때 지난 활동 기록으로 게임 점수 채우기
     bootAuth();
     setTimeout(function(){ try { sweepAdopted(true); } catch(e){} }, 0);   // 앱을 열 때 바로 정리
   });
@@ -6147,7 +6910,10 @@
       logActivity: logActivity, renderFeed: renderFeed, openFeed: openFeed, renderAll: renderAll,
       cal: cal, openCalendar: openCalendar, renderCalendar: renderCalendar,
       hotel: hotel, openHotel: openHotel, renderHotel: renderHotel, schedules: function(){ return state.schedules; },
-      applySchedules: applySchedules };
+      applySchedules: applySchedules,
+      game: game, openGame: openGame, gameHTML: gameHTML, gameMissions: gameMissions, gameRows: gameRows,
+      gamify: function(){ return state.gamify; }, applyGamify: applyGamify, gamifySeed: gamifySeed,
+      gamifyPayload: gamifyPayload, gPoints: gPoints, gStreak: gStreak, gLevel: gLevel, confettiBurst: confettiBurst };
   }
 })();
 </script>
