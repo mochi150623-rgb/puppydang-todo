@@ -138,6 +138,9 @@
   .chip .cn{font-size:12px;color:var(--muted-2);font-weight:800}
   .chip.on{background:var(--tint);border-color:var(--tint-3);color:var(--brown-d)}
   .chip.on .cn{color:var(--brown)}
+  /* 🐱 고양이 탭 — 고양이 장과 같은 라벤더 톤 */
+  .chip.cat.on{background:#EDE9FA;border-color:#CFC8EF;color:#4B3F94}
+  .chip.cat.on .cn{color:#5B4BAA}
   .chip.done{color:var(--green);border-color:#DEE5D0;background:#F5F8EE}
   /* 작업 활동 모달 — 날짜 필터 칩 바(세로 스크롤과 무관하게 상단 고정, 가로 스크롤) */
   .feedchips{flex:none;padding:10px 16px;background:#FFFDFB;border-bottom:1px solid var(--line);
@@ -942,6 +945,9 @@
   .vrow .vdate{flex:none;width:134px;height:40px;border-radius:11px;border:1.5px solid var(--line);background:#fff;
     padding:0 9px;font-size:13px;font-weight:800;color:var(--ink)}
   .vrow.done .vdate{border-color:#CFE0BC;background:#FBFDF8;color:#456B33}
+  .vrow .vdel{flex:none;width:30px;height:40px;border-radius:10px;border:0;background:#F8F1E8;color:var(--muted);
+    font-size:12.5px;font-weight:800;display:grid;place-items:center}
+  .vrow .vdel:active{transform:scale(.96)}
   .vacmore{margin-top:10px;border-top:1px dashed #F1E6D8;padding-top:8px}
   .vacmore summary{font-size:12.5px;font-weight:800;color:var(--muted-2);cursor:pointer;list-style:none}
   .vacmore summary::-webkit-details-marker{display:none}
@@ -963,6 +969,36 @@
   .archrow{display:flex;gap:8px;padding:7px 0;font-size:13px;font-weight:700;color:var(--ink-2);letter-spacing:-.02em;border-bottom:1px dashed #F1E6D8}
   .archrow:last-child{border-bottom:0}
   .archrow .al{width:92px;flex:none;color:var(--muted-2);font-weight:800;font-size:12.5px}
+
+  /* ---------- 분양완료 담당 직원 선택 ---------- */
+  .adoptwrap{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;padding:20px}
+  .adoptwrap[hidden]{display:none}
+  .adoptscrim{position:absolute;inset:0;background:rgba(46,33,22,.5);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+  .adoptcard{position:relative;width:100%;max-width:352px;background:var(--card);border-radius:22px;
+    padding:20px 16px 14px;box-shadow:0 18px 50px rgba(46,33,22,.3)}
+  .adopthead b{display:block;font-size:18px;font-weight:900;color:var(--brown-d);letter-spacing:-.035em}
+  .adopthead span{display:block;margin-top:5px;font-size:12.5px;font-weight:700;color:var(--muted-2);letter-spacing:-.02em}
+  .adoptgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:15px 0 0}
+  .adoptopt{display:flex;align-items:center;justify-content:center;gap:5px;min-height:46px;padding:10px 6px;
+    border:1.5px solid #EFE2CF;background:#FFFBF5;border-radius:14px;font-family:inherit;
+    font-size:14.5px;font-weight:800;color:#6B4A2B;letter-spacing:-.02em}
+  .adoptopt:active{transform:scale(.98)}
+  .adoptopt.on{border-color:#C08A4A;background:#FFF1DC;color:var(--brown-d);box-shadow:inset 0 0 0 2px rgba(192,138,74,.18)}
+  .adoptopt.none{grid-column:1 / -1;color:#8B7A68;background:#F7F3EC;border-color:#E9E0D4}
+  .adoptopt.none.on{border-color:#B9A892;background:#EFE9DF;color:#5A4736}
+  .adoptfoot{display:flex;gap:8px;margin-top:14px}
+  .adoptfoot button{flex:1;height:46px;border-radius:14px;font-family:inherit;font-size:15px;font-weight:800;letter-spacing:-.02em;border:0}
+  .adoptfoot .acancel{background:#F2ECE3;color:#7E6957}
+  .adoptfoot .aok{background:linear-gradient(140deg,#8A5A2E,#5A381E);color:#fff;box-shadow:0 8px 18px rgba(90,56,30,.22)}
+  .adoptfoot .aok:active{transform:scale(.985)}
+
+  /* ---------- 게임 모달 점수 안내 ---------- */
+  .gpts{margin:12px 0 0;padding:12px 14px;border-radius:16px;background:#FFFBF5;border:1px solid #F0E4D3}
+  .gpts>b{display:block;font-size:12.5px;font-weight:900;color:#8A5A2E;letter-spacing:-.02em;margin-bottom:8px}
+  .gpts .gptrow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 0;
+    font-size:13px;font-weight:700;color:var(--ink-2);letter-spacing:-.02em}
+  .gpts .gptrow em{font-style:normal;color:var(--muted-2);font-weight:700;font-size:12.5px}
+  .gpts .gptrow b{font-weight:900;color:var(--brown-d)}
 
   /* ---------- 하단 바: 캘린더 · 호텔픽업 · 새 아이 · 설정 ---------- */
   .bottombar{gap:7px;padding-left:12px;padding-right:12px}
@@ -1003,7 +1039,7 @@
   <header>
     <div class="topline">
       <div class="brand"><img class="blogo" src="puppies-icon.png" alt="퍼피댕 로고" width="30" height="30">
-        <span class="brandtext"><span class="brandname">퍼피댕 · 디데이펫</span><span class="brandver">퍼피댕 V1.4</span></span></div>
+        <span class="brandtext"><span class="brandname">퍼피댕 · 디데이펫</span><span class="brandver">퍼피댕 V1.5</span></span></div>
       <div class="topact">
         <button class="wpill" data-act="openWorker" aria-label="작업자 선택">👤 <b id="workerName">—</b><span class="chev">▾</span></button>
         <button class="gbtn adminonly" data-act="openSettings" aria-label="설정">⚙️</button>
@@ -1121,6 +1157,10 @@
     <button type="button" class="pvbtn" id="photoViewNoteBtn" data-act="healthPhotoNoteEdit">✏️ 코멘트 달기</button>
   </div>
   <button type="button" class="pvclose" data-act="closePhotoView" aria-label="닫기">✕</button>
+</div>
+<div class="adoptwrap" id="adoptWrap" hidden>
+  <div class="adoptscrim" data-act="adoptCancel"></div>
+  <div class="adoptcard" id="adoptCard" role="dialog" aria-modal="true" aria-labelledby="adoptTitle"></div>
 </div>
 <div class="instwrap" id="installWrap" hidden></div>
 <div class="instwrap" id="pushWrap" hidden></div>
@@ -1522,6 +1562,7 @@
       /* 분양완료 보관함 기록: 장을 비우고 옮겨 둔 기록(14일 뒤 자동 삭제) */
       isArchive: !!p.isArchive,
       archivedFrom: String(p.archivedFrom == null ? '' : p.archivedFrom).slice(0, 68),
+      adoptedBy: String(p.adoptedBy == null ? '' : p.adoptedBy).slice(0, 12),   // 분양완료 담당 직원
       intakeDate: isValidDate(p.intakeDate) ? p.intakeDate : todayStr(),
       birthDate: isValidDate(p.birthDate) ? p.birthDate : '',
       photoProfile: typeof p.photoProfile === 'string' ? p.photoProfile : '',
@@ -2413,7 +2454,8 @@
       name: String(it.name || '').slice(0, 30),
       act: String(it.act || '').slice(0, 40),
       tail: String(it.tail || '입력했습니다').slice(0, 20),
-      memo: String(it.memo || '').slice(0, 60)
+      memo: String(it.memo || '').slice(0, 60),
+      noPts: it.noPts ? 1 : 0        // 담당없음처럼 점수를 주지 않는 기록
     };
   }
   // 2주가 지난 활동은 읽기/쓰기 때 자동으로 걸러냅니다 (최신순 정렬)
@@ -2505,22 +2547,24 @@
     if(/체크|해제|증상/.test(a)) return '🩺';
     if(/노트/.test(a)) return '🗑️';
     if(/자동 정리/.test(a)) return '🧹';
+    if(/분양완료/.test(a)) return '🏷️';
     if(/분양 상태/.test(a)) return '🏷️';
     return '📝';
   }
-  function logActivity(p, act, tail, memo){
+  function logActivity(p, act, tail, memo, by, noPts){
     var now = new Date();
     var item = normActivity({
       id: 'a' + now.getTime().toString(36) + Math.random().toString(36).slice(2, 6),
       at: now.toISOString(),
-      by: state.worker,
+      by: by === undefined ? state.worker : by,
       dogId: p ? p.id : '',
       branch: p ? p.branch : '',
       cage: p ? p.cage : '',
       name: p ? p.name : '',
       act: act,
       tail: tail || '입력했습니다',
-      memo: memoPreview(memo)
+      memo: memoPreview(memo),
+      noPts: noPts ? 1 : 0
     });
     state.activity = sortActivityDesc(activityFresh([item].concat(state.activity || []))).slice(0, ACTIVITY_MAX);
     saveLocal();
@@ -2727,7 +2771,7 @@
   var gamifyDirty = false;
 
   function blankGamifyUser(){
-    return { totalPts:0, monthly:{}, daily:{}, counts:{ bath:0, med:0, photo:0, vaccine:0, note:0 }, days:[], updatedAt:'' };
+    return { totalPts:0, monthly:{}, daily:{}, counts:{ bath:0, med:0, photo:0, vaccine:0, note:0, adopt:0 }, days:[], updatedAt:'' };
   }
   function gState(){
     if(!state.gamify || typeof state.gamify !== 'object') state.gamify = { users:{}, seeded:false };
@@ -2787,17 +2831,19 @@
     var t = String(tail || '');
     if(!a || /자동 정리/.test(a)) return null;
     if(/삭제|지웠/.test(t)) return null;
-    if(/^(목욕|약욕)완료$/.test(a)) return { kind:'bath', pts:10 };
-    if(/접종/.test(a)) return { kind:'vaccine', pts:10 };
-    if(/급여/.test(a)) return { kind:'med', pts:5 };
-    if(a === '상태 사진') return { kind:'photo', pts:5 };
-    if(a === '정보' || a === '메모' || a === '노트') return { kind:'note', pts:3 };
-    if(/체크|해제|회복/.test(a)) return { kind:'note', pts:3 };
+    if(/^(목욕|약욕)완료$/.test(a)) return { kind:'bath', pts:5 };
+    if(/접종/.test(a)) return { kind:'vaccine', pts:3 };
+    if(/급여/.test(a)) return { kind:'med', pts:3 };
+    if(a === '분양완료') return { kind:'adopt', pts:10 };
+    if(a === '상태 사진') return { kind:'photo', pts:1 };
+    if(a === '정보' || a === '메모' || a === '노트') return { kind:'note', pts:1 };
+    if(/체크|해제|회복/.test(a)) return { kind:'note', pts:1 };
     return null;
   }
 
   function gamifyAward(item, seed){
     if(!item) return null;
+    if(item.noPts) return null;                        // 담당없음(점수 없음)으로 남긴 기록
     var hit = gamifyKind(item.act, item.tail);
     if(!hit) return null;
     var who = String(item.by || '').trim().slice(0, 12);
@@ -3100,8 +3146,22 @@
         '<button type="button" class="gseg' + (tab === 'rank' ? ' on' : '') + '" data-act="gameTab" data-tab="rank" role="tab" aria-selected="' + (tab === 'rank') + '">🏆 랭킹</button>' +
       '</div>' +
       (tab === 'rank' ? gameRankHTML() : gameMissionHTML()) +
-      '<p class="gfoot">포인트는 목욕 · 투약 · 접종 · 사진 · 기록을 남길 때 자동으로 쌓여요<br>기록을 지우면 점수는 오르지 않아요</p>' +
+      gameScoreHTML() +
+      '<p class="gfoot">기록을 지우면 점수는 오르지 않아요 · 분양완료 없음은 점수를 남기지 않아요</p>' +
       '</div>';
+  }
+
+  /* 모달 안 점수 안내 — 실제 적립 규칙(gamifyKind)과 같은 값이어야 해요 */
+  function gameScoreHTML(){
+    var rows = [
+      ['🏷️ 분양완료', '아이 분양 성사', '+10점'],
+      ['🛁 목욕 · 약욕', '완료 기록', '+5점'],
+      ['💉 접종 · 💊 투약', '접종 완료 · 급여', '+3점'],
+      ['🩺 📸 📝', '특이사항 · 상태 사진 · 메모·정보 수정', '+1점']
+    ];
+    return '<div class="gpts"><b>기록하면 쌓이는 점수</b>' + rows.map(function(r){
+      return '<div class="gptrow"><span>' + r[0] + ' <em>' + r[1] + '</em></span><b>' + r[2] + '</b></div>';
+    }).join('') + '</div>';
   }
 
   function openGame(){
@@ -3720,7 +3780,9 @@
     var arr = state.puppies.filter(function(p){
       if(p.isArchive && ui.status !== 'sold') return false;   // 보관함 기록은 분양완료 탭에서만
       if(ui.branch !== '전체' && p.branch !== ui.branch) return false;
-      if(ui.status !== '전체' && p.status !== ui.status) return false;
+      if(ui.status === 'cat'){
+        if(!isCat(p)) return false;                          // 🐱 고양이 탭: 고양이 아이들만
+      } else if(ui.status !== '전체' && p.status !== ui.status) return false;
       if(ui.special){
         if(p.status === 'sold') return false;
         if(ui.special === 'bath' && !bathNeeded(p)) return false;
@@ -3807,10 +3869,15 @@
       if(!matchQuery(p, q)) return;
       counts.sold++;
     });
+    var catCount = pool.filter(isCat).length;
+    if(!catCount && ui.status === 'cat') ui.status = '전체';   // 보이는 고양이가 없으면 탭도 풀기
     var html = '<button class="chip ' + (ui.status==='전체'?'on':'') + '" data-act="status" data-status="전체" role="tab">전체 <span class="cn">' + counts['전체'] + '</span></button>';
     STATUS_KEYS.forEach(function(k){
       html += '<button class="chip ' + (ui.status===k?'on':'') + '" data-act="status" data-status="' + k + '" role="tab">' + STATUS[k].label + ' <span class="cn">' + (counts[k]||0) + '</span></button>';
     });
+    if(catCount){                                            // 분양완료 오른쪽에 🐱 고양이 탭
+      html += '<button class="chip cat' + (ui.status==='cat'?' on':'') + '" data-act="status" data-status="cat" role="tab" aria-selected="' + (ui.status==='cat') + '">🐱 고양이 <span class="cn">' + catCount + '</span></button>';
+    }
     $('#statusChips').innerHTML = html;
   }
 
@@ -5215,6 +5282,7 @@
     return sheetbar('🗂 분양완료 · ' + esc(p.name || ''), esc(p.cage || '장 번호 없음') + ' · ' + p.branch) +
       '<div class="sheetbody">' +
       '<div class="archnote">분양완료 보관함 기록' + (adopt ? ' · <b>' + adopt.text + '</b>' : '') +
+        (p.adoptedBy ? ' · 담당 <b>' + esc(p.adoptedBy) + '</b>' : '') +
         '<span>2주가 지나면 이 기록은 자동으로 삭제돼요. 장(' + esc(p.cage || '') + ')은 비워져 새 아이를 받을 수 있어요.</span></div>' +
       '<section class="scard" style="margin-top:0"><div class="shead"><h3>📋 기본 정보</h3></div>' +
         '<div class="inforows" style="display:block">' + rows + '</div></section>' +
@@ -5444,6 +5512,16 @@
     if(!d.cage){ showFormError('장 번호를 적어주세요. (예: 1번장, A-03)'); $('#fCage').focus(); return; }
     if(!isValidDate(d.intakeDate)){ showFormError('입소일을 골라주세요.'); return; }
     if(d.birthDate && !isValidDate(d.birthDate)){ showFormError('생일을 다시 골라주세요.'); return; }
+    /* 분양완료로 저장할 때는 누가 분양했는지 먼저 고르게 해요 (고른 직원에게 +10점) */
+    var prev = (ui.formEdit && ui.formId) ? get(ui.formId) : null;
+    if(d.status === 'sold' && !(prev && (prev.status === 'sold' || prev.isArchive))){
+      askAdopter({ branch:d.branch, cage:d.cage, name:d.name }, function(who){ saveFormCommit(d, who); });
+      return;
+    }
+    saveFormCommit(d, null);
+  }
+  function saveFormCommit(d, who){
+    var adopter = (who === null || who === undefined) ? String(state.worker || '') : String(who || '');
     var now = new Date().toISOString();
     var saved;
     var beforeFlags = null, beforeMemo = '';
@@ -5464,8 +5542,10 @@
       merged.createdAt = keep.createdAt;
       /* 폼에서 분양완료로 바꾼 경우: 수정한 정보까지 보관함 기록으로 옮기고 장은 빈 장으로 */
       if(d.status === 'sold' && p.status !== 'sold' && !p.isArchive){
-        var arc = adoptOut(p, merged);
+        var arc = adoptOut(p, merged, adopter);
         if(arc) memoLogReset(arc);
+        ui.formEdit = false;
+        ui.formId = null;
         return;
       }
       for(var k in merged){ p[k] = merged[k]; }
@@ -5477,9 +5557,14 @@
         /* 새로 등록하면서 바로 분양완료 → 장을 차지하지 않는 보관함 기록으로 저장 (14일 뒤 자동 삭제) */
         np.adoptedAt = now;
         np.isArchive = true;
+        np.adoptedBy = adopter;
       }
       state.puppies.push(np);
       saved = np;
+      if(np.status === 'sold'){
+        logActivity({ id:'', branch:np.branch, cage:np.cage, name:np.name }, '분양완료', '처리했습니다', '',
+          adopter || String(state.worker || ''), !adopter);
+      }
     }
     /* 접종일은 있는데 예정일이 비어 있으면 마지막 접종일 + 2주(14일)로 채워 저장 */
     if(!isValidDate(saved.nextVaccine)){
@@ -5684,7 +5769,7 @@
         '<div class="settingrow"><div><b>전체 비우기</b><span>모든 노트를 지워요 · 되돌릴 수 없어요</span></div>' +
           '<button class="btn sm danger" data-act="wipeAll">비우기</button></div>' +
       '</section>' +
-      '<div class="sfoot"><img src="puppies-logo.png" alt="퍼피댕" style="width:132px;display:block;margin:0 auto 7px;border-radius:7px">퍼피댕 V1.4 · 디데이펫 관리 노트</div>' +
+      '<div class="sfoot"><img src="puppies-logo.png" alt="퍼피댕" style="width:132px;display:block;margin:0 auto 7px;border-radius:7px">퍼피댕 V1.5 · 디데이펫 관리 노트</div>' +
       '</div>';
   }
 
@@ -5821,6 +5906,7 @@
     /* 고양이 장은 비워도 종류(cat)를 유지 — 14일 자동 정리 뒤에도 🐱 로 남아야 해요 */
     if(isCat(p)) p.species = 'cat';
     p.adoptedAt = null;
+    p.adoptedBy = '';
     p.isArchive = false;
     p.archivedFrom = '';
     p.photoProfile = '';
@@ -5865,9 +5951,11 @@
     a.isArchive = true;
     return a;
   }
-  /* 분양완료 전환: 장 슬롯은 즉시 빈 장이 되고, 기록은 분양완료 보관함으로 이동 */
-  function adoptOut(slot, src){
+  /* 분양완료 전환: 장 슬롯은 즉시 빈 장이 되고, 기록은 분양완료 보관함으로 이동
+     who — 분양을 처리한 직원 (기본: 지금 작업자, '' 이면 담당없음 · 점수 없음) */
+  function adoptOut(slot, src, who){
     if(!slot || slot.isArchive) return null;
+    var adopter = (who === undefined) ? String(state.worker || '') : String(who || '');
     var data = src || slot;
     if(isEmptyRecord(data) || (isEmptySlot(slot) && String(data.name || '') === '미정')){
       toast('빈 장은 분양완료로 옮길 기록이 없어요');
@@ -5875,15 +5963,68 @@
     }
     var now = new Date().toISOString();
     var archive = makeArchive(data, now);
+    archive.adoptedBy = adopter;
     var cage = slot.cage;
     state.puppies.push(archive);
     clearSlot(slot);
     save();
-    logActivity({ id:'', branch:archive.branch, cage:archive.cage, name:archive.name }, '분양완료', '보관함으로 옮겼습니다');
+    /* 누가 분양했는지 — 고른 직원 이름으로 활동 기록을 남기고, 그 직원에게 +10점 */
+    logActivity({ id:'', branch:archive.branch, cage:archive.cage, name:archive.name },
+      '분양완료', '처리했습니다', '', adopter || String(state.worker || ''), !adopter);
     renderAll();
     closeSheet();
-    toast((archive.cage ? archive.cage + ' ' : '') + archive.name + ' → 분양완료 보관함 · ' + (cage || '장') + '은 빈 장이 됐어요');
+    toast((archive.cage ? archive.cage + ' ' : '') + archive.name + ' → 분양완료 보관함 · ' + (cage || '장') + '은 빈 장이 됐어요'
+      + (adopter ? ' · 담당 ' + adopter : ' · 담당 없음'));
     return archive;
+  }
+
+  /* ---------- 분양완료 담당 직원 선택 (누가 분양했나요?) ---------- */
+  var adoptAsk = null;    // { who:'원지원', cb:function }
+  function closeAdoptAsk(){
+    adoptAsk = null;
+    var w = $('#adoptWrap');
+    if(w) w.hidden = true;
+    var c = $('#adoptCard');
+    if(c) c.innerHTML = '';
+  }
+  function adoptAskHTML(p){
+    var names = (state.staff || []).filter(function(n){ return n && n !== RETIRED_STAFF; });
+    if(!names.length) names = DEFAULT_STAFF.slice(0, 1);
+    var sel = adoptAsk && adoptAsk.who !== undefined ? adoptAsk.who : String(state.worker || names[0]);
+    if(sel && names.indexOf(sel) < 0) sel = names[0];
+    var where = [p && p.branch, p && p.cage, p && p.name].filter(Boolean).join(' · ');
+    var opts = names.map(function(n){
+      return '<button type="button" class="adoptopt' + (sel === n ? ' on' : '') + '" data-act="adoptWho" data-name="' + esc(n) + '" aria-pressed="' + (sel === n) + '">👤 ' + esc(n) + '</button>';
+    }).join('');
+    opts += '<button type="button" class="adoptopt none' + (sel === '' ? ' on' : '') + '" data-act="adoptWho" data-name="" aria-pressed="' + (sel === '') + '">해당없음 <em style="font-style:normal;font-weight:700;font-size:12px;color:#9A8B7C">(점수 없음)</em></button>';
+    return '<div class="adopthead"><b id="adoptTitle">🎉 누가 분양했나요?</b>' +
+        '<span>' + esc(where || '분양완료') + ' · 고른 직원에게 +10점</span></div>' +
+      '<div class="adoptgrid">' + opts + '</div>' +
+      '<div class="adoptfoot">' +
+        '<button type="button" class="acancel" data-act="adoptCancel">취소</button>' +
+        '<button type="button" class="aok" data-act="adoptConfirm">분양완료 저장</button>' +
+      '</div>';
+  }
+  function askAdopter(p, cb){
+    adoptAsk = { who: String(state.worker || ''), cb: cb, target: p || null };
+    var w = $('#adoptWrap'), c = $('#adoptCard');
+    if(!w || !c) { adoptAsk = null; if(cb) cb(String(state.worker || '')); return; }
+    c.innerHTML = adoptAskHTML(p);
+    w.hidden = false;
+  }
+  function adoptPickWho(name){
+    if(!adoptAsk) return;
+    adoptAsk.who = String(name || '');
+    var c = $('#adoptCard');
+    if(c && adoptAsk.target !== undefined) c.innerHTML = adoptAskHTML(adoptAsk.target);
+  }
+  function adoptConfirm(){
+    var a = adoptAsk;
+    if(!a) return;
+    var who = String(a.who || '');
+    var cb = a.cb;
+    closeAdoptAsk();
+    if(cb) cb(who);
   }
   function adoptInfo(p){
     if(!p || p.status !== 'sold' || !p.adoptedAt) return null;
@@ -5942,7 +6083,7 @@
     /* 분양완료: 이 장은 바로 빈 장이 되고, 기존 기록은 분양완료 보관함으로 이동 */
     if(st === 'sold'){
       if(p.isArchive) return;
-      adoptOut(p);
+      askAdopter(p, function(who){ adoptOut(p, null, who); });
       return;
     }
     var prev = p.status;
@@ -5982,8 +6123,21 @@
         '<button type="button" class="vchip2' + (ds ? ' on' : '') + '" data-act="vacQuick" data-type="' + esc(t) + '" aria-pressed="' + (ds ? 'true' : 'false') + '" aria-label="' + esc(t) + (ds ? ' 접종 완료 · 누르면 날짜 수정' : ' 오늘 접종으로 체크') + '">' +
           '<i class="vck">' + (ds ? '✓' : '＋') + '</i>' + esc(t) + '</button>' +
         '<input type="date" class="vdate" data-act="vacDateSet" data-type="' + esc(t) + '" value="' + ds + '" aria-label="' + esc(t) + ' 접종일">' +
+        (ds ? '<button type="button" class="vdel" data-act="vacClear" data-type="' + esc(t) + '" aria-label="' + esc(t) + ' 접종 기록 삭제">✕</button>' : '') +
       '</div>';
     }).join('') + '</div>';
+  }
+  /* 접종 기록 비우기 — 남은 마지막 접종일(+14일) 기준으로 다음 접종일을 다시 계산 */
+  function clearVacType(target, type){
+    if(!target || !type) return;
+    if(target.vaccineDates && typeof target.vaccineDates === 'object') delete target.vaccineDates[type];
+    if(Array.isArray(target.vaccines)){
+      target.vaccines = target.vaccines.filter(function(v){ return vacName(v.type) !== type; });
+    }
+    touchPuppy(target);
+    var last = lastVacDate(target);
+    if(last) syncNextVac(target);                              // 남은 기록 기준으로 재계산
+    else { target.nextVaccine = ''; target.nextVacManual = false; }   // 남은 접종이 없으면 D-day도 비움
   }
   function vacTarget(){
     if(ui.sheet === 'form') return draft;
@@ -6406,6 +6560,15 @@
       case 'setStatus':
         setStatus(ui.detailId, el.getAttribute('data-status'));
         break;
+      case 'adoptWho':
+        adoptPickWho(el.getAttribute('data-name') || '');
+        break;
+      case 'adoptCancel':
+        closeAdoptAsk();
+        break;
+      case 'adoptConfirm':
+        adoptConfirm();
+        break;
       case 'bathAdd':
         (function(){
           var p = get(ui.detailId); if(!p) return;
@@ -6473,6 +6636,23 @@
           toast(ui.vacType + ' 기록 · ' + state.worker + vacToastSuffix(p));
         })();
         break;
+      case 'vacClear':
+        (function(){
+          var type = el.getAttribute('data-type');
+          if(!type) return;
+          var tg = vacTarget(); if(!tg) return;
+          if(!window.confirm(vacName(type) + ' 접종 기록을 지울까요?')) return;
+          clearVacType(tg, type);
+          if(tg === draft){                     // 등록·수정 폼: 폼 안에서만 바뀌고 [저장] 때 반영
+            readForm();
+            setSheet(formHTML(), true);
+            toast(vacName(type) + ' 접종 기록을 지웠어요 · 저장을 누르면 반영돼요');
+            return;
+          }
+          save(); renderAll(); refreshDetail();
+          toast(vacName(type) + ' 접종 기록을 지웠어요' + vacToastSuffix(tg));
+        })();
+        break;
       case 'vacDel':
         (function(){
           var p = get(ui.detailId); if(!p) return;
@@ -6486,7 +6666,9 @@
             if(latest) p.vaccineDates[nm] = latest; else delete p.vaccineDates[nm];
           }
           touchPuppy(p);
-          if((p.vaccines || []).length) syncNextVac(p);   // 남은 기록의 마지막 접종일 + 2주로 다시 계산
+          var last = lastVacDate(p);
+          if(last) syncNextVac(p);   // 남은 기록의 마지막 접종일 + 2주로 다시 계산
+          else { p.nextVaccine = ''; p.nextVacManual = false; }   // 남은 접종이 없으면 D-day도 비움
           save(); renderAll(); refreshDetail();
           toast('접종 기록을 지웠어요' + vacToastSuffix(p));
         })();
