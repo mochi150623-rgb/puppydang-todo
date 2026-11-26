@@ -1030,17 +1030,91 @@
     background:rgba(255,253,251,.98)}
   .sumfoot .btn{width:100%;height:50px;font-size:15.5px;border-radius:15px}
 
-  /* ---------- 하단 바: 캘린더 · 호텔픽업 · 새 아이 · 설정 ---------- */
-  .bottombar{gap:7px;padding-left:12px;padding-right:12px}
-  @media (max-width:380px){
+  /* ---------- 하단 바: 캘린더 · 호텔픽업 · 청소 · 새 아이 · 설정 ---------- */
+  .bottombar{gap:7px;padding-left:11px;padding-right:11px}
+  @media (max-width:400px){
     .bottombar{gap:6px;padding-left:10px;padding-right:10px}
-    .sidebtn,.sidebtn.calbtn,.sidebtn.hotelbtn{width:50px;height:48px;font-size:16px}
-    .sidebtn.calbtn .cl,.sidebtn.hotelbtn .cl{font-size:9px}
-    .addbtn{height:48px;font-size:14px;letter-spacing:-.03em}
+    .sidebtn,.sidebtn.calbtn,.sidebtn.hotelbtn,.sidebtn.cleanbtn{width:50px;height:48px;font-size:16px}
+    .sidebtn.calbtn .cl,.sidebtn.hotelbtn .cl,.sidebtn.cleanbtn .cl{font-size:9px}
+    .addbtn{height:48px;font-size:14px;letter-spacing:-.04em}
     .sumbtn{padding:0 7px;font-size:12px}
     .gamebtn{padding:0 6px;font-size:12px}
     .sortsel{font-size:12px;padding:0 4px}
   }
+  @media (max-width:340px){
+    .bottombar{gap:5px;padding-left:8px;padding-right:8px}
+    .sidebtn,.sidebtn.calbtn,.sidebtn.hotelbtn,.sidebtn.cleanbtn{width:45px;height:46px;font-size:15px}
+    .sidebtn.calbtn .cl,.sidebtn.hotelbtn .cl,.sidebtn.cleanbtn .cl{font-size:8.5px}
+    .addbtn{height:46px;font-size:12.5px;letter-spacing:-.05em;padding:0 2px}
+    .sumbtn{padding:0 6px;font-size:11.5px}
+    .gamebtn{padding:0 5px;font-size:11.5px}
+    .sortsel{font-size:11.5px;padding:0 3px}
+  }
+
+  /* ---------- 🧹 청소 인증 (하단 바 버튼 · 7일 자동 리셋 · 초록 톤) ---------- */
+  .sidebtn.cleanbtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;width:58px;font-size:17px;line-height:1;
+    background:linear-gradient(160deg,#EFF8EC,#DFF0D9);border-color:#CEE4C5;color:#3F6B34}
+  .sidebtn.cleanbtn .cl{font-size:9.5px;font-weight:800;color:#4C7A3F;letter-spacing:-.04em;margin-top:2px;white-space:nowrap}
+  .cleanwrap{position:fixed;inset:0;z-index:72;background:var(--bg);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+    background-image:radial-gradient(760px 340px at 50% -120px,#DCEFD6 0%,rgba(250,246,241,0) 70%);background-repeat:no-repeat}
+  .cleanpage{max-width:480px;margin:0 auto;min-height:100%;padding-bottom:calc(22px + env(safe-area-inset-bottom))}
+  .cleanbar{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:8px;padding:calc(9px + env(safe-area-inset-top)) 14px 9px;
+    background:linear-gradient(140deg,#3F7A32,#25541D);border-bottom:1px solid rgba(255,255,255,.14);box-shadow:0 6px 18px rgba(37,84,29,.18)}
+  .cleanbar .ibtn{width:40px;height:40px;font-size:17px;background:rgba(255,255,255,.16);color:#fff}
+  .cleanbar .calt{flex:1;min-width:0}
+  .cleanbar .calt b{display:block;font-size:17px;font-weight:800;letter-spacing:-.035em;color:#fff}
+  .cleanbar .calt span{display:block;font-size:12px;font-weight:800;color:rgba(255,255,255,.82);letter-spacing:-.02em;margin-top:1px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cleanttl{flex:none;height:30px;padding:0 10px;border-radius:10px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);
+    font-size:11.5px;font-weight:800;color:#fff;letter-spacing:-.02em;display:inline-flex;align-items:center;gap:3px}
+  .cleanbody{padding:12px 14px 0}
+  .cleanform{background:#fff;border:1.5px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:12px;margin-top:12px}
+  .cleanchips{display:flex;gap:6px;flex-wrap:wrap}
+  .clchip{height:36px;padding:0 11px;border-radius:11px;border:1.5px solid #DCE7D6;background:#FBFDF9;
+    font-size:13px;font-weight:800;color:#4C6B37;letter-spacing:-.02em;white-space:nowrap}
+  .clchip.on{background:#E7F2E1;border-color:#BBD8AE;color:#33591F;box-shadow:0 2px 8px rgba(76,107,55,.14)}
+  .clchip:active{transform:scale(.97)}
+  .cleanmemo{width:100%;height:48px;margin-top:9px;border-radius:13px;border:1.5px solid var(--line);background:#FFFDF9;
+    padding:0 13px;font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.02em}
+  .cleanmemo::placeholder{color:#C0B2A2;font-weight:700;font-size:14px}
+  .cleanbtnrow{display:flex;gap:7px;margin-top:9px}
+  .cleanbtnrow .btn{flex:1;min-width:0;height:46px;font-size:14px;padding:0 8px}
+  .cleanbtnrow .btn.photo{background:#F5FAF2;border-color:#D6E7CE;color:#3F6B34}
+  .cleanprev{position:relative;display:inline-block;margin-top:10px}
+  .cleanprev img{display:block;height:92px;max-width:100%;border-radius:12px;border:1.5px solid var(--line);object-fit:cover}
+  .cleanprev .clx{position:absolute;top:-7px;right:-7px;width:27px;height:27px;border-radius:50%;background:#5A381E;color:#fff;
+    font-size:12px;font-weight:800;display:grid;place-items:center;box-shadow:0 3px 8px rgba(90,56,30,.32)}
+  .cleanhint{margin-top:9px;font-size:11.5px;font-weight:700;color:var(--muted-2);letter-spacing:-.02em;line-height:1.55}
+  .cleanhint b{color:#3F6B34}
+  .clcard{background:#fff;border:1.5px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:10px 11px;margin-top:9px}
+  .clhead{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:800;color:var(--muted-2);letter-spacing:-.02em}
+  .clhead b{font-size:13px;font-weight:800;color:var(--ink-2);letter-spacing:-.03em}
+  .clhead .clbr{background:#EEF7EC;color:#3F6B34;border-radius:6px;padding:1px 5px;font-size:11.5px;font-weight:800}
+  .clhead .cltime{margin-left:auto;font-size:11.5px;font-weight:800;color:var(--muted-2);white-space:nowrap}
+  .clhead .cldel{flex:none;width:27px;height:27px;border-radius:8px;background:#F8F1E8;color:var(--muted);font-size:12px;font-weight:800;display:grid;place-items:center}
+  .clhead .cldel:active{transform:scale(.95)}
+  .clbody{display:flex;gap:9px;margin-top:8px;align-items:flex-start}
+  .clthumb{flex:none;width:74px;height:74px;border-radius:12px;overflow:hidden;background:#F1E8DC;border:1.5px solid var(--line);padding:0}
+  .clthumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .cltext{flex:1;min-width:0}
+  .clkind{display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:800;color:#3F6B34;background:#EEF7EC;
+    border-radius:7px;padding:2px 7px;letter-spacing:-.02em;margin-bottom:4px}
+  .clmemo{font-size:14px;font-weight:800;color:var(--ink);letter-spacing:-.02em;line-height:1.5;word-break:keep-all;white-space:pre-wrap}
+  .clnone{font-size:12.5px;font-weight:700;color:var(--muted-2);letter-spacing:-.02em}
+  .clnew{margin-top:12px;display:flex;align-items:center;gap:7px;padding:10px 12px;border-radius:13px;background:#F4FAF1;
+    border:1px dashed #CFE3C7;font-size:12.5px;font-weight:800;color:#3F6B34;letter-spacing:-.02em}
+
+  /* ---------- 📅 캘린더 서브탭 (목욕·약욕 / 분양완료) ---------- */
+  .caltabs{display:flex;gap:5px;background:#F1E8DC;padding:4px;border-radius:14px;margin-bottom:9px}
+  .caltabs button{flex:1;height:40px;border-radius:11px;font-size:14px;font-weight:800;color:var(--muted);letter-spacing:-.03em;
+    display:inline-flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap}
+  .caltabs button.on{background:#fff;color:var(--brown-d);box-shadow:0 2px 8px rgba(90,56,30,.14)}
+  .caltabs button.on.sold{color:#8A5310}
+  .cbd.sold{background:#FBEEDD;color:#A45F0B}
+  .cday.on .cbd.sold{color:#A45F0B}
+  .calsum .csum.sold b{color:#A45F0B}
+  .calrow .cbdg.sold{background:#FBEEDD;color:#A45F0B}
+  .crmain span .crby2{font-weight:800;color:var(--brown)}
 </style>
 </head>
 <body class="locked">
@@ -1072,7 +1146,7 @@
   <header>
     <div class="topline">
       <div class="brand"><img class="blogo" src="puppies-icon.png" alt="퍼피댕 로고" width="30" height="30">
-        <span class="brandtext"><span class="brandname">퍼피댕 · 디데이펫</span><span class="brandver">퍼피댕 V1.6</span></span></div>
+        <span class="brandtext"><span class="brandname">퍼피댕 · 디데이펫</span><span class="brandver">퍼피댕 V1.7</span></span></div>
       <div class="topact">
         <button class="wpill" data-act="openWorker" aria-label="작업자 선택">👤 <b id="workerName">—</b><span class="chev">▾</span></button>
         <button class="gbtn adminonly" data-act="openSettings" aria-label="설정">⚙️</button>
@@ -1121,6 +1195,9 @@
   <button class="sidebtn hotelbtn" data-act="openHotel" aria-label="호텔링 · 분양픽업 캘린더 열기">
     <span aria-hidden="true">🏨</span><span class="cl">호텔·픽업</span>
   </button>
+  <button class="sidebtn cleanbtn" data-act="openClean" aria-label="청소 인증 열기">
+    <span aria-hidden="true">🧹</span><span class="cl">청소</span>
+  </button>
   <button class="addbtn" data-act="openForm">＋ 새 아이 등록</button>
   <button class="sidebtn adminonly" data-act="openSettings" aria-label="설정">⚙️</button>
 </div>
@@ -1129,10 +1206,11 @@
   <div class="calpage">
     <div class="calbar">
       <button class="ibtn" data-act="closeCalendar" aria-label="캘린더 닫기">‹</button>
-      <div class="calt"><b>목욕 · 약욕 캘린더</b><span id="calSub">—</span></div>
+      <div class="calt"><b id="calBarTitle">목욕 · 약욕 캘린더</b><span id="calSub">—</span></div>
       <button class="caltoday" data-act="calToday">오늘</button>
     </div>
     <div class="calbody">
+      <div class="caltabs" id="calTabs" role="tablist" aria-label="캘린더 종류"></div>
       <div class="calseg" id="calSeg" role="tablist" aria-label="지점 캘린더 선택"></div>
       <div class="calmonth">
         <button class="calnav" data-act="calMonth" data-delta="-1" aria-label="이전 달">‹ 이전달</button>
@@ -1146,7 +1224,7 @@
       <div class="calsum" id="calSum"></div>
       <div class="calsec"><h2 id="calDayTitle">—</h2><span class="tn" id="calDayToday" hidden>오늘</span><span class="n" id="calDayCount"></span></div>
       <div id="calList"></div>
-      <p class="calfoot">기록을 누르면 그 아이 상세로 이동해요 · 다른 폰에서 기록해도 바로 반영돼요</p>
+      <p class="calfoot" id="calFoot">기록을 누르면 그 아이 상세로 이동해요 · 다른 폰에서 기록해도 바로 반영돼요</p>
     </div>
   </div>
 </div>
@@ -1175,6 +1253,34 @@
       <div class="calsec"><h2 id="hotelDayTitle">—</h2><span class="tn" id="hotelDayToday" hidden>오늘</span><span class="n" id="hotelDayCount"></span></div>
       <div id="hotelList"></div>
       <p class="calfoot">호텔링은 입실일부터 퇴실일까지 날짜에 걸쳐 보여요 · 다른 폰에서 등록해도 바로 반영돼요</p>
+    </div>
+  </div>
+</div>
+
+<div class="cleanwrap" id="cleanWrap" hidden>
+  <div class="cleanpage">
+    <div class="cleanbar">
+      <button class="ibtn" data-act="closeClean" aria-label="청소 인증 닫기">‹</button>
+      <div class="calt"><b>🧹 청소 인증</b><span id="cleanSub">—</span></div>
+      <span class="cleanttl">7일 보관</span>
+    </div>
+    <div class="cleanbody">
+      <div class="calseg" id="cleanSeg" role="tablist" aria-label="청소 지점 선택"></div>
+      <div class="cleanform">
+        <div class="cleanchips" id="cleanChips"></div>
+        <input class="cleanmemo" id="cleanMemo" type="text" maxlength="60" autocomplete="off"
+          placeholder="예: 매장 바닥청소완료" aria-label="청소 메모">
+        <div class="cleanbtnrow">
+          <button type="button" class="btn photo" data-act="cleanPhotoPick">📷 사진 찍기/올리기</button>
+          <button type="button" class="btn primary" data-act="cleanAdd">올리기</button>
+        </div>
+        <div class="cleanprev" id="cleanPrev" hidden></div>
+        <input type="file" id="fileClean" accept="image/*" hidden>
+        <p class="cleanhint">사진만 · 글만 · 둘 다 올려도 돼요 · 올리면 게임 점수 <b>+1점</b>이 쌓여요</p>
+      </div>
+      <div class="calsec"><h2>최근 청소 인증</h2><span class="n" id="cleanCount"></span></div>
+      <div id="cleanList"></div>
+      <p class="calfoot">일주일(7일)이 지난 청소 기록은 사진과 함께 자동으로 지워져요 · 다른 폰에서 올려도 바로 보여요</p>
     </div>
   </div>
 </div>
@@ -1237,6 +1343,12 @@
   var ACTIVITY_ID = '__activity__';    // public.puppies 의 활동 메타 행 (__staff__ 와 같은 방식)
   var SCHED_ID = '__schedules__';      // 호텔링 · 분양픽업 일정 공유 행 (스키마 변경 없이 같은 방식으로 저장)
   var GAMIFY_ID = '__gamify__';        // 🎮 직원 케어 게임(포인트 · 랭킹) 공유 행 — 아이 기록이 아니에요
+  var CLEAN_ID = '__cleaning__';       // 🧹 청소 인증 공유 행 (사진 포함 · 7일 뒤 자동 삭제)
+  var SOLDLOG_ID = '__soldlog__';      // 🏡 분양완료 캘린더용 기록(색인) — 보관함 기록이 지워져도 분양일·담당자는 남겨요
+  var CLEAN_MAX = 80;                  // 청소 인증 안전상한(최근 7일 치만 남아요)
+  var CLEAN_KINDS = ['매장 바닥','분양장','유리','화장실','소독'];
+  var CLEAN_TTL = 7 * 24 * 60 * 60 * 1000;   // 일주일(7일)이 지난 청소 기록은 사진과 함께 자동 삭제
+  var SOLDLOG_MAX = 2000;              // 분양완료 색인 안전상한
   var SCHED_MAX = 400;                 // 안전상한
   var SCHED_DEL_TTL = 90 * 24 * 60 * 60 * 1000;   // 삭제 표식 보관 기간
   var ACTIVITY_MAX = 1000;             // 안전상한(2주 치가 잘리지 않게 넉넉히)
@@ -1742,6 +1854,7 @@
   function blankState(){
     return { v:2, worker:DEFAULT_STAFF[0], staff:DEFAULT_STAFF.slice(), hintDismissed:false, autoStaffPurged:true,
       puppies: [], activity: [], schedules: [], schedDel: [], gamify: { users:{}, seeded:false },
+      cleaning: { items: [], del: [] }, soldLog: [],
       seeded:false, createdAt:new Date().toISOString() };
   }
 
@@ -1802,6 +1915,8 @@
       schedules: (Array.isArray(data.schedules) ? data.schedules : []).map(normSched).slice(0, SCHED_MAX),
       schedDel: (Array.isArray(data.schedDel) ? data.schedDel : []).filter(function(d){ return d && d.id; }).slice(0, 300),
       gamify: normGamify(data.gamify),
+      cleaning: normCleaning(data.cleaning),
+      soldLog: normSoldLog(data.soldLog),
       seeded: !!data.seeded,
       createdAt: data.createdAt || new Date().toISOString()
     };
@@ -1848,6 +1963,7 @@
   var localOnly = {};   // 이 기기에만 있는(아직 공유 목록에 없는) id
   var activityDirty = false;   // 이 기기에만 있는 활동이 있어 공유 목록에 합쳐야 함
   var schedDirty = false;      // 이 기기에만 있는 호텔·픽업 일정이 있어 공유 행에 합쳐야 함
+  var cleanDirty = false;      // 이 기기에만 있는 청소 인증이 있어 공유 행에 합쳐야 함
 
   var SYNC_META = {
     live:      { text:'🟢 실시간 동기화', cls:'live' },
@@ -2015,6 +2131,8 @@
       if(activityDirty) pushActivity();
       if(schedDirty) pushSchedules();
       if(gamifyDirty) pushGamify(true);
+      if(cleanDirty) pushCleaning();
+      if(soldDirty) pushSoldLog();
     }
     renderSyncBadge();
     if(ui.sheet === 'sync') setSheet(syncHTML(), true);
@@ -2335,6 +2453,8 @@
       if(r.id === ACTIVITY_ID){ applyActivity(r.data, true); return; }
       if(r.id === SCHED_ID){ applySchedules(r.data, true); return; }
       if(r.id === GAMIFY_ID){ applyGamify(r.data, true); return; }   // 🎮 게임 점수 행은 아이 기록이 아니에요
+      if(r.id === CLEAN_ID){ applyCleaning(r.data, true); return; }   // 🧹 청소 인증 행
+      if(r.id === SOLDLOG_ID){ applySoldLog(r.data, true); return; }  // 🏡 분양완료 캘린더 색인 행
       if(r.id === PUSH_ID) return;               // 알림 구독 목록 행은 아이 기록이 아니에요
       try { remote.push(norm(r.data || {})); } catch(e){}
     });
@@ -2364,6 +2484,7 @@
     try { gamifySeed(); } catch(e){}   // 게임 점수 행이 없으면 기존 활동 기록으로 한 번만 채워요
     renderAll();
     sweepAdopted(true);          // 공유 목록을 끌어온 직후에도 2주 지난 분양완료 장 정리
+    try { soldLogSync(); } catch(e){}   // 분양완료 기록을 캘린더 색인에도 한 번 모아 둬요
     pushAfter.forEach(function(p){ pushed[p.id] = JSON.stringify(p); upsertPuppy(p); });
     if(ui.sheet === 'detail' && ui.detailId && !get(ui.detailId)) closeSheet();
     else if(ui.sheet === 'detail' && ui.detailId) refreshDetail();
@@ -2373,7 +2494,8 @@
     if(!payload || payload.table !== 'puppies') return;
     if(payload.eventType === 'DELETE'){
       var oldId = payload.old && payload.old.id;
-      if(!oldId || oldId === META_ID || oldId === ACTIVITY_ID || oldId === SCHED_ID || oldId === GAMIFY_ID || oldId === PUSH_ID) return;
+      if(!oldId || oldId === META_ID || oldId === ACTIVITY_ID || oldId === SCHED_ID || oldId === GAMIFY_ID ||
+        oldId === CLEAN_ID || oldId === SOLDLOG_ID || oldId === PUSH_ID) return;
       var gone = get(oldId);
       if(!gone) return;
       state.puppies = state.puppies.filter(function(x){ return x.id !== oldId; });
@@ -2389,6 +2511,8 @@
     if(row.id === ACTIVITY_ID){ applyActivity(row.data, true); return; }
     if(row.id === SCHED_ID){ applySchedules(row.data, true); return; }
     if(row.id === GAMIFY_ID){ applyGamify(row.data, true); return; }
+    if(row.id === CLEAN_ID){ applyCleaning(row.data, true); return; }
+    if(row.id === SOLDLOG_ID){ applySoldLog(row.data, true); return; }
     if(row.id === PUSH_ID) return;               // 알림 구독 목록 행은 아이 기록이 아니에요
     var incoming = norm(row.data || {});
     var cur = get(incoming.id);
@@ -2805,7 +2929,7 @@
   var gamifyDirty = false;
 
   function blankGamifyUser(){
-    return { totalPts:0, monthly:{}, daily:{}, counts:{ bath:0, med:0, photo:0, vaccine:0, note:0, adopt:0 }, days:[], updatedAt:'' };
+    return { totalPts:0, monthly:{}, daily:{}, counts:{ bath:0, med:0, photo:0, vaccine:0, note:0, adopt:0, clean:0 }, days:[], updatedAt:'' };
   }
   function gState(){
     if(!state.gamify || typeof state.gamify !== 'object') state.gamify = { users:{}, seeded:false };
@@ -2869,6 +2993,7 @@
     if(/접종/.test(a)) return { kind:'vaccine', pts:3 };
     if(/급여/.test(a)) return { kind:'med', pts:3 };
     if(a === '분양완료') return { kind:'adopt', pts:10 };
+    if(a === '청소 인증') return { kind:'clean', pts:1 };   // 🧹 청소 인증은 +1점
     if(a === '상태 사진') return { kind:'photo', pts:1 };
     if(a === '정보' || a === '메모' || a === '노트') return { kind:'note', pts:1 };
     if(/체크|해제|회복/.test(a)) return { kind:'note', pts:1 };
@@ -2884,7 +3009,9 @@
     if(!who) return null;
     var at = new Date(item.at || Date.now());
     if(isNaN(at.getTime())) at = new Date();
-    var tag = who + '|' + String(item.dogId || item.name || '') + '|' + hit.kind;
+    /* 청소 인증은 항목/메모가 다르면 따로 점수를 쌓고, 같은 메모 연타만 60초에 한 번으로 막아요 */
+    var tagKind = hit.kind === 'clean' ? ('clean:' + String(item.memo || '').slice(0, 20)) : hit.kind;
+    var tag = who + '|' + String(item.dogId || item.name || '') + '|' + tagKind;
     var now = Date.now();
     if(!seed){
       if(gamifyCool[tag] && now - gamifyCool[tag] < GAMIFY_COOL_MS) return null;
@@ -4099,15 +4226,16 @@
     renderSummary();       // 📊 현황 요약 창이 열려 있으면 집계를 다시 그림
     renderCalendar();      // 캘린더가 열려 있을 때만 그림 (실시간 동기화 포함)
     renderHotel();         // 호텔링 · 분양픽업 화면이 열려 있을 때만 그림
+    renderClean();         // 🧹 청소 인증 화면이 열려 있을 때만 그림
   }
 
   /* ================= 목욕 · 약욕 캘린더 (지점별) ================= */
-  var cal = { branch:'퍼피댕', y:0, m:0, sel:'' };
+  var cal = { tab:'bath', branch:'퍼피댕', y:0, m:0, sel:'' };
 
   function calIsOpen(){ var w = $('#calWrap'); return !!w && !w.hidden; }
   function syncBodyLock(){
     var sheetOpen = !!($('#sheetWrap') && !$('#sheetWrap').hidden);
-    document.body.classList.toggle('lock', sheetOpen || calIsOpen() || hotelIsOpen());
+    document.body.classList.toggle('lock', sheetOpen || calIsOpen() || hotelIsOpen() || cleanIsOpen());
   }
   function calOpenInit(){
     // 목록에서 디데이펫을 보고 있었으면 디데이펫 캘린더로, 그 외에는 퍼피댕 캘린더로 열기
@@ -4168,9 +4296,136 @@
     w.hidden = true;
     syncBodyLock();
   }
+  /* ---------- 📅 캘린더 서브탭 (🛁 목욕·약욕 / 🏡 분양완료) ---------- */
+  function renderCalTabs(){
+    var el = $('#calTabs');
+    if(!el) return;
+    el.innerHTML = [
+      { k:'bath', t:'🛁 목욕·약욕' },
+      { k:'sold', t:'🏡 분양완료' }
+    ].map(function(x){
+      var on = cal.tab === x.k;
+      return '<button type="button" class="' + (on ? 'on' : '') + (x.k === 'sold' ? ' sold' : '') + '" data-act="calTab" data-tab="' + x.k + '" role="tab" aria-selected="' + on + '">' + x.t + '</button>';
+    }).join('');
+  }
+
+  /* ---------- 🏡 분양완료 캘린더 (지점별 · 날짜별 건수 배지 · 그날 목록) ---------- */
+  function soldPrefix(){ return cal.y + '-' + pad(cal.m + 1) + '-'; }
+  function soldEntriesMonth(){
+    var pre = soldPrefix();
+    return (state.soldLog || []).filter(function(e){
+      if(!e || e.branch !== cal.branch) return false;
+      return String(e.adoptedAt || '').slice(0, 10).indexOf(pre) === 0;
+    });
+  }
+  function soldMap(){
+    var map = {};
+    soldEntriesMonth().forEach(function(e){
+      var ds = String(e.adoptedAt).slice(0, 10);
+      var o = map[ds] || (map[ds] = { n:0, list:[] });
+      o.n++;
+      o.list.push(e);
+    });
+    Object.keys(map).forEach(function(k){
+      map[k].list.sort(function(a, b){
+        var c = cageNum({ cage:a.cage }) - cageNum({ cage:b.cage });
+        if(c !== 0) return c;
+        return String(a.name || '').localeCompare(String(b.name || ''), 'ko');
+      });
+    });
+    return map;
+  }
+  function soldBranchCount(b){
+    var ym = cal.y + '-' + pad(cal.m + 1);
+    return (state.soldLog || []).filter(function(e){
+      return e && e.branch === b && String(e.adoptedAt || '').slice(0, 7) === ym;
+    }).length;
+  }
+  function renderSoldCalendar(){
+    var map = soldMap();
+    var tot = 0;
+    Object.keys(map).forEach(function(k){ tot += map[k].n; });
+    var today = todayStr();
+
+    var bt = $('#calBarTitle');
+    if(bt) bt.textContent = '🏡 분양완료 캘린더';
+    var cf = $('#calFoot');
+    if(cf) cf.textContent = '분양일은 분양완료 기록 기준이에요 · 기록을 누르면 그 아이 보관함 상세가 열려요';
+
+    $('#calSub').textContent = cal.branch + ' · ' + (cal.m + 1) + '월 분양완료 ' + tot + '건';
+
+    $('#calSeg').innerHTML = BRANCHES.map(function(b){
+      var n = soldBranchCount(b);
+      var on = cal.branch === b;
+      return '<button type="button" class="' + (on ? 'on' : '') + '" data-act="calBranch" data-branch="' + b + '" role="tab" aria-selected="' + on + '">' +
+        b + ' <span class="cc">' + n + '</span></button>';
+    }).join('');
+
+    $('#calMonthLabel').textContent = cal.y + '년 ' + (cal.m + 1) + '월';
+
+    var firstDow = new Date(cal.y, cal.m, 1).getDay();
+    var dim = new Date(cal.y, cal.m + 1, 0).getDate();
+    var prevDim = new Date(cal.y, cal.m, 0).getDate();
+    var cells = Math.ceil((firstDow + dim) / 7) * 7;
+    var html = '';
+    for(var i = 0; i < cells; i++){
+      var day = i - firstDow + 1;
+      if(day < 1){ html += '<span class="cday out" aria-hidden="true"><span class="dn">' + (prevDim + day) + '</span></span>'; continue; }
+      if(day > dim){ html += '<span class="cday out" aria-hidden="true"><span class="dn">' + (day - dim) + '</span></span>'; continue; }
+      var ds = cal.y + '-' + pad(cal.m + 1) + '-' + pad(day);
+      var dow = i % 7;
+      var o = map[ds];
+      var cls = 'cday' + (dow === 0 ? ' sun' : (dow === 6 ? ' sat' : '')) + (ds === today ? ' today' : '') + (ds === cal.sel ? ' on' : '');
+      var lab = fmtMD(ds) + (o ? ' · 분양완료 ' + o.n + '건' : ' · 분양완료 없음');
+      html += '<button type="button" class="' + cls + '" data-act="calPick" data-date="' + ds + '" aria-label="' + lab + '" aria-pressed="' + (ds === cal.sel) + '">' +
+        '<span class="dn">' + day + '</span>' +
+        '<span class="bd">' + (o ? '<span class="cbd sold"><i>🏡</i>' + o.n + '건</span>' : '') + '</span></button>';
+    }
+    $('#calGrid').innerHTML = html;
+
+    $('#calSum').innerHTML =
+      '<span class="csum sold">🏡 <b>' + tot + '</b> 분양완료<span class="csx">' + (cal.m + 1) + '월</span></span>';
+
+    var sel = cal.sel;
+    var selDay = Number(String(sel).slice(8, 10));
+    var selDow = new Date(cal.y, cal.m, selDay).getDay();
+    $('#calDayTitle').textContent = fmtMD(sel) + ' (' + WEEK[selDow] + ')';
+    var tn = $('#calDayToday');
+    if(tn) tn.hidden = (sel !== today);
+
+    var dayMap = map[sel];
+    var listEl = $('#calList');
+    var cntEl = $('#calDayCount');
+    if(!dayMap || !dayMap.list.length){
+      cntEl.textContent = '분양완료 없음';
+      listEl.className = '';
+      listEl.innerHTML = '<div class="calnote"><span class="ce">🏡</span><b>이 날은 분양완료 기록이 없어요</b>' +
+        '<p>' + esc(cal.branch) + ' ' + (cal.m + 1) + '월은 분양완료 <b>' + tot + '건</b>이에요.</p></div>';
+      return;
+    }
+    cntEl.textContent = '분양완료 ' + dayMap.n + '건';
+    listEl.className = 'callist';
+    listEl.innerHTML = dayMap.list.map(function(e){
+      var sub = [];
+      if(e.breed) sub.push(e.breed);
+      sub.push(e.sex === 'female' ? '여야' : '남아');
+      sub.push(e.adoptedBy ? '담당 ' + e.adoptedBy : '담당 미지정');
+      return '<button type="button" class="calrow" data-act="soldOpen" data-src="' + esc(e.src || '') + '" data-id="' + esc(e.id) + '">' +
+        '<span class="cbdg sold">🏡 분양완료</span>' +
+        '<span class="crmain"><b>' + esc((e.cage ? e.cage + ' ' : '') + (e.name || '이름 없음')) + '</b><span>' + esc(sub.join(' · ')) + '</span></span>' +
+        '<span class="crarr">›</span></button>';
+    }).join('');
+  }
+
   function renderCalendar(){
     var w = $('#calWrap');
     if(!w || w.hidden) return;
+    renderCalTabs();
+    if(cal.tab === 'sold'){ renderSoldCalendar(); return; }
+    var bt = $('#calBarTitle');
+    if(bt) bt.textContent = '목욕 · 약욕 캘린더';
+    var cf = $('#calFoot');
+    if(cf) cf.textContent = '기록을 누르면 그 아이 상세로 이동해요 · 다른 폰에서 기록해도 바로 반영돼요';
     var map = calMap();
     var tot = calTotals(map);
     var today = todayStr();
@@ -4710,6 +4965,369 @@
     toast('일정을 지웠어요');
   }
 
+  /* ================= 🧹 청소 인증 (7일 자동 리셋 · 사진/글 · 게임 +1점) =================
+     public.puppies 의 특수 행 id = '__cleaning__' 에 저장 · 일주일(7일)이 지난 기록은 사진 포함 자동 삭제 */
+  var clean = { branch:'퍼피댕', kind:'', memo:'', photo:'' };
+
+  function cleanIsOpen(){ var w = $('#cleanWrap'); return !!w && !w.hidden; }
+  function normCleanItem(it){
+    it = it || {};
+    var t = new Date(it.at || Date.now());
+    if(isNaN(t.getTime())) t = new Date();
+    return {
+      id: String(it.id || uid()),
+      branch: it.branch === '디데이펫' ? '디데이펫' : '퍼피댕',
+      kind: String(it.kind == null ? '' : it.kind).replace(/\s+/g, ' ').trim().slice(0, 20),
+      memo: String(it.memo == null ? '' : it.memo).replace(/\s+/g, ' ').trim().slice(0, 60),
+      photoDataUrl: typeof it.photoDataUrl === 'string' ? it.photoDataUrl : '',
+      by: String(it.by || '').slice(0, 12),
+      at: t.toISOString()
+    };
+  }
+  function normCleanDel(list){
+    var cut = Date.now() - CLEAN_TTL * 2;
+    var out = [], seen = {};
+    (Array.isArray(list) ? list : []).forEach(function(d){
+      if(!d || !d.id) return;
+      var t = new Date(d.at || 0).getTime();
+      if(!(t > 0) || t < cut || seen[d.id]) return;
+      seen[d.id] = 1;
+      out.push({ id: String(d.id), at: new Date(t).toISOString() });
+    });
+    out.sort(function(a, b){ return String(b.at).localeCompare(String(a.at)); });
+    return out.slice(0, 200);
+  }
+  /* 7일이 지난 기록은 사진과 함께 자동 삭제 · 지운 기록(삭제 표식)은 다시 살아나지 않아요 */
+  function cleanFresh(items, del){
+    var cut = Date.now() - CLEAN_TTL;
+    var dmap = {};
+    (del || []).forEach(function(d){ var t = new Date(d.at || 0).getTime() || 0; if(t > (dmap[d.id] || 0)) dmap[d.id] = t; });
+    var out = (Array.isArray(items) ? items : []).filter(function(it){
+      if(!it || !it.id) return false;
+      var t = new Date(it.at || 0).getTime() || 0;
+      if(!(t >= cut)) return false;
+      return !((dmap[it.id] || 0) >= t);
+    });
+    out.sort(function(a, b){ return String(b.at).localeCompare(String(a.at)); });
+    return out.slice(0, CLEAN_MAX);
+  }
+  function normCleaning(data){
+    data = (data && typeof data === 'object') ? data : {};
+    var del = normCleanDel(data.del);
+    var items = (Array.isArray(data.items) ? data.items : []).map(normCleanItem);
+    return { items: cleanFresh(items, del), del: del };
+  }
+  function cleanState(){
+    if(!state.cleaning || typeof state.cleaning !== 'object') state.cleaning = { items: [], del: [] };
+    if(!Array.isArray(state.cleaning.items)) state.cleaning.items = [];
+    if(!Array.isArray(state.cleaning.del)) state.cleaning.del = [];
+    return state.cleaning;
+  }
+  function cleanList(){ var cs = cleanState(); return cleanFresh(cs.items, cs.del); }
+  /* 로드 · 추가 · 열기 때 7일 지난 기록을 사진 포함 자동 삭제 */
+  function cleanSweep(){
+    var cs = cleanState();
+    var before = JSON.stringify(cs.items) + '|' + JSON.stringify(cs.del);
+    cs.items = cleanFresh(cs.items, cs.del);
+    cs.del = normCleanDel(cs.del);
+    if(before === JSON.stringify(cs.items) + '|' + JSON.stringify(cs.del)) return false;
+    saveLocal();
+    cleanDirty = true;
+    pushCleaning();
+    return true;
+  }
+  function pushCleaning(){
+    if(!isLive()) return;                 // 연결되면 setSync('live') 에서 다시 올려요
+    var cs = cleanState();
+    sync.client.from('puppies').upsert({ id: CLEAN_ID, data: { items: cs.items, del: cs.del }, updated_at: new Date().toISOString() }).then(function(res){
+      if(res && res.error) handleSyncError(res.error);
+      else cleanDirty = false;
+    }, function(err){ handleSyncError(err); });
+  }
+  function applyCleaning(data, fromRemote){
+    if(!data) return;
+    var cs = cleanState();
+    var remoteItems = (Array.isArray(data.items) ? data.items : []).map(normCleanItem);
+    var remoteDel = normCleanDel(data.del);
+    var byId = {};
+    remoteItems.forEach(function(it){ byId[it.id] = it; });
+    (cs.items || []).forEach(function(it){
+      var cur = byId[it.id];
+      if(!cur){ byId[it.id] = it; return; }
+      if(String(it.at) > String(cur.at)) byId[it.id] = it;
+    });
+    var delAt = {};
+    remoteDel.forEach(function(d){ if(String(d.at) > String(delAt[d.id] || '')) delAt[d.id] = String(d.at); });
+    (cs.del || []).forEach(function(d){ if(String(d.at) > String(delAt[d.id] || '')) delAt[d.id] = String(d.at); });
+    var del = normCleanDel(Object.keys(delAt).map(function(id){ return { id:id, at:delAt[id] }; }));
+    var items = cleanFresh(Object.keys(byId).map(function(k){ return byId[k]; }), del);
+    var changed = JSON.stringify(items) !== JSON.stringify(cs.items) || JSON.stringify(del) !== JSON.stringify(cs.del);
+    cs.items = items; cs.del = del;
+    if(changed){ saveLocal(); renderClean(); }
+    if(fromRemote){
+      var rItem = {};
+      remoteItems.forEach(function(it){ rItem[it.id] = it.at; });
+      var rDel = {};
+      remoteDel.forEach(function(d){ rDel[d.id] = d.at; });
+      var need = false;
+      items.forEach(function(it){ if(rItem[it.id] !== it.at) need = true; });
+      del.forEach(function(d){ if(rDel[d.id] !== d.at) need = true; });
+      var nowIds = {};
+      items.forEach(function(it){ nowIds[it.id] = 1; });
+      remoteItems.forEach(function(it){ if(!nowIds[it.id]) need = true; });   // 7일 지난 기록이 공유 행에 남아 있으면 지워요
+      if(need){ cleanDirty = true; pushCleaning(); }   // 이 기기에만 있던 청소 기록을 공유 행에 합쳐요
+    }
+  }
+
+  function cleanOpenInit(){
+    clean.branch = (ui.branch === '디데이펫') ? '디데이펫' : '퍼피댕';
+    clean.kind = ''; clean.memo = ''; clean.photo = '';
+  }
+  function openClean(){
+    var w = $('#cleanWrap');
+    if(!w) return;
+    cleanOpenInit();
+    w.hidden = false;
+    w.scrollTop = 0;
+    document.body.classList.add('lock');
+    cleanSweep();                       // 열 때도 7일 지난 기록 정리
+    renderClean();
+    var inp = $('#cleanMemo');
+    if(inp) inp.value = '';
+  }
+  function closeClean(){
+    var w = $('#cleanWrap');
+    if(!w || w.hidden) return;
+    w.hidden = true;
+    syncBodyLock();
+  }
+  function cleanChipHTML(){
+    return CLEAN_KINDS.map(function(k){
+      var on = clean.kind === k;
+      return '<button type="button" class="clchip' + (on ? ' on' : '') + '" data-act="cleanKind" data-kind="' + esc(k) + '" aria-pressed="' + (on ? 'true' : 'false') + '">' + esc(k) + '</button>';
+    }).join('');
+  }
+  function cleanCardHTML(it){
+    var mine = String(it.by || '') === String(state.worker || '');
+    var del = (mine || isAdmin())
+      ? '<span class="cldel" data-act="cleanDel" data-id="' + esc(it.id) + '" role="button" tabindex="0" aria-label="청소 인증 삭제">✕</span>'
+      : '';
+    var photo = it.photoDataUrl
+      ? '<button type="button" class="clthumb" data-act="cleanPhoto" data-id="' + esc(it.id) + '" aria-label="청소 사진 크게 보기"><img src="' + it.photoDataUrl + '" alt="청소 사진"></button>'
+      : '';
+    return '<div class="clcard">' +
+      '<div class="clhead"><b>' + esc(it.by || '직원') + '</b>' +
+        '<span class="clbr">' + esc(it.branch) + '</span>' +
+        '<span class="cltime">' + esc(mdHM(it.at)) + '</span>' + del + '</div>' +
+      '<div class="clbody">' + photo +
+        '<div class="cltext">' +
+          (it.kind ? '<span class="clkind">🧹 ' + esc(it.kind) + '</span>' : '') +
+          (it.memo ? '<div class="clmemo">' + esc(it.memo) + '</div>' : '') +
+          (!it.kind && !it.memo ? '<div class="clnone">사진만 올렸어요</div>' : '') +
+        '</div>' +
+      '</div></div>';
+  }
+  function renderClean(){
+    var w = $('#cleanWrap');
+    if(!w || w.hidden) return;
+    var list = cleanList();
+    var mine = list.filter(function(it){ return it.branch === clean.branch; });
+    var todayN = mine.filter(function(it){ return isSameLocalDay(it.at); }).length;
+    $('#cleanSub').textContent = clean.branch + ' · 오늘 ' + todayN + '건 · 최근 7일 ' + mine.length + '건';
+    $('#cleanSeg').innerHTML = BRANCHES.map(function(b){
+      var n = list.filter(function(it){ return it.branch === b; }).length;
+      var on = clean.branch === b;
+      return '<button type="button" class="' + (on ? 'on' : '') + '" data-act="cleanBranch" data-branch="' + b + '" role="tab" aria-selected="' + on + '">' +
+        b + ' <span class="cc">' + n + '</span></button>';
+    }).join('');
+    $('#cleanChips').innerHTML = cleanChipHTML();
+    var prev = $('#cleanPrev');
+    if(prev){
+      if(clean.photo){
+        prev.hidden = false;
+        prev.innerHTML = '<img src="' + clean.photo + '" alt="올릴 청소 사진">' +
+          '<span class="clx" data-act="cleanPhotoClear" role="button" tabindex="0" aria-label="사진 빼기">✕</span>';
+      } else {
+        prev.hidden = true;
+        prev.innerHTML = '';
+      }
+    }
+    var cnt = $('#cleanCount');
+    if(cnt) cnt.textContent = mine.length + '건 · 7일 보관';
+    var el = $('#cleanList');
+    if(!el) return;
+    el.className = mine.length ? 'cllist' : '';
+    el.innerHTML = mine.length
+      ? mine.map(cleanCardHTML).join('')
+      : '<div class="calnote"><span class="ce">🧹</span><b>' + clean.branch + ' 청소 인증이 아직 없어요</b>' +
+        '<p>사진이나 메모를 올리면 여기에 최신순으로 쌓여요 · 올릴 때마다 게임 점수 <b>+1점</b></p></div>';
+  }
+  function cleanPhotoPick(file){
+    if(!file) return;
+    if(!/^image\//.test(String(file.type || ''))){ toast('이미지 파일만 올릴 수 있어요.'); return; }
+    compressImage(file, function(dataURL){
+      clean.photo = dataURL;
+      renderClean();
+      toast('사진을 넣었어요 (약 ' + Math.round(dataURL.length / 1024) + 'KB) · 올리기를 눌러주세요');
+    }, { max:640, quality:0.68, maxLen:90000 });   // DB 용량 절약 — 640px JPEG 0.68 이하로 압축
+  }
+  function cleanAdd(){
+    var inp = $('#cleanMemo');
+    var memo = String((inp ? inp.value : '') || clean.memo || '').replace(/\s+/g, ' ').trim().slice(0, 60);
+    var kind = String(clean.kind || '');
+    if(!kind && !memo && !clean.photo){
+      toast('사진이나 항목·메모 중 하나는 넣어주세요');
+      if(inp) inp.focus();
+      return;
+    }
+    var item = normCleanItem({ id: uid(), branch: clean.branch, kind: kind, memo: memo,
+      photoDataUrl: clean.photo, by: state.worker, at: new Date().toISOString() });
+    var cs = cleanState();
+    cs.items = cleanFresh([item].concat(cs.items), cs.del);
+    cs.del = normCleanDel(cs.del);
+    clean.kind = ''; clean.memo = ''; clean.photo = '';
+    if(inp) inp.value = '';
+    saveLocal();
+    cleanDirty = true;
+    pushCleaning();
+    /* 활동 기록(푸시 포함) + 게임 점수 +1점 · 팀 케어 기록 미션에도 들어가요 */
+    logActivity({ id:'', branch:item.branch, cage:'', name:'' }, '청소 인증', '했습니다', memo || kind);
+    renderClean();
+    toast('청소 인증을 올렸어요 · +1점 🧹');
+  }
+  function cleanDelete(id){
+    var it = null;
+    cleanList().forEach(function(x){ if(x.id === id) it = x; });
+    if(!it) return;
+    if(String(it.by || '') !== String(state.worker || '') && !isAdmin()){
+      toast('내가 올린 기록만 지울 수 있어요');
+      return;
+    }
+    if(!window.confirm('이 청소 인증을 지울까요?\n다른 폰에서도 함께 사라져요.')) return;
+    var cs = cleanState();
+    cs.items = cs.items.filter(function(x){ return x.id !== id; });
+    cs.del = normCleanDel([{ id:id, at:new Date().toISOString() }].concat(cs.del));
+    saveLocal();
+    cleanDirty = true;
+    pushCleaning();
+    renderClean();
+    toast('청소 인증을 지웠어요');
+  }
+  function openCleanPhoto(id){
+    var it = null;
+    cleanList().forEach(function(x){ if(x.id === id) it = x; });
+    if(!it) return;
+    if(!it.photoDataUrl){ toast('사진이 없는 기록이에요'); return; }
+    var box = $('#photoView'), img = $('#photoViewImg');
+    if(!box || !img) return;
+    img.src = it.photoDataUrl;
+    img.alt = '청소 사진 크게 보기';
+    ui.hpNoteId = '';
+    var note = $('#photoViewNote');
+    if(note){
+      var what = [it.kind, it.memo].filter(Boolean).join(' · ');
+      note.textContent = (it.by ? it.by + '님 · ' : '') + mdHM(it.at) + ' · ' + it.branch + (what ? ' · ' + what : '');
+      note.className = 'pvnote';
+    }
+    var nb = $('#photoViewNoteBtn');
+    if(nb) nb.hidden = true;      // 청소 사진에는 코멘트 버튼이 필요 없어요
+    box.hidden = false;
+    document.body.classList.add('lock');
+  }
+
+  /* ================= 🏡 분양완료 캘린더 색인 (보관함 기록이 14일 뒤 지워져도 분양일은 남아요) ================= */
+  var soldDirty = false;
+  function normSoldEntry(it){
+    it = it || {};
+    var t = new Date(it.adoptedAt || 0);
+    if(isNaN(t.getTime()) || !(t.getTime() > 0)) return null;
+    var nm = String(it.name == null ? '' : it.name).trim();
+    if(!nm || nm === '미정') nm = String(it.breed || '').trim() || '이름 없음';
+    return {
+      id: String(it.id || ('s' + t.getTime().toString(36) + Math.random().toString(36).slice(2, 5))),
+      src: String(it.src || ''),
+      branch: it.branch === '디데이펫' ? '디데이펫' : '퍼피댕',
+      cage: String(it.cage == null ? '' : it.cage).slice(0, 20),
+      name: nm.slice(0, 30),
+      breed: String(it.breed == null ? '' : it.breed).slice(0, 30),
+      sex: it.sex === 'female' ? 'female' : 'male',
+      adoptedAt: t.toISOString(),
+      adoptedBy: String(it.adoptedBy == null ? '' : it.adoptedBy).slice(0, 12)
+    };
+  }
+  function normSoldLog(list){
+    var out = [], seen = {};
+    (Array.isArray(list) ? list : []).forEach(function(raw){
+      var e = normSoldEntry(raw);
+      if(!e) return;
+      var key = e.src || e.id;
+      if(seen[key]) return;
+      seen[key] = 1;
+      out.push(e);
+    });
+    out.sort(function(a, b){ return String(b.adoptedAt).localeCompare(String(a.adoptedAt)); });
+    return out.slice(0, SOLDLOG_MAX);
+  }
+  function pushSoldLog(){
+    if(!isLive()) return;
+    sync.client.from('puppies').upsert({ id: SOLDLOG_ID, data: { items: state.soldLog || [] }, updated_at: new Date().toISOString() }).then(function(res){
+      if(res && res.error) handleSyncError(res.error);
+      else soldDirty = false;
+    }, function(err){ handleSyncError(err); });
+  }
+  function applySoldLog(data, fromRemote){
+    if(!data) return;
+    var remote = normSoldLog(data.items);
+    var map = {}, order = [];
+    function add(e){ var k = e.src || e.id; if(map[k]) return; map[k] = e; order.push(k); }
+    remote.forEach(add);
+    (state.soldLog || []).forEach(add);
+    var merged = normSoldLog(order.map(function(k){ return map[k]; }));
+    var changed = JSON.stringify(merged) !== JSON.stringify(state.soldLog || []);
+    state.soldLog = merged;
+    if(changed){ saveLocal(); renderCalendar(); }
+    if(fromRemote){
+      var rk = {};
+      remote.forEach(function(e){ rk[e.src || e.id] = 1; });
+      var need = merged.some(function(e){ return !rk[e.src || e.id]; });
+      if(need){ soldDirty = true; pushSoldLog(); }
+    }
+  }
+  /* 분양완료(보관함 · 장 슬롯) 기록을 색인에 한 번 모아 둬요 */
+  function soldLogSync(){
+    if(!state || !state.puppies) return false;
+    var base = normSoldLog(state.soldLog);
+    var have = {};
+    base.forEach(function(e){ have[e.src || e.id] = 1; });
+    var added = 0;
+    state.puppies.forEach(function(p){
+      if(!p || !(p.isArchive || p.status === 'sold')) return;
+      if(!p.adoptedAt || have[p.id]) return;
+      var e = normSoldEntry({ id:'s' + String(p.id).replace(/[^a-zA-Z0-9_-]/g, ''), src:p.id, branch:p.branch, cage:p.cage,
+        name:p.name, breed:p.breed, sex:p.sex, adoptedAt:p.adoptedAt, adoptedBy:p.adoptedBy });
+      if(!e) return;
+      have[p.id] = 1;
+      base.push(e);
+      added++;
+    });
+    if(!added) return false;
+    state.soldLog = normSoldLog(base);
+    saveLocal();
+    soldDirty = true;
+    pushSoldLog();
+    return true;
+  }
+  /* 보관함 기록을 지우면 그 분양 기록도 색인에서 빼요 (잘못 눌러 취소한 경우) */
+  function soldLogDrop(srcId){
+    if(!srcId) return;
+    var before = (state.soldLog || []).length;
+    state.soldLog = (state.soldLog || []).filter(function(e){ return e.src !== srcId; });
+    if((state.soldLog || []).length === before) return;
+    saveLocal();
+    soldDirty = true;
+    pushSoldLog();
+  }
+
   /* ================= 시트 ================= */
   function openSheet(){
     var w = $('#sheetWrap');
@@ -4748,11 +5366,15 @@
     return ui.branch === '디데이펫' ? '디데이펫' : '퍼피댕';
   }
 
-  /* 빈장: 이름이 없거나 ‘미정’인 장 */
+  /* 빈장: 이름이 비었거나 ‘미정’이고, 품종·사진도 없는 장만.
+     이름을 ‘미정’으로 둔 채 품종·모색·사진을 채운 아이는 실제 보유 아이로 세요. */
   function sumIsEmptySlot(p){
     if(!p) return false;
     var nm = String(p.name == null ? '' : p.name).trim();
-    return nm === '' || nm === '미정';
+    if(nm !== '' && nm !== '미정') return false;
+    if(String(p.breed == null ? '' : p.breed).trim()) return false;   // 품종이 있으면 실제 아이
+    if(p.photoProfile) return false;                                  // 사진이 있어도 실제 아이
+    return true;
   }
 
   function sumSexTxt(male, female){
@@ -4827,17 +5449,25 @@
     return d;
   }
 
-  function sumBreedBlock(groups, lines){
-    groups.forEach(function(g){
+  /* 위쪽 블록: 품종별 남아/여아 수만 (모색 없이) */
+  function sumBreedLines(groups, lines){
+    (groups || []).forEach(function(g){
       lines.push(g.breed + ' ' + sumSexTxt(g.male, g.female));
-      if(!g.colorRows.length) return;                                  // 모색이 하나도 없으면 생략
+    });
+  }
+  /* 아래쪽 블록: [품종] 모색 상세 — 모색 정보가 하나도 없는 품종은 위쪽 목록에 이미 있어서 빼요 */
+  function sumColorBlock(groups, lines){
+    (groups || []).forEach(function(g){
+      if(!g.colorRows.length) return;
       lines.push('[' + g.breed + ']');
       g.colorRows.forEach(function(c){ lines.push(c.color + ' ' + sumSexTxt(c.male, c.female)); });
       if(g.ncMale || g.ncFemale) lines.push('모색 미입력 ' + sumSexTxt(g.ncMale, g.ncFemale));
     });
   }
 
-  /* 카톡에 그대로 붙여넣을 글 */
+  /* 카톡에 그대로 붙여넣을 글
+     위쪽: [지점] 아래 모든 견종의 남아/여아 수 → 총 N마리 → 빈장 M개
+     아래쪽: [품종] 모색 상세 (고양이가 있으면 그 아래 [🐱 고양이] 블록) */
   function summaryText(scope){
     var d = summaryData(scope);
     var now = new Date();
@@ -4854,17 +5484,25 @@
       L.push('아직 등록된 아이가 없어요');
       return L.join('\n');
     }
-    L.push('총 ' + total + '마리' + (d.reserved ? ' (예약중 ' + d.reserved + ')' : '') + ' · 빈장 ' + empt + '개');
+    /* ---- 위쪽 블록: 견종별 남아/여아 → 총 → 빈장 ---- */
+    L.push('[' + label + ']');
+    if(d.dogs) sumBreedLines(d.dogGroups, L);
+    L.push('총 ' + total + '마리' + (d.reserved ? ' (예약중 ' + d.reserved + ')' : ''));
     if(total) L.push('남아 ' + d.male + ' · 여아 ' + d.female);
-    if(d.dogs){
-      L.push('');
-      L.push('🐶 강아지');
-      sumBreedBlock(d.dogGroups, L);
-    }
+    L.push('빈장 ' + empt + '개 입니다');
+    /* ---- 아래쪽 블록: 품종별 모색 상세 ---- */
+    var dogDet = [];
+    if(d.dogs) sumColorBlock(d.dogGroups, dogDet);
+    if(dogDet.length){ L.push(''); Array.prototype.push.apply(L, dogDet); }
     if(d.cats || d.emptyCats){
       L.push('');
-      L.push('🐱 고양이');
-      if(d.cats) sumBreedBlock(d.catGroups, L);
+      L.push('[🐱 고양이]');
+      if(d.cats){
+        sumBreedLines(d.catGroups, L);
+        var catDet = [];
+        sumColorBlock(d.catGroups, catDet);
+        if(catDet.length) Array.prototype.push.apply(L, catDet);
+      }
       if(d.emptyCats) L.push('고양이 빈장 ' + d.emptyCats + '개');
     }
     return L.join('\n');
@@ -4892,7 +5530,7 @@
         (d.reserved ? '<div class="sumres">🟡 예약중 <b>' + d.reserved + '마리</b></div>' : '') +
         '<div class="sumchat"><div class="scl">💬 카톡에 이렇게 붙어요</div>' +
           '<pre id="sumPrev">' + esc(summaryText(d.scope)) + '</pre></div>' +
-        '<p class="sumhint">분양완료 보관함은 빼고 셉니다 · 빈장은 이름이 비었거나 ‘미정’인 장이에요 · 예약중도 총 마리에 들어가요.</p>' +
+        '<p class="sumhint">분양완료 보관함은 빼고 셉니다 · 빈장은 이름이 비었거나 ‘미정’이고 품종·사진도 없는 장이에요 · 이름을 미정으로 둬도 품종이나 사진이 있으면 실제 아이로 세요 · 예약중도 총 마리에 들어가요.</p>' +
       '</div>' +
       '<div class="sumfoot"><button type="button" class="btn primary" data-act="sumCopy">📋 카톡 복붙하기</button></div>';
   }
@@ -5152,7 +5790,7 @@
       note.className = 'pvnote' + (cmt ? '' : ' none');
     }
     var nb = $('#photoViewNoteBtn');
-    if(nb) nb.textContent = String(ph.label || '').trim() ? '✏️ 코멘트 수정' : '✏️ 코멘트 달기';
+    if(nb){ nb.hidden = false; nb.textContent = String(ph.label || '').trim() ? '✏️ 코멘트 수정' : '✏️ 코멘트 달기'; }
     box.hidden = false;
     document.body.classList.add('lock');
   }
@@ -5171,7 +5809,10 @@
     box.hidden = true;
     var img = $('#photoViewImg');
     if(img) img.removeAttribute('src');
-    if($('#sheetWrap').hidden) document.body.classList.remove('lock');
+    ui.hpNoteId = '';
+    var nb = $('#photoViewNoteBtn');
+    if(nb) nb.hidden = false;
+    syncBodyLock();
   }
   function deleteHealthPhoto(id){
     var p = get(ui.detailId);
@@ -5541,6 +6182,7 @@
     if(!window.confirm('‘' + p.name + '’ 분양완료 기록을 지울까요?\n되돌릴 수 없어요.')) return;
     state.puppies = state.puppies.filter(function(x){ return x.id !== p.id; });
     save();
+    soldLogDrop(p.id);   // 분양완료 캘린더에서도 같이 빠지게
     logActivity({ id:'', branch:p.branch, cage:p.cage, name:p.name }, '분양완료 기록', '지웠습니다');
     ui.detailId = null;
     closeSheet();
@@ -5837,7 +6479,10 @@
   }
 
   /* ================= 사진 ================= */
-  function compressImage(file, cb){
+  function compressImage(file, cb, opt){
+    var MAX = (opt && opt.max) || 640;              // 모바일 카드·상세에서 충분히 선명하고 장당 40~70KB 정도로 가볍게
+    var Q0 = (opt && opt.quality) || 0.72;
+    var MAXLEN = (opt && opt.maxLen) || 120000;
     var reader = new FileReader();
     reader.onerror = function(){ toast('사진을 읽지 못했어요. 다른 사진으로 시도해 주세요.'); };
     reader.onload = function(e){
@@ -5845,7 +6490,6 @@
       img.onerror = function(){ toast('이미지 형식을 읽을 수 없어요.'); };
       img.onload = function(){
         try {
-          var MAX = 640;   // 모바일 카드·상세에서 충분히 선명하고 장당 40~70KB 정도로 가볍게
           var w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
           var scale = Math.min(1, MAX / Math.max(w, h));
           w = Math.max(1, Math.round(w * scale));
@@ -5856,10 +6500,10 @@
           ctx.fillStyle = '#ffffff';
           ctx.fillRect(0,0,w,h);
           ctx.drawImage(img, 0, 0, w, h);
-          var q = 0.72;
+          var q = Q0;
           var data = cv.toDataURL('image/jpeg', q);
           var guard = 0;
-          while(data.length > 120000 && guard < 8){
+          while(data.length > MAXLEN && guard < 8){
             q = Math.max(0.4, q - 0.06);
             data = cv.toDataURL('image/jpeg', q);
             guard++;
@@ -6007,7 +6651,7 @@
         '<div class="settingrow"><div><b>전체 비우기</b><span>모든 노트를 지워요 · 되돌릴 수 없어요</span></div>' +
           '<button class="btn sm danger" data-act="wipeAll">비우기</button></div>' +
       '</section>' +
-      '<div class="sfoot"><img src="puppies-logo.png" alt="퍼피댕" style="width:132px;display:block;margin:0 auto 7px;border-radius:7px">퍼피댕 V1.6 · 디데이펫 관리 노트</div>' +
+      '<div class="sfoot"><img src="puppies-logo.png" alt="퍼피댕" style="width:132px;display:block;margin:0 auto 7px;border-radius:7px">퍼피댕 V1.7 · 디데이펫 관리 노트</div>' +
       '</div>';
   }
 
@@ -6211,6 +6855,7 @@
       '분양완료', '처리했습니다', '', adopter || String(state.worker || ''), !adopter);
     renderAll();
     closeSheet();
+    try { soldLogSync(); } catch(e){}   // 🏡 분양완료 캘린더 색인에도 남겨요
     toast((archive.cage ? archive.cage + ' ' : '') + archive.name + ' → 분양완료 보관함 · ' + (cage || '장') + '은 빈 장이 됐어요'
       + (adopter ? ' · 담당 ' + adopter : ' · 담당 없음'));
     return archive;
@@ -6566,6 +7211,70 @@
         break;
       case 'openCalendar':
         openCalendar();
+        break;
+      case 'calTab':
+        (function(){
+          var t = el.getAttribute('data-tab') === 'sold' ? 'sold' : 'bath';
+          if(cal.tab === t){ renderCalendar(); return; }
+          cal.tab = t;
+          if(t === 'sold'){
+            /* 분양완료 탭으로 바뀌면 이번 달 분양이 있는 가장 최근 날짜를 골라 둬요 */
+            var map = soldMap();
+            if(!map[cal.sel]){
+              var keys = Object.keys(map).sort();
+              var pick = '';
+              for(var i = keys.length - 1; i >= 0; i--){ if(keys[i] <= todayStr()){ pick = keys[i]; break; } }
+              if(!pick && keys.length) pick = keys[keys.length - 1];
+              if(pick) cal.sel = pick;
+            }
+          }
+          renderCalendar();
+        })();
+        break;
+      case 'soldOpen':
+        (function(){
+          var src = el.getAttribute('data-src');
+          if(src && get(src)){ openDetail(src); return; }   // 보관함 기록이 남아 있으면 상세로
+          var id = el.getAttribute('data-id');
+          var e = null;
+          (state.soldLog || []).forEach(function(x){ if(x.id === id) e = x; });
+          if(!e){ toast('분양완료 기록을 찾을 수 없어요'); return; }
+          toast((e.cage ? e.cage + ' ' : '') + e.name + ' · ' + fmtMD(isoYmd(e.adoptedAt)) + ' 분양완료' +
+            (e.adoptedBy ? ' · 담당 ' + e.adoptedBy : '') + ' · 보관함 기록은 2주 뒤 정리돼요');
+        })();
+        break;
+      case 'openClean':
+        openClean();
+        break;
+      case 'closeClean':
+        closeClean();
+        break;
+      case 'cleanBranch':
+        clean.branch = el.getAttribute('data-branch') === '디데이펫' ? '디데이펫' : '퍼피댕';
+        renderClean();
+        break;
+      case 'cleanKind':
+        (function(){
+          var k = el.getAttribute('data-kind') || '';
+          clean.kind = (clean.kind === k) ? '' : k;
+          renderClean();
+        })();
+        break;
+      case 'cleanAdd':
+        cleanAdd();
+        break;
+      case 'cleanPhotoPick':
+        (function(){ var inp = $('#fileClean'); if(inp) inp.click(); })();
+        break;
+      case 'cleanPhotoClear':
+        clean.photo = '';
+        renderClean();
+        break;
+      case 'cleanPhoto':
+        openCleanPhoto(el.getAttribute('data-id'));
+        break;
+      case 'cleanDel':
+        cleanDelete(el.getAttribute('data-id'));
         break;
       case 'closeCalendar':
         closeCalendar();
@@ -7106,6 +7815,7 @@
       if($('#photoView') && !$('#photoView').hidden) closePhotoView();
       else if($('#installWrap') && !$('#installWrap').hidden) closeInstallGuide();
       else if(!$('#sheetWrap').hidden) closeSheet();
+      else if(cleanIsOpen()) closeClean();
       else if(hotelIsOpen()) closeHotel();
       else if(calIsOpen()) closeCalendar();
     }
@@ -7192,6 +7902,11 @@
     }
     if(t.id === 'fileHealthPhoto'){
       if(t.files && t.files.length) addHealthPhotos(t.files);
+      t.value = '';
+      return;
+    }
+    if(t.id === 'fileClean'){
+      if(t.files && t.files[0]) cleanPhotoPick(t.files[0]);
       t.value = '';
       return;
     }
@@ -7345,7 +8060,12 @@
       gamify: function(){ return state.gamify; }, applyGamify: applyGamify, gamifySeed: gamifySeed,
       gamifyPayload: gamifyPayload, gPoints: gPoints, gStreak: gStreak, gLevel: gLevel, confettiBurst: confettiBurst,
       summary: summary, openSummary: openSummary, summaryHTML: summaryHTML, summaryText: summaryText,
-      summaryData: summaryData, sumCopy: sumCopy, copyToClipboard: copyToClipboard };
+      summaryData: summaryData, sumCopy: sumCopy, copyToClipboard: copyToClipboard,
+      clean: clean, openClean: openClean, closeClean: closeClean, renderClean: renderClean,
+      cleanList: cleanList, cleanState: cleanState, applyCleaning: applyCleaning, cleanAdd: cleanAdd,
+      CLEAN_TTL: CLEAN_TTL, soldLog: function(){ return state.soldLog; }, soldLogSync: soldLogSync,
+      applySoldLog: applySoldLog, renderSoldCalendar: renderSoldCalendar, soldMap: soldMap,
+      sumIsEmptySlot: sumIsEmptySlot };
   }
 })();
 </script>
