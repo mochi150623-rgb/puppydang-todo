@@ -373,6 +373,9 @@
   .dphmain img{width:100%;height:100%;object-fit:cover;object-position:center 38%;display:block}
   .dphmain .ph .phemo{font-size:40px}
   .dphmain .ph .phlab{font-size:13.5px}
+  .dphmain img.archmainimg{cursor:zoom-in}
+  .archphoto{margin:0 0 12px}
+  .archphotohint{margin:6px 2px 0;text-align:center;font-size:11.5px;font-weight:800;color:var(--muted-2);letter-spacing:-.02em}
 
   .dhead{margin-top:14px}
   .dnamerow{display:flex;align-items:center;gap:8px}
@@ -1232,7 +1235,7 @@
   <header>
     <div class="topline">
       <div class="brand"><img class="blogo" src="puppies-icon.png" alt="퍼피댕 로고" width="30" height="30">
-        <span class="brandtext"><span class="brandname">퍼피댕 · 디데이펫</span><span class="brandver">퍼피댕 V2.3</span></span></div>
+        <span class="brandtext"><span class="brandname">퍼피댕 · 디데이펫</span><span class="brandver">퍼피댕 V2.4</span></span></div>
       <div class="topact">
         <button class="wpill" data-act="openWorker" aria-label="작업자 선택">👤 <b id="workerName">—</b><span class="chev">▾</span></button>
         <button class="gbtn adminonly" data-act="openSettings" aria-label="설정">⚙️</button>
@@ -6409,6 +6412,38 @@
     var nb = $('#photoViewNoteBtn'); if(nb) nb.hidden = true;
     pvOpenList(items, idx);
   }
+  /* 분양완료 보관함 상세 — 아이 메인 사진 크게 보기 */
+  function openArchiveMainPhoto(){
+    var p = get(ui.detailId);
+    if(!p || !p.photoProfile) return;
+    var box = $('#photoView');
+    if(!box) return;
+    ui.hpNoteId = '';
+    ui.photoKind = 'archive';
+    var nb = $('#photoViewNoteBtn'); if(nb) nb.hidden = true;   // 보관함 기록은 수정하지 않아요
+    var head = [p.name || '이름 없음', [p.cage, p.branch].filter(Boolean).join(' '), '분양완료'].filter(Boolean).join(' · ');
+    pvOpenList([{ src: p.photoProfile, alt: (p.name || '아이') + ' 사진 크게 보기', note: head }], 0);
+  }
+  /* 보관함 상세 — 건강 상태 사진 크게 보기 (여러 장이면 좌우로 넘겨요) */
+  function openArchiveHealthPhoto(id){
+    var p = get(ui.detailId);
+    if(!p || !id) return;
+    var list = p.healthPhotos || [];
+    var items = [], idx = 0;
+    list.forEach(function(ph){
+      if(ph.id === id) idx = items.length;
+      var cmt = String(ph.label || '').trim();
+      var d = ph.addedAt ? new Date(ph.addedAt) : null;
+      var cap = (d && !isNaN(d.getTime())) ? (d.getMonth() + 1) + '/' + d.getDate() : '';
+      items.push({ src: ph.dataUrl, alt: '상태 사진 크게 보기',
+        note: [cap, ph.addedBy].filter(Boolean).join(' · ') + (cmt ? ' · 💬 ' + cmt : '') });
+    });
+    if(!items.length) return;
+    ui.hpNoteId = '';
+    ui.photoKind = 'archive';
+    var nb = $('#photoViewNoteBtn'); if(nb) nb.hidden = true;
+    pvOpenList(items, idx);
+  }
   /* 분양완료 보관함처럼 기록 사진·예전 사진이 섞여 있는 곳 — 아이디로 둘 다 찾아 열어요 */
   function openAnyBathPhoto(id){
     var p = get(ui.detailId);
@@ -6732,6 +6767,38 @@
       '</div>';
   }
 
+  /* 분양완료 보관함 상세 맨 위 — 아이 메인 사진 (사진이 없으면 아무것도 그리지 않아요) */
+  function archivePhotoHTML(p){
+    var src = p && p.photoProfile;
+    if(!src) return '';
+    return '<div class="dphoto archphoto">' +
+      '<div class="dphmain">' +
+        '<img class="archmainimg" src="' + src + '" alt="' + esc(p.name || '아이') + ' 사진 크게 보기" ' +
+          'data-act="archiveMainPhoto" role="button" tabindex="0" aria-label="' + esc(p.name || '아이') + ' 사진 크게 보기">' +
+      '</div>' +
+      '<div class="archphotohint">사진을 누르면 크게 볼 수 있어요</div>' +
+    '</div>';
+  }
+  /* 보관함 상세용 건강 상태 사진 — 보기 전용 (올리기·코멘트 수정 없음) */
+  function healthPhotoStripHTML(p){
+    var list = (p && p.healthPhotos) || [];
+    if(!list.length) return '';
+    return '<div class="hphoto" style="margin-top:4px">' +
+      '<div class="hpgrid">' + list.map(function(ph){
+        var cmt = String(ph.label || '').trim();
+        var d = ph.addedAt ? new Date(ph.addedAt) : null;
+        var cap = (d && !isNaN(d.getTime())) ? (d.getMonth() + 1) + '/' + d.getDate() : '날짜 미상';
+        return '<div class="hpitem">' +
+          '<button type="button" class="hpopen" data-act="archiveHealthPhoto" data-id="' + esc(ph.id) + '" aria-label="상태 사진 크게 보기">' +
+            '<img src="' + ph.dataUrl + '" alt="' + esc(cmt || '상태 사진') + '" loading="lazy">' +
+          '</button>' +
+          '<span class="hpcap">' + esc(cap) + (ph.addedBy ? ' · ' + esc(ph.addedBy) : '') + '</span>' +
+          (cmt ? '<span class="hpcap" style="color:#5A381E">💬 ' + esc(cmt) + '</span>' : '') +
+        '</div>';
+      }).join('') + '</div>' +
+      '</div>';
+  }
+
   function archiveDetailHTML(id){
     var p = get(id);
     if(!p) return '<div class="sheetbody"><p class="sp">기록을 찾을 수 없어요.</p></div>';
@@ -6767,11 +6834,16 @@
       '<div class="archnote">분양완료 보관함 기록' + (adopt ? ' · <b>' + adopt.text + '</b>' : '') +
         (p.adoptedBy ? ' · 담당 <b>' + esc(p.adoptedBy) + '</b>' : '') +
         '<span>2주가 지나면 이 기록은 자동으로 삭제돼요. 장(' + esc(p.cage || '') + ')은 비워져 새 아이를 받을 수 있어요.</span></div>' +
+      archivePhotoHTML(p) +
       '<section class="scard" style="margin-top:0"><div class="shead"><h3>📋 기본 정보</h3></div>' +
         '<div class="inforows" style="display:block">' + rows + '</div></section>' +
       (p.memo ? '<section class="scard"><div class="shead"><h3>📝 메모</h3></div><p class="sp" style="white-space:pre-wrap">' + esc(p.memo) + '</p></section>' : '') +
       '<section class="scard"><div class="shead"><h3>🛁 목욕 · 약욕 기록</h3><span class="sbadge calm">' + ((p.baths || []).length) + '건</span></div>' +
         (baths || '<p class="sp small">기록 없음</p>') + bathPhotoStripHTML(p) + '</section>' +
+      ((p.healthPhotos && p.healthPhotos.length)
+        ? '<section class="scard"><div class="shead"><h3>🩺 건강 · 상태 사진</h3><span class="sbadge calm">' +
+            p.healthPhotos.length + '장</span></div>' + healthPhotoStripHTML(p) + '</section>'
+        : '') +
       '<section class="scard"><div class="shead"><h3>💊 투약 · 주사</h3><span class="sbadge calm">' + ((p.medLogs || []).length) + '건</span></div>' +
         (meds || '<p class="sp small">기록 없음</p>') + '</section>' +
       '<section class="scard"><div class="shead"><h3>💉 접종 · 구충</h3><span class="sbadge calm">' + ((p.vaccines || []).length) + '건</span></div>' +
@@ -7298,7 +7370,7 @@
         '<div class="settingrow"><div><b>전체 비우기</b><span>모든 노트를 지워요 · 되돌릴 수 없어요</span></div>' +
           '<button class="btn sm danger" data-act="wipeAll">비우기</button></div>' +
       '</section>' +
-      '<div class="sfoot"><img src="puppies-logo.png" alt="퍼피댕" style="width:132px;display:block;margin:0 auto 7px;border-radius:7px">퍼피댕 V2.3 · 디데이펫 관리 노트</div>' +
+      '<div class="sfoot"><img src="puppies-logo.png" alt="퍼피댕" style="width:132px;display:block;margin:0 auto 7px;border-radius:7px">퍼피댕 V2.4 · 디데이펫 관리 노트</div>' +
       '</div>';
   }
 
@@ -7836,6 +7908,12 @@
         break;
       case 'bathPhotoAny':
         openAnyBathPhoto(el.getAttribute('data-id'));
+        break;
+      case 'archiveMainPhoto':
+        openArchiveMainPhoto();
+        break;
+      case 'archiveHealthPhoto':
+        openArchiveHealthPhoto(el.getAttribute('data-id'));
         break;
       case 'bathiPhotoDel':
         deleteBathPhoto(el.getAttribute('data-id'));
