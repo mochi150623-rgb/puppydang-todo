@@ -433,6 +433,17 @@
   .hdel{grid-area:del;justify-self:end;width:28px;height:28px;border-radius:8px;background:#F8F1E8;color:var(--muted);font-size:12.5px;display:grid;place-items:center}
   .hmemo{grid-area:memo;height:34px;font-size:13.5px;border-radius:9px;border:1px dashed #E8DACA;background:#FDFAF6;padding:0 9px;font-weight:600}
   .hmemo:focus{outline:none;border-color:var(--tint-3);background:#fff}
+  .hmemo.has{border-style:solid;border-color:#E2CDB2;background:#FFFDFB;color:#5A381E}
+  /* 목욕 코멘트 빠른 입력 */
+  .bathcmt{margin-top:10px}
+  .bcinput{width:100%;height:40px;border-radius:11px;border:1.5px dashed #E8DACA;background:#FDFAF6;padding:0 10px;
+    font-size:13.5px;font-weight:700;letter-spacing:-.01em}
+  .bcinput:focus{outline:none;border-color:var(--tint-3);background:#fff;border-style:solid}
+  .bcinput::placeholder{color:var(--muted-2);font-weight:600}
+  .bcquick{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+  .bcquick button{height:28px;padding:0 8px;border-radius:8px;background:#fff;border:1px solid #E7D8C5;font-size:11px;
+    font-weight:800;color:var(--muted);letter-spacing:-.02em}
+  .bcquick button:active{background:#F6EBDC}
 
   .vseg{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px}
   .vchip{height:31px;padding:0 9px;border-radius:9px;border:1.5px solid var(--line);background:#fff;font-size:12.5px;
@@ -1144,7 +1155,7 @@
   <header>
     <div class="topline">
       <div class="brand"><img class="blogo" src="puppies-icon.png" alt="퍼피댕 로고" width="30" height="30">
-        <span class="brandtext"><span class="brandname">퍼피댕 · 디데이펫</span><span class="brandver">퍼피댕 V1.9</span></span></div>
+        <span class="brandtext"><span class="brandname">퍼피댕 · 디데이펫</span><span class="brandver">퍼피댕 V2.0</span></span></div>
       <div class="topact">
         <button class="wpill" data-act="openWorker" aria-label="작업자 선택">👤 <b id="workerName">—</b><span class="chev">▾</span></button>
         <button class="gbtn adminonly" data-act="openSettings" aria-label="설정">⚙️</button>
@@ -1350,6 +1361,8 @@
   var SCHED_DEL_TTL = 90 * 24 * 60 * 60 * 1000;   // 삭제 표식 보관 기간
   var ACTIVITY_MAX = 1000;             // 안전상한(2주 치가 잘리지 않게 넉넉히)
   var HEALTH_PHOTO_MAX = 6;            // 아이별 상태 사진 최대 장수
+  var BATH_PHOTO_MAX = 6;              // 아이별 목욕 · 약욕 사진 최대 장수 (상태 사진과 같은 6장)
+  var BATH_MEMO_QUICK = ['피부 각질 줄어듦','발바닥 붉음','냄새 줄어듦','뽀송뽀송'];   // 목욕 코멘트 빠른 입력
   var ACTIVITY_TTL = 14 * 24 * 60 * 60 * 1000;   // 2주(14일) 지난 활동은 자동 정리
   var ADOPT_TTL = 14 * 24 * 60 * 60 * 1000;     // 분양완료 후 14일(2주) 지나면 장은 그대로 두고 내용만 비움
 
@@ -1733,6 +1746,15 @@
           addedBy: String(ph.addedBy == null ? '' : ph.addedBy).slice(0, 12),
           label: String(ph.label == null ? '' : ph.label).slice(0, 20) };
       }) : [],
+      /* 🛁 목욕 · 약욕 후 사진 (상태 사진과 같은 방식 · 최신이 앞) */
+      bathPhotos: Array.isArray(p.bathPhotos) ? p.bathPhotos.filter(function(ph){
+        return ph && typeof ph.dataUrl === 'string' && ph.dataUrl;
+      }).slice(0, BATH_PHOTO_MAX).map(function(ph){
+        return { id: ph.id || uid(), dataUrl: ph.dataUrl,
+          addedAt: ph.addedAt ? String(ph.addedAt) : '',
+          addedBy: String(ph.addedBy == null ? '' : ph.addedBy).slice(0, 12),
+          label: String(ph.label == null ? '' : ph.label).slice(0, 20) };
+      }) : [],
       /* 💊 투약 · 주사 기록 — 누를 때마다 1회씩 쌓이는 기록 (최근 MED_MAX 건 보관) */
       medLogs: (function(){
         var src = Array.isArray(p.medLogs) ? p.medLogs : [];
@@ -1922,7 +1944,7 @@
   var state = loadState();
   var ui = {
     branch:'전체', status:'전체', q:'', sort:'cage', special:'', prevSort:'cage', bathKind:'목욕',
-    detailId:null, hpNote:null, hpNoteId:'',
+    detailId:null, hpNote:null, hpNoteId:'', bathNote:null, bathMemo:'', photoKind:'health',
     vacType: VAC_PRESETS[0], formEdit:false, formId:null, sheet:null
   };
   var draft = null;
@@ -2992,6 +3014,8 @@
     if(a === '분양완료') return { kind:'adopt', pts:10 };
     if(a === '청소 인증') return { kind:'clean', pts:2 };   // 🧹 청소 인증은 +2점
     if(a === '상태 사진') return { kind:'photo', pts:1 };
+    if(a === '목욕 사진') return { kind:'photo', pts:1 };
+    if(a === '목욕 사진 코멘트' || a === '목욕 코멘트') return { kind:'note', pts:1 };
     if(a === '정보' || a === '메모' || a === '노트') return { kind:'note', pts:1 };
     if(/체크|해제|회복/.test(a)) return { kind:'note', pts:1 };
     return null;
@@ -3316,7 +3340,7 @@
       ['🛁 목욕 · 약욕', '완료 기록', '+5점'],
       ['💉 접종 · 💊 투약', '접종 완료 · 급여', '+3점'],
       ['🧹 청소 인증', '매장 청소 올리기', '+2점'],
-      ['🩺 📸 📝', '특이사항 · 상태 사진 · 메모·정보 수정', '+1점']
+      ['🩺 📸 📝', '특이사항 · 사진(상태·목욕) · 메모·정보 수정', '+1점']
     ];
     return '<div class="gpts"><b>기록하면 쌓이는 점수</b>' + rows.map(function(r){
       return '<div class="gptrow"><span>' + r[0] + ' <em>' + r[1] + '</em></span><b>' + r[2] + '</b></div>';
@@ -4252,7 +4276,7 @@
         if(!b || !isValidDate(b.date)) return;
         var d = String(b.date).slice(0, 10);
         if(d.indexOf(pre) !== 0) return;
-        out.push({ dog:p, date:d, kind:bathKind(b), by:String(b.by || ''), bid:b.id });
+        out.push({ dog:p, date:d, kind:bathKind(b), by:String(b.by || ''), memo:String(b.memo || ''), bid:b.id });
       });
     });
     return out;
@@ -4488,7 +4512,7 @@
     listEl.innerHTML = dayMap.list.map(function(e){
       var p = e.dog;
       var yak = e.kind === '약욕';
-      var sub = [p.breed || '품종 미정', p.sex === 'female' ? '여아' : '남아'].join(' · ');
+      var sub = [p.breed || '품종 미정', p.sex === 'female' ? '여아' : '남아'].concat(e.memo ? ['💬 ' + e.memo] : []).join(' · ');
       return '<button type="button" class="calrow" data-act="calOpen" data-dog="' + p.id + '">' +
         '<span class="cbdg ' + (yak ? 'yak' : '') + '">' + (yak ? '🧴' : '🛁') + ' ' + e.kind + '</span>' +
         '<span class="crmain"><b>' + esc((p.cage ? p.cage + ' ' : '') + (p.name || '이름 없음')) + '</b><span>' + esc(sub) + '</span></span>' +
@@ -5779,6 +5803,7 @@
     img.src = ph.dataUrl;
     img.alt = (String(ph.label || '').trim() || '상태 사진') + ' 크게 보기';
     ui.hpNoteId = id;
+    ui.photoKind = 'health';
     var note = $('#photoViewNote');
     if(note){
       var cmt = String(ph.label || '').trim();
@@ -5808,6 +5833,7 @@
     var img = $('#photoViewImg');
     if(img) img.removeAttribute('src');
     ui.hpNoteId = '';
+    ui.photoKind = 'health';
     var nb = $('#photoViewNoteBtn');
     if(nb) nb.hidden = false;
     syncBodyLock();
@@ -5824,6 +5850,229 @@
     renderAll();
     refreshDetail();
     toast('상태 사진을 지웠어요');
+  }
+
+  /* ================= 🛁 목욕 · 약욕 후 사진 (상태 사진과 같은 방식) ================= */
+  /* 오늘 목욕을 기록할 때 같이 적는 한 줄 코멘트 — 피부·발바닥·냄새 */
+  function bathQuickMemoHTML(){
+    var v = String(ui.bathMemo || '');
+    return '<div class="bathcmt">' +
+      '<label class="mini" for="bathQuickMemo">💬 목욕 코멘트 (선택) — 피부·발바닥·냄새</label>' +
+      '<input type="text" class="bcinput" id="bathQuickMemo" maxlength="40" autocomplete="off" value="' + esc(v) + '" placeholder="예) 피부 각질 줄어듦, 뽀송함">' +
+      '<div class="bcquick">' + BATH_MEMO_QUICK.map(function(q){
+        return '<button type="button" data-act="bathMemoQuick" data-v="' + esc(q) + '">' + esc(q) + '</button>';
+      }).join('') + '</div>' +
+    '</div>';
+  }
+  /* 입력란에 적힌 코멘트를 가져가고 입력란을 비워요 (다음 기록에는 빈칸으로) */
+  function bathTakeMemo(){
+    var v = String(ui.bathMemo || '').replace(/\s+/g, ' ').trim().slice(0, 40);
+    ui.bathMemo = '';
+    return v;
+  }
+  function bathMemoQuick(v){
+    ui.bathMemo = String(v || '').slice(0, 40);
+    var inp = $('#bathQuickMemo');
+    if(inp){
+      inp.value = ui.bathMemo;
+      try { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); } catch(e){}
+    }
+  }
+  function bathPhotosHTML(p){
+    var list = (p && p.bathPhotos) || [];
+    var grid = list.length
+      ? '<div class="hpgrid">' + list.map(function(ph){
+          var cap = '';
+          var d = ph.addedAt ? new Date(ph.addedAt) : null;
+          if(d && !isNaN(d.getTime())) cap = (d.getMonth() + 1) + '/' + d.getDate();
+          var cmt = String(ph.label || '').trim();
+          return '<div class="hpitem">' +
+            '<button type="button" class="hpopen" data-act="bathPhotoOpen" data-id="' + esc(ph.id) + '" aria-label="목욕 사진 크게 보기">' +
+              '<img src="' + ph.dataUrl + '" alt="' + esc(cmt || '목욕 사진') + '" loading="lazy">' +
+            '</button>' +
+            '<span class="hpcap">' + esc(cap || '날짜 미상') + (ph.addedBy ? ' · ' + esc(ph.addedBy) : '') + '</span>' +
+            '<button type="button" class="hpnote' + (cmt ? ' has' : '') + '" data-act="bathPhotoNote" data-id="' + esc(ph.id) + '" aria-label="목욕 사진 코멘트 ' + (cmt ? '수정' : '입력') + '">' +
+              '<span class="hpnx">' + (cmt ? '💬 ' + esc(cmt) : '＋ 코멘트') + '</span><span class="hpnp" aria-hidden="true">✏️</span>' +
+            '</button>' +
+            '<button type="button" class="hpdel" data-act="bathPhotoDel" data-id="' + esc(ph.id) + '" aria-label="목욕 사진 삭제">✕</button>' +
+          '</div>';
+        }).join('') + '</div>'
+      : '<p class="hpempty">아직 올린 사진이 없어요 — 목욕 후 피부·발바닥·털 상태를 사진으로 남겨두면 다음 목욕 때 비교하기 쉬워요.</p>';
+    return '<div class="hphoto">' +
+      '<div class="hphead"><b>📷 목욕 사진</b><span>최대 ' + BATH_PHOTO_MAX + '장</span></div>' +
+      grid +
+      bathPhotoNoteEditorHTML(p) +
+      '<input type="file" id="fileBathPhoto" accept="image/*" multiple hidden>' +
+      '<button type="button" class="btn sm wide" data-act="bathPhotoPick">📷 목욕 사진 올리기</button>' +
+      '<p class="hint" style="margin:7px 0 0;text-align:center">분양완료하면 사진도 보관함으로 옮겨지고, 2주 뒤 자동으로 지워져요</p>' +
+      '</div>';
+  }
+  /* 목욕 사진 한 장에 한 줄 코멘트 — 예) “11/26 피부 각질 줄어듦, 뽀송함” */
+  function bathPhotoNoteEditorHTML(p){
+    if(!ui.bathNote) return '';
+    var ph = ((p && p.bathPhotos) || []).filter(function(x){ return x.id === ui.bathNote; })[0];
+    if(!ph) return '';
+    var cmt = String(ph.label || '').trim();
+    var d = ph.addedAt ? new Date(ph.addedAt) : null;
+    var cap = (d && !isNaN(d.getTime())) ? (d.getMonth() + 1) + '/' + d.getDate() : '';
+    return '<div class="hpne">' +
+      '<div class="hpnhead">' +
+        '<img src="' + ph.dataUrl + '" alt="">' +
+        '<div><b>💬 목욕 사진 코멘트</b><span>' + [cap, ph.addedBy].filter(Boolean).map(esc).join(' · ') + ' 사진</span></div>' +
+      '</div>' +
+      '<div class="hpnrow">' +
+        '<input class="hpnoteinput" id="bathNoteInput" type="text" maxlength="40" autocomplete="off" value="' + esc(cmt) + '" placeholder="예: 11/26 피부 각질 줄어듦, 뽀송함">' +
+        '<button type="button" class="hpnb save" data-act="bathPhotoNoteSave">저장</button>' +
+        '<button type="button" class="hpnb" data-act="bathPhotoNoteCancel" aria-label="코멘트 입력 취소">✕</button>' +
+      '</div>' +
+      '<div class="hpnquick">' + BATH_MEMO_QUICK.map(function(q){
+        return '<button type="button" data-act="bathPhotoNoteQuick" data-v="' + esc(q) + '">' + esc(q) + '</button>';
+      }).join('') + '</div>' +
+    '</div>';
+  }
+  function bathPhotoNoteStart(id){
+    var p = get(ui.detailId);
+    if(!p || !id) return;
+    if(!(p.bathPhotos || []).some(function(x){ return x.id === id; })) return;
+    ui.bathNote = id;
+    refreshDetail();
+    setTimeout(focusBathPhotoNote, 70);
+  }
+  function focusBathPhotoNote(){
+    var el = $('#bathNoteInput');
+    if(!el) return;
+    try {
+      el.scrollIntoView({ block:'center', behavior:'smooth' });
+      el.focus({ preventScroll:true });
+      el.setSelectionRange(el.value.length, el.value.length);
+    } catch(e){ try { el.focus(); } catch(e2){} }
+  }
+  function bathPhotoNoteCancel(){
+    ui.bathNote = null;
+    refreshDetail();
+  }
+  function bathPhotoNoteSave(id, value){
+    var p = get(ui.detailId);
+    if(!p) return;
+    id = id || ui.bathNote;
+    var ph = (p.bathPhotos || []).filter(function(x){ return x.id === id; })[0];
+    if(!ph) return;
+    var inp = $('#bathNoteInput');
+    var v = (value != null) ? String(value) : (inp ? String(inp.value || '') : '');
+    v = v.replace(/\s+/g, ' ').trim().slice(0, 40);
+    var before = String(ph.label || '').trim();
+    ph.label = v;
+    ph.noteBy = String(state.worker || '').slice(0, 12);
+    ph.noteAt = new Date().toISOString();
+    ui.bathNote = null;
+    touchPuppy(p);
+    save();
+    if(v && v !== before) logActivity(p, '목욕 사진 코멘트', '남겼습니다', v);
+    renderAll();
+    refreshDetail();
+    toast(v ? '목욕 사진 코멘트를 저장했어요 · ' + v : '목욕 사진 코멘트를 지웠어요');
+  }
+  function addBathPhotos(files){
+    var p = get(ui.detailId);
+    if(!p) return;
+    var list = Array.prototype.slice.call(files || []).filter(function(f){ return f && /^image\//.test(String(f.type || '')); });
+    if(!list.length){ toast('이미지 파일만 올릴 수 있어요.'); return; }
+    var room = BATH_PHOTO_MAX - ((p.bathPhotos || []).length);
+    if(room <= 0){ toast('목욕 사진은 최대 ' + BATH_PHOTO_MAX + '장까지예요. 하나 지우고 올려주세요.'); return; }
+    var take = list.slice(0, room);
+    if(list.length > room) toast('목욕 사진은 ' + BATH_PHOTO_MAX + '장까지라 ' + room + '장만 올릴게요');
+    var done = 0, added = 0;
+    function finish(){
+      if(done < take.length) return;
+      if(!added) return;
+      touchPuppy(p);
+      save();
+      logActivity(p, '목욕 사진', added > 1 ? added + '장 추가했습니다' : '추가했습니다');
+      if(added === 1 && (p.bathPhotos || [])[0]) ui.bathNote = p.bathPhotos[0].id;
+      renderAll();
+      refreshDetail();
+      toast('목욕 사진 ' + added + '장을 올렸어요' + (added === 1 ? ' · 코멘트를 남겨보세요' : ''));
+      if(ui.bathNote) setTimeout(focusBathPhotoNote, 120);
+    }
+    take.forEach(function(f){
+      compressImage(f, function(dataURL){
+        p.bathPhotos = [{ id: uid(), dataUrl: dataURL, addedAt: new Date().toISOString(),
+          addedBy: String(state.worker || '').slice(0, 12), label: '' }].concat(p.bathPhotos || []).slice(0, BATH_PHOTO_MAX);
+        added++; done++;
+        finish();
+      });
+    });
+  }
+  function openBathPhoto(id){
+    var p = get(ui.detailId);
+    if(!p || !id) return;
+    var ph = (p.bathPhotos || []).filter(function(x){ return x.id === id; })[0];
+    if(!ph) return;
+    var box = $('#photoView'), img = $('#photoViewImg');
+    if(!box || !img) return;
+    img.src = ph.dataUrl;
+    img.alt = (String(ph.label || '').trim() || '목욕 사진') + ' 크게 보기';
+    ui.hpNoteId = id;
+    ui.photoKind = 'bath';
+    var note = $('#photoViewNote');
+    if(note){
+      var cmt = String(ph.label || '').trim();
+      var d = ph.addedAt ? new Date(ph.addedAt) : null;
+      var cap = (d && !isNaN(d.getTime())) ? (d.getMonth() + 1) + '/' + d.getDate() : '';
+      note.textContent = cmt || ((cap ? cap + ' · ' : '') + '아직 코멘트가 없어요');
+      note.className = 'pvnote' + (cmt ? '' : ' none');
+    }
+    var nb = $('#photoViewNoteBtn');
+    if(nb){
+      nb.hidden = !!p.isArchive;      // 보관함 기록은 그대로 보기만 해요
+      nb.textContent = String(ph.label || '').trim() ? '✏️ 코멘트 수정' : '✏️ 코멘트 달기';
+    }
+    box.hidden = false;
+    document.body.classList.add('lock');
+  }
+  /* 라이트박스에서 바로 목욕 사진 코멘트 입력으로 */
+  function bathPhotoNoteFromView(){
+    var id = ui.hpNoteId;
+    closePhotoView();
+    if(!id) return;
+    ui.bathNote = id;
+    refreshDetail();
+    setTimeout(focusBathPhotoNote, 120);
+  }
+  function deleteBathPhoto(id){
+    var p = get(ui.detailId);
+    if(!p || !id) return;
+    if(!(p.bathPhotos || []).some(function(x){ return x.id === id; })) return;
+    if(!window.confirm('이 목욕 사진을 지울까요?\n지우면 되돌릴 수 없어요.')) return;
+    p.bathPhotos = (p.bathPhotos || []).filter(function(x){ return x.id !== id; });
+    if(ui.bathNote === id) ui.bathNote = null;
+    touchPuppy(p);
+    save();
+    logActivity(p, '목욕 사진', '삭제했습니다');
+    renderAll();
+    refreshDetail();
+    toast('목욕 사진을 지웠어요');
+  }
+  /* 분양완료 보관함 기록 — 보기만 하는 사진 줄 */
+  function bathPhotoStripHTML(p){
+    var list = (p && p.bathPhotos) || [];
+    if(!list.length) return '';
+    return '<div class="hphoto" style="margin-top:10px">' +
+      '<div class="hphead"><b>📷 목욕 사진</b><span>' + list.length + '장</span></div>' +
+      '<div class="hpgrid">' + list.map(function(ph){
+        var cap = '';
+        var d = ph.addedAt ? new Date(ph.addedAt) : null;
+        if(d && !isNaN(d.getTime())) cap = (d.getMonth() + 1) + '/' + d.getDate();
+        var cmt = String(ph.label || '').trim();
+        return '<div class="hpitem">' +
+          '<button type="button" class="hpopen" data-act="bathPhotoOpen" data-id="' + esc(ph.id) + '" aria-label="목욕 사진 크게 보기">' +
+            '<img src="' + ph.dataUrl + '" alt="' + esc(cmt || '목욕 사진') + '" loading="lazy">' +
+          '</button>' +
+          '<span class="hpcap">' + esc(cap || '날짜 미상') + (ph.addedBy ? ' · ' + esc(ph.addedBy) : '') + '</span>' +
+          (cmt ? '<span class="hpcap" style="color:#5A381E">💬 ' + esc(cmt) + '</span>' : '') +
+        '</div>';
+      }).join('') + '</div>' +
+      '</div>';
   }
 
   /* ================= 💊 투약 · 주사 ================= */
@@ -6000,12 +6249,14 @@
 
     var bathHistory = (p.baths || []).slice().sort(function(a,b){ return String(b.date).localeCompare(String(a.date)); }).map(function(b){
       var bk = bathKind(b);
+      var bm = String(b.memo || '').trim();
       return '<li class="hrow"><span class="htype">' +
         '<button type="button" class="hkind' + (bk === '약욕' ? ' yak' : '') + '" data-act="bathKind" data-id="' + b.id + '" aria-label="목욕 종류 바꾸기">' + (bk === '약욕' ? '🧴 ' : '🛁 ') + bk + '</button>' +
         '<em>' + agoText(b.date) + '</em>' +
         (b.by ? '<span class="hby">' + esc(b.by) + '</span>' : '') + '</span>' +
         '<input type="date" class="hdate" value="' + b.date + '" data-act="bathDate" data-id="' + b.id + '" aria-label="목욕 날짜">' +
-        '<button class="hdel" data-act="bathDel" data-id="' + b.id + '" aria-label="목욕 기록 삭제">✕</button></li>';
+        '<button class="hdel" data-act="bathDel" data-id="' + b.id + '" aria-label="목욕 기록 삭제">✕</button>' +
+        '<input type="text" class="hmemo' + (bm ? ' has' : '') + '" maxlength="40" value="' + esc(bm) + '" placeholder="＋ 코멘트 — 피부·발바닥·냄새 (선택)" data-act="bathMemo" data-id="' + b.id + '" aria-label="목욕 코멘트"></li>';
     }).join('');
 
     var vacHistory = (p.vaccines || []).slice().sort(function(a,b){ return String(b.date).localeCompare(String(a.date)); }).map(function(v){
@@ -6067,8 +6318,10 @@
       '<section class="scard"><div class="shead"><h3>🛁 목욕 · 약욕 기록</h3><span class="sbadge ' + bl.cls + '">' + bl.long + '</span></div>' +
         '<div class="bathnow"><div class="bathlast">마지막 ' + (bl.kind || '목욕') +
           '<b>' + (last ? fmtMD(last.date) : '기록 없음') + '</b>' +
-          (last ? '<span class="sub">' + agoText(last.date) + (last.by ? ' · ' + esc(last.by) : '') + '</span>' : '<span class="sub">아래 버튼으로 오늘 목욕을 기록해 보세요</span>') +
+          (last ? '<span class="sub">' + agoText(last.date) + (last.by ? ' · ' + esc(last.by) : '') +
+            (last.memo ? ' · 💬 ' + esc(last.memo) : '') + '</span>' : '<span class="sub">아래 버튼으로 오늘 목욕을 기록해 보세요</span>') +
         '</div></div>' +
+        bathQuickMemoHTML() +
         '<div class="bathacts">' +
           '<button class="btn primary sm" data-act="bathToday" data-kind="목욕">🛁 목욕 완료</button>' +
           '<button class="btn sm yak" data-act="bathToday" data-kind="약욕">🧴 약욕 완료</button>' +
@@ -6082,6 +6335,7 @@
           '<button class="btn sm" data-act="bathAdd">이 날짜로 기록</button></div>' +
           '<div class="hint" style="margin-top:6px">기록은 지금 작업자 <b>' + esc(state.worker) + '</b> 이름으로 남아요 · 기록의 종류 배지를 누르면 목욕↔약욕을 바꿀 수 있어요</div></div>' +
         '<ul class="hlist">' + bathHistory + '</ul>' +
+        bathPhotosHTML(p) +
       '</section>' +
 
       '<section class="scard"><div class="shead"><h3>💉 접종 · 구충</h3>' +
@@ -6165,7 +6419,7 @@
         '<div class="inforows" style="display:block">' + rows + '</div></section>' +
       (p.memo ? '<section class="scard"><div class="shead"><h3>📝 메모</h3></div><p class="sp" style="white-space:pre-wrap">' + esc(p.memo) + '</p></section>' : '') +
       '<section class="scard"><div class="shead"><h3>🛁 목욕 · 약욕 기록</h3><span class="sbadge calm">' + ((p.baths || []).length) + '건</span></div>' +
-        (baths || '<p class="sp small">기록 없음</p>') + '</section>' +
+        (baths || '<p class="sp small">기록 없음</p>') + bathPhotoStripHTML(p) + '</section>' +
       '<section class="scard"><div class="shead"><h3>💊 투약 · 주사</h3><span class="sbadge calm">' + ((p.medLogs || []).length) + '건</span></div>' +
         (meds || '<p class="sp small">기록 없음</p>') + '</section>' +
       '<section class="scard"><div class="shead"><h3>💉 접종 · 구충</h3><span class="sbadge calm">' + ((p.vaccines || []).length) + '건</span></div>' +
@@ -6193,6 +6447,8 @@
     if(get(id).isArchive){
       ui.detailId = id;
       ui.hpNote = null;
+      ui.bathNote = null;
+      ui.bathMemo = '';
       ui.sheet = 'detail';
       setSheet(archiveDetailHTML(id));
       openSheet();
@@ -6200,6 +6456,8 @@
     }
     ui.detailId = id;
     ui.hpNote = null;
+    ui.bathNote = null;
+    ui.bathMemo = '';
     ui.vacType = VAC_PRESETS[0];
     ui.sheet = 'detail';
     /* 예전 기록 보정 — 3차까지 맞았으면 자동 D-day 를 비우고, 아니면 마지막 접종일 + 2주로 채워요 */
@@ -6408,10 +6666,11 @@
       if(!p) return;
       beforeFlags = (p.healthFlags || []).slice();
       beforeMemo = String(p.memo || '');
-      var keep = { id:p.id, baths:p.baths, vaccines:p.vaccines, nextVaccine:p.nextVaccine, createdAt:p.createdAt, healthPhotos:p.healthPhotos, medLogs:p.medLogs };
+      var keep = { id:p.id, baths:p.baths, vaccines:p.vaccines, nextVaccine:p.nextVaccine, createdAt:p.createdAt, healthPhotos:p.healthPhotos, bathPhotos:p.bathPhotos, medLogs:p.medLogs };
       var merged = norm(Object.assign({}, p, d, { updatedAt: now, updatedBy: state.worker }));
       merged.baths = keep.baths;
       merged.healthPhotos = keep.healthPhotos;
+      merged.bathPhotos = keep.bathPhotos;
       merged.medLogs = keep.medLogs;
       merged.vaccines = Array.isArray(d.vaccines) ? d.vaccines : keep.vaccines;
       merged.vaccineDates = (d.vaccineDates && typeof d.vaccineDates === 'object') ? d.vaccineDates : (p.vaccineDates || {});
@@ -6649,7 +6908,7 @@
         '<div class="settingrow"><div><b>전체 비우기</b><span>모든 노트를 지워요 · 되돌릴 수 없어요</span></div>' +
           '<button class="btn sm danger" data-act="wipeAll">비우기</button></div>' +
       '</section>' +
-      '<div class="sfoot"><img src="puppies-logo.png" alt="퍼피댕" style="width:132px;display:block;margin:0 auto 7px;border-radius:7px">퍼피댕 V1.9 · 디데이펫 관리 노트</div>' +
+      '<div class="sfoot"><img src="puppies-logo.png" alt="퍼피댕" style="width:132px;display:block;margin:0 auto 7px;border-radius:7px">퍼피댕 V2.0 · 디데이펫 관리 노트</div>' +
       '</div>';
   }
 
@@ -6723,14 +6982,15 @@
       toast('오늘 ' + kind + '은 이미 기록되어 있어요');
       return;
     }
+    var memo = bathTakeMemo();
     p.baths = p.baths || [];
-    p.baths.push({ id: uid(), date: t, kind: kind, by: state.worker, memo:'' });
+    p.baths.push({ id: uid(), date: t, kind: kind, by: state.worker, memo: memo });
     touchPuppy(p);
     save();
-    logActivity(p, kind + '완료', '입력했습니다');
+    logActivity(p, kind + '완료', '입력했습니다', memo);
     renderAll();
     if(ui.detailId === id) refreshDetail();
-    toast(p.name + ' ' + kind + ' 완료 · ' + state.worker);
+    toast(p.name + ' ' + kind + ' 완료 · ' + state.worker + (memo ? ' · 💬 ' + memo : ''));
   }
 
   /* 💊 투약 · 주사 1회 기록 — 누를 때마다 지금 시각·지금 작업자 이름으로 쌓여요 */
@@ -6808,6 +7068,7 @@
     p.healthFlags = [];
     p.healthDates = {};
     p.healthPhotos = [];
+    p.bathPhotos = [];
     p.medLogs = [];
     p.updatedAt = new Date().toISOString();
   }
@@ -6817,7 +7078,8 @@
     if(!p) return true;
     return String(p.name || '미정') === '미정' && !p.photoProfile && !p.regNo && !p.adopter &&
       !(p.baths && p.baths.length) && !(p.vaccines && p.vaccines.length) &&
-      !(p.healthFlags && p.healthFlags.length) && !(p.medLogs && p.medLogs.length) && !String(p.memo || '').trim();
+      !(p.healthFlags && p.healthFlags.length) && !(p.medLogs && p.medLogs.length) && !String(p.memo || '').trim() &&
+      !(p.healthPhotos && p.healthPhotos.length) && !(p.bathPhotos && p.bathPhotos.length);
   }
   /* 기존 기록 전체를 보관함(아카이브) 기록으로 복사 — 원래 장 번호도 그대로 갖고 가요 */
   function makeArchive(src, adoptedAt){
@@ -7434,7 +7696,37 @@
         })();
         break;
       case 'healthPhotoNoteEdit':
-        healthPhotoNoteFromView();
+        if(ui.photoKind === 'bath') bathPhotoNoteFromView();
+        else healthPhotoNoteFromView();
+        break;
+      case 'bathPhotoPick':
+        (function(){ var inp = $('#fileBathPhoto'); if(inp) inp.click(); })();
+        break;
+      case 'bathPhotoOpen':
+        openBathPhoto(el.getAttribute('data-id'));
+        break;
+      case 'bathPhotoDel':
+        deleteBathPhoto(el.getAttribute('data-id'));
+        break;
+      case 'bathPhotoNote':
+        bathPhotoNoteStart(el.getAttribute('data-id'));
+        break;
+      case 'bathPhotoNoteSave':
+        bathPhotoNoteSave(el.getAttribute('data-id'));
+        break;
+      case 'bathPhotoNoteCancel':
+        bathPhotoNoteCancel();
+        break;
+      case 'bathPhotoNoteQuick':
+        (function(){
+          var inp = $('#bathNoteInput');
+          if(!inp) return;
+          inp.value = el.getAttribute('data-v') || '';
+          try { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); } catch(e){}
+        })();
+        break;
+      case 'bathMemoQuick':
+        bathMemoQuick(el.getAttribute('data-v'));
         break;
       case 'closePhotoView':
         closePhotoView();
@@ -7532,10 +7824,11 @@
           if(!isValidDate(dt)){ toast('날짜를 골라주세요'); return; }
           p.baths = p.baths || [];
           if(p.baths.some(function(b){ return b.date === dt && bathKind(b) === kind; })){ toast('그 날짜는 이미 ' + kind + ' 기록이 있어요'); return; }
-          p.baths.push({ id: uid(), date: dt, kind: kind, by: state.worker, memo:'' });
+          var bmemo = bathTakeMemo();
+          p.baths.push({ id: uid(), date: dt, kind: kind, by: state.worker, memo: bmemo });
           touchPuppy(p);
           save();
-          logActivity(p, (dt === todayStr() ? '' : fmtMD(dt) + ' ') + kind + '완료', '입력했습니다');
+          logActivity(p, (dt === todayStr() ? '' : fmtMD(dt) + ' ') + kind + '완료', '입력했습니다', bmemo);
           renderAll(); refreshDetail();
           toast(fmtMD(dt) + ' ' + kind + ' 기록 · ' + state.worker);
         })();
@@ -7865,6 +8158,10 @@
       if(bh) bh.innerHTML = ag ? '<b>' + ag.main + '</b> · ' + ag.days + '일' : '생년월일을 고르면 자동 계산돼요';
       return;
     }
+    if(t.id === 'bathQuickMemo'){
+      ui.bathMemo = String(t.value || '').slice(0, 40);
+      return;
+    }
     if(t.id === 'memoBox'){
       var p = get(ui.detailId);
       if(!p) return;
@@ -7900,6 +8197,11 @@
     }
     if(t.id === 'fileHealthPhoto'){
       if(t.files && t.files.length) addHealthPhotos(t.files);
+      t.value = '';
+      return;
+    }
+    if(t.id === 'fileBathPhoto'){
+      if(t.files && t.files.length) addBathPhotos(t.files);
       t.value = '';
       return;
     }
@@ -7982,6 +8284,19 @@
         touchPuppy(p);
         save();
         toast('메모를 저장했어요');
+      }
+      return;
+    }
+    if(actName === 'bathMemo'){
+      var b2 = findBath(p, t.getAttribute('data-id'));
+      if(b2){
+        var bv = String(t.value || '').replace(/\s+/g, ' ').trim().slice(0, 40);
+        var bPrev = String(b2.memo || '').trim();
+        b2.memo = bv;
+        touchPuppy(p);
+        save();
+        if(bv && bv !== bPrev) logActivity(p, '목욕 코멘트', '남겼습니다', bv);
+        toast(bv ? '목욕 코멘트를 저장했어요 · ' + bv : '목욕 코멘트를 지웠어요');
       }
       return;
     }
