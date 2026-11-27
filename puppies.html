@@ -159,6 +159,10 @@
   .hpitem{position:relative;border-radius:12px;overflow:hidden;background:#F7F0E7;border:1.5px solid var(--line)}
   .hpopen{display:block;width:100%;padding:0;background:none;line-height:0}
   .hpopen img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
+  /* V2.7 — 같은 날 사진을 한 칸에 묶어요: 대표 썸네일 + '3장' 배지 */
+  .hpopen .hpthumb{display:block;position:relative;line-height:0}
+  .hpnum{position:absolute;right:5px;bottom:5px;padding:2px 7px;border-radius:9px;background:rgba(46,33,22,.72);
+    color:#fff;font-size:10.5px;font-weight:800;letter-spacing:-.02em;line-height:1.35}
   .hpdel{position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;background:rgba(46,33,22,.62);
     color:#fff;font-size:12px;font-weight:800;display:grid;place-items:center}
   .hpcap{display:block;font-size:10.5px;font-weight:700;color:var(--muted-2);padding:4px 6px 2px;letter-spacing:-.02em;
@@ -198,6 +202,10 @@
   .pvnote.none{color:rgba(255,255,255,.72);font-weight:700}
   .pvbtn{height:38px;padding:0 15px;border-radius:12px;background:#fff;color:#5A381E;font-size:13px;font-weight:800;
     box-shadow:0 4px 14px rgba(0,0,0,.24)}
+  /* V2.7 — 크게 보기 안에서 지금 사진 / 그날 사진 삭제 */
+  .pvacts{display:flex;gap:7px;flex-wrap:wrap;justify-content:center}
+  .pvacts[hidden]{display:none}
+  .pvbtn.del{background:rgba(255,255,255,.92);color:#A0381C;font-size:12.5px;height:36px;padding:0 13px}
   /* 여러 장 넘겨 보기 (V2.2) */
   .pvnav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;
     background:rgba(255,255,255,.18);color:#fff;font-size:26px;font-weight:700;line-height:1;display:grid;place-items:center}
@@ -1244,7 +1252,7 @@
   <header>
     <div class="topline">
       <div class="brand"><img class="blogo" src="puppies-icon.png" alt="퍼피댕 로고" width="30" height="30">
-        <span class="brandtext"><span class="brandname">퍼피댕 · 디데이펫</span><span class="brandver">퍼피댕 V2.6</span></span></div>
+        <span class="brandtext"><span class="brandname">퍼피댕 · 디데이펫</span><span class="brandver">퍼피댕 V2.7</span></span></div>
       <div class="topact">
         <button class="wpill" data-act="openWorker" aria-label="작업자 선택">👤 <b id="workerName">—</b><span class="chev">▾</span></button>
         <button class="gbtn adminonly" data-act="openSettings" aria-label="설정">⚙️</button>
@@ -1395,6 +1403,7 @@
     <span class="pvcount" id="pvCount" hidden></span>
     <div class="pvnote" id="photoViewNote"></div>
     <button type="button" class="pvbtn" id="photoViewNoteBtn" data-act="healthPhotoNoteEdit">✏️ 코멘트 달기</button>
+    <div class="pvacts" id="pvActs" hidden></div>
   </div>
   <button type="button" class="pvclose" data-act="closePhotoView" aria-label="닫기">✕</button>
 </div>
@@ -1453,7 +1462,7 @@
   var SCHED_MAX = 400;                 // 안전상한
   var SCHED_DEL_TTL = 90 * 24 * 60 * 60 * 1000;   // 삭제 표식 보관 기간
   var ACTIVITY_MAX = 1000;             // 안전상한(2주 치가 잘리지 않게 넉넉히)
-  var HEALTH_PHOTO_MAX = 6;            // 아이별 상태 사진 최대 장수
+  var HEALTH_PHOTO_MAX = 20;           // 아이별 상태 사진 최대 장수 (V2.7 — 6장 → 20장)
   var BATH_PHOTO_MAX = 6;              // 기록 한 건에 담는 목욕 · 약욕 사진 최대 장수 (상태 사진과 같은 6장)
   var BATH_PHOTO_TOTAL = 18;           // 아이 한 마리가 들고 있는 목욕 사진 전체 상한 (넘으면 오래된 것부터 정리)
   var BATH_MEMO_QUICK = ['피부 각질 줄어듦','발바닥 붉음','냄새 줄어듦','뽀송뽀송'];   // 목욕 코멘트 빠른 입력
@@ -2051,7 +2060,7 @@
   var state = loadState();
   var ui = {
     branch:'전체', status:'전체', q:'', sort:'cage', special:'', prevSort:'cage', bathKind:'목욕',
-    detailId:null, hpNote:null, hpNoteId:'', bathDraft:null, photoKind:'health',
+    detailId:null, hpNote:null, hpNoteId:'', hpDay:'', bathDraft:null, photoKind:'health',
     vacType: VAC_PRESETS[0], formEdit:false, formId:null, sheet:null
   };
   var draft = null;
@@ -5788,33 +5797,117 @@
   }
 
   /* ================= 건강 상태 사진 (피부·귀 등) ================= */
+  /* ===== V2.7 — 같은 날짜(로컬 기준)에 올린 사진은 카드 1개로 모아요 =====
+     사진은 최신이 앞에 쌓이므로, 날짜가 처음 나온 순서대로 묶으면 최근 날짜가 위에 와요. */
+  function hpDayKey(ph){
+    var d = (ph && ph.addedAt) ? new Date(ph.addedAt) : null;
+    if(!d || isNaN(d.getTime())) return '';
+    return ymd(d);
+  }
+  function hpDayShort(key){
+    var s = String(key || '');
+    if(!s) return '날짜 미상';
+    var a = s.split('-');
+    if(a.length < 3) return s;
+    return (+a[1]) + '/' + (+a[2]);
+  }
+  function healthPhotoDays(p){
+    var out = [], seen = {};
+    ((p && p.healthPhotos) || []).forEach(function(ph){
+      if(!ph || !ph.dataUrl || !ph.id) return;
+      var k = hpDayKey(ph);
+      if(!seen[k]){ seen[k] = { key: k, items: [] }; out.push(seen[k]); }
+      seen[k].items.push(ph);
+    });
+    return out;
+  }
+  function hpDayFind(p, key){
+    var days = healthPhotoDays(p);
+    for(var i = 0; i < days.length; i++){ if(days[i].key === key) return days[i]; }
+    return null;
+  }
+  /* 그날 올린 사람 — 그날 처음 올린 사람부터, 여러 명이면 '원지원 외 1명' */
+  function hpDayBy(items){
+    var u = [], list = items || [];
+    for(var i = list.length - 1; i >= 0; i--){
+      var w = String(list[i].addedBy || '').trim();
+      if(w && u.indexOf(w) < 0) u.push(w);
+    }
+    if(!u.length) return '';
+    return u.length > 1 ? u[0] + ' 외 ' + (u.length - 1) + '명' : u[0];
+  }
   function healthPhotosHTML(p){
-    var list = (p && p.healthPhotos) || [];
-    var grid = list.length
-      ? '<div class="hpgrid">' + list.map(function(ph){
-          var cap = '';
-          var d = ph.addedAt ? new Date(ph.addedAt) : null;
-          if(d && !isNaN(d.getTime())) cap = (d.getMonth() + 1) + '/' + d.getDate();
-          var cmt = String(ph.label || '').trim();
-          return '<div class="hpitem">' +
-            '<button type="button" class="hpopen" data-act="healthPhotoOpen" data-id="' + esc(ph.id) + '" aria-label="상태 사진 크게 보기">' +
-              '<img src="' + ph.dataUrl + '" alt="' + esc(cmt || '상태 사진') + '" loading="lazy">' +
-            '</button>' +
-            '<span class="hpcap">' + esc(cap || '날짜 미상') + (ph.addedBy ? ' · ' + esc(ph.addedBy) : '') + '</span>' +
-            '<button type="button" class="hpnote' + (cmt ? ' has' : '') + '" data-act="healthPhotoNote" data-id="' + esc(ph.id) + '" aria-label="사진 코멘트 ' + (cmt ? '수정' : '입력') + '">' +
-              '<span class="hpnx">' + (cmt ? '💬 ' + esc(cmt) : '＋ 코멘트') + '</span><span class="hpnp" aria-hidden="true">✏️</span>' +
-            '</button>' +
-            '<button type="button" class="hpdel" data-act="healthPhotoDel" data-id="' + esc(ph.id) + '" aria-label="상태 사진 삭제">✕</button>' +
-          '</div>';
-        }).join('') + '</div>'
+    var days = healthPhotoDays(p);
+    var grid = days.length
+      ? '<div class="hpgrid">' + days.map(hpDayCardHTML).join('') + '</div>'
       : '<p class="hpempty">아직 올린 사진이 없어요 — 피부·귀·눈 상태를 사진으로 남겨두면 나중에 비교하기 쉬워요.</p>';
     return '<div class="hphoto">' +
-      '<div class="hphead"><b>📷 상태 사진</b><span>최대 ' + HEALTH_PHOTO_MAX + '장</span></div>' +
+      '<div class="hphead"><b>📷 상태 사진</b><span>최대 ' + HEALTH_PHOTO_MAX + '장 · 같은 날은 한 칸에 모여요</span></div>' +
       grid +
       healthPhotoNoteEditorHTML(p) +
       '<input type="file" id="fileHealthPhoto" accept="image/*" multiple hidden>' +
       '<button type="button" class="btn sm wide" data-act="healthPhotoPick">📷 상태 사진 올리기</button>' +
       '</div>';
+  }
+  /* 날짜 한 칸 — 대표 썸네일 + 장수 배지 + 날짜·올린이 / 코멘트 / ✕ */
+  function hpDayCardHTML(day){
+    var items = (day && day.items) || [];
+    var n = items.length;
+    var first = items[0] || {};
+    var dayTxt = hpDayShort(day.key);
+    var by = hpDayBy(items);
+    var cmts = items.map(function(ph){ return String(ph.label || '').trim(); }).filter(Boolean);
+    var cmt = cmts.length ? cmts[0] + (cmts.length > 1 ? ' 외 ' + (cmts.length - 1) : '') : '';
+    var noteAttr = (n === 1)
+      ? 'data-act="healthPhotoNote" data-id="' + esc(first.id) + '"'
+      : 'data-act="healthPhotoDayNote" data-day="' + esc(day.key) + '"';
+    return '<div class="hpitem' + (n > 1 ? ' hpday' : '') + '">' +
+      '<button type="button" class="hpopen" data-act="healthPhotoDayOpen" data-day="' + esc(day.key) + '" aria-label="' + esc(dayTxt + ' 상태 사진 ' + n + '장 크게 보기') + '">' +
+        '<span class="hpthumb"><img src="' + first.dataUrl + '" alt="' + esc(cmt || '상태 사진') + '" loading="lazy">' +
+          (n > 1 ? '<span class="hpnum">' + n + '장</span>' : '') + '</span>' +
+      '</button>' +
+      '<span class="hpcap">' + esc(dayTxt + (by ? ' · ' + by : '')) + '</span>' +
+      '<button type="button" class="hpnote' + (cmt ? ' has' : '') + '" ' + noteAttr + ' aria-label="' + (n > 1 ? '이 날 사진 코멘트 보기·수정' : '사진 코멘트 ' + (cmt ? '수정' : '입력')) + '">' +
+        '<span class="hpnx">' + (cmt ? '💬 ' + esc(cmt) : '＋ 코멘트') + '</span><span class="hpnp" aria-hidden="true">✏️</span>' +
+      '</button>' +
+      '<button type="button" class="hpdel" data-act="healthPhotoDayDel" data-day="' + esc(day.key) + '" aria-label="' + esc(n > 1 ? '이 날 사진 ' + n + '장 — 지울 사진 고르기' : '상태 사진 삭제') + '">✕</button>' +
+    '</div>';
+  }
+  /* 그날 코멘트 — 한 장이면 바로 입력, 여러 장이면 크게 보기에서 사진별로 */
+  function healthPhotoDayNote(key){
+    var p = get(ui.detailId);
+    if(!p) return;
+    var day = hpDayFind(p, key);
+    if(!day) return;
+    if(day.items.length === 1) return healthPhotoNoteStart(day.items[0].id);
+    var idx = 0;
+    day.items.forEach(function(ph, i){ if(String(ph.label || '').trim()) idx = i; });
+    openHealthPhotoDay(key, idx);
+  }
+  /* 그날 ✕ — 한 장이면 바로 삭제, 여러 장이면 한꺼번에 날아가지 않게 크게 보기에서 고르게 해요 */
+  function healthPhotoDayDel(key){
+    var p = get(ui.detailId);
+    if(!p) return;
+    var day = hpDayFind(p, key);
+    if(!day || !day.items.length) return;
+    if(day.items.length === 1){ deleteHealthPhoto(day.items[0].id); return; }
+    openHealthPhotoDay(key, 0);
+  }
+  function openHealthPhotoDay(key, idx){
+    var p = get(ui.detailId);
+    if(!p) return;
+    var day = hpDayFind(p, key);
+    if(!day || !day.items.length) return;
+    var items = day.items.map(function(ph){
+      var cmt = String(ph.label || '').trim();
+      return { src: ph.dataUrl, alt: '상태 사진 크게 보기',
+        note: [hpDayShort(key), ph.addedBy, cmt ? '💬 ' + cmt : ''].filter(Boolean).join(' · '),
+        hpId: ph.id, hpDay: key, hpNote: cmt };
+    });
+    ui.hpNoteId = '';
+    ui.photoKind = 'health';
+    ui.hpDay = key;
+    pvOpenList(items, idx || 0);
   }
   /* 사진 한 장에 한 줄 코멘트 — 예) “11/26 많이 좋아짐” */
   function healthPhotoNoteEditorHTML(p){
@@ -5908,7 +6001,7 @@
           addedBy: String(state.worker || '').slice(0, 12), label: '' }].concat(p.healthPhotos || []).slice(0, HEALTH_PHOTO_MAX);
         added++; done++;
         finish();
-      });
+      }, { max:640, quality:0.68, maxLen:90000 });   // V2.7 — 20장까지 담아도 가볍게 (장당 90KB 이하)
     });
   }
   /* ===== V2.2 — 사진 여러 장 넘겨 보기 ===== */
@@ -5918,6 +6011,7 @@
     var c = $('#pvCount'); if(c) c.hidden = true;
     var pv = $('#pvPrev'); if(pv) pv.hidden = true;
     var nx = $('#pvNext'); if(nx) nx.hidden = true;
+    var acts = $('#pvActs'); if(acts){ acts.hidden = true; acts.innerHTML = ''; }
   }
   function pvRender(){
     var list = ui.pvList || [];
@@ -5928,12 +6022,30 @@
     if(img){ img.src = it.src; img.alt = it.alt || '사진 크게 보기'; }
     var note = $('#photoViewNote');
     if(note){ note.textContent = it.note || ''; note.className = 'pvnote' + (it.note ? '' : ' none'); }
+    /* V2.7 — 상태 사진은 지금 보는 사진의 코멘트를 그 자리에서 고칠 수 있게 해요 */
+    var nb = $('#photoViewNoteBtn');
+    if(it.hpId && ui.photoKind === 'health'){
+      ui.hpNoteId = it.hpId;
+      if(nb){ nb.hidden = false; nb.textContent = it.hpNote ? '✏️ 코멘트 수정' : '✏️ 코멘트 달기'; }
+    }
+    pvActsRender(it);
     var multi = list.length > 1;
     var cnt = $('#pvCount');
     if(cnt){ cnt.hidden = !multi; cnt.textContent = (ui.pvIdx + 1) + ' / ' + list.length; }
     var pv = $('#pvPrev'), nx = $('#pvNext');
     if(pv) pv.hidden = !multi;
     if(nx) nx.hidden = !multi;
+  }
+  /* V2.7 — 상태 사진 삭제 버튼 (한 장 / 그날 전체) */
+  function pvActsRender(it){
+    var box = $('#pvActs');
+    if(!box) return;
+    if(!it || !it.hpId || ui.photoKind !== 'health'){ box.hidden = true; box.innerHTML = ''; return; }
+    var n = (ui.pvList || []).filter(function(x){ return x && x.hpDay === it.hpDay; }).length;
+    box.innerHTML =
+      '<button type="button" class="pvbtn del" data-act="pvHealthDel" aria-label="지금 보는 사진 한 장 지우기">🗑 이 사진 지우기</button>' +
+      (n > 1 ? '<button type="button" class="pvbtn del" data-act="pvHealthDelDay" aria-label="이 날 사진 모두 지우기">그날 ' + n + '장 모두 지우기</button>' : '');
+    box.hidden = false;
   }
   function pvOpenList(items, idx){
     if(!items || !items.length) return false;
@@ -6089,28 +6201,35 @@
   function openHealthPhoto(id){
     var p = get(ui.detailId);
     if(!p || !id) return;
-    var ph = (p.healthPhotos || []).filter(function(x){ return x.id === id; })[0];
-    if(!ph) return;
-    var box = $('#photoView'), img = $('#photoViewImg');
-    if(!box || !img) return;
-    pvClearList();
-    pvzClear();
-    img.src = ph.dataUrl;
-    img.alt = (String(ph.label || '').trim() || '상태 사진') + ' 크게 보기';
-    ui.hpNoteId = id;
-    ui.photoKind = 'health';
-    var note = $('#photoViewNote');
-    if(note){
-      var cmt = String(ph.label || '').trim();
-      var d = ph.addedAt ? new Date(ph.addedAt) : null;
-      var cap = (d && !isNaN(d.getTime())) ? (d.getMonth() + 1) + '/' + d.getDate() : '';
-      note.textContent = cmt || ((cap ? cap + ' · ' : '') + '아직 코멘트가 없어요');
-      note.className = 'pvnote' + (cmt ? '' : ' none');
+    var days = healthPhotoDays(p);
+    for(var i = 0; i < days.length; i++){
+      for(var j = 0; j < days[i].items.length; j++){
+        if(days[i].items[j].id === id){ openHealthPhotoDay(days[i].key, j); return; }
+      }
     }
-    var nb = $('#photoViewNoteBtn');
-    if(nb){ nb.hidden = false; nb.textContent = String(ph.label || '').trim() ? '✏️ 코멘트 수정' : '✏️ 코멘트 달기'; }
-    box.hidden = false;
-    document.body.classList.add('lock');
+  }
+  /* V2.7 — 크게 보기에서 바로 삭제: 지금 보는 사진 한 장 / 그날 사진 전체 */
+  function pvHealthDelete(all){
+    var p = get(ui.detailId);
+    if(!p) return;
+    var it = (ui.pvList || [])[ui.pvIdx];
+    if(!it || !it.hpId) return;
+    var ids = all
+      ? (ui.pvList || []).filter(function(x){ return x && x.hpDay === it.hpDay; }).map(function(x){ return x.hpId; }).filter(Boolean)
+      : [it.hpId];
+    if(!ids.length) return;
+    var msg = all
+      ? hpDayShort(it.hpDay) + ' 사진 ' + ids.length + '장을 모두 지울까요?\n지우면 되돌릴 수 없어요.'
+      : '이 사진 한 장을 지울까요?\n그날 다른 사진은 그대로 남아요.';
+    if(!window.confirm(msg)) return;
+    p.healthPhotos = (p.healthPhotos || []).filter(function(x){ return ids.indexOf(x.id) < 0; });
+    touchPuppy(p);
+    save();
+    logActivity(p, '상태 사진', all ? ids.length + '장 삭제했습니다' : '1장 삭제했습니다');
+    closePhotoView();
+    renderAll();
+    refreshDetail();
+    toast(all ? '그날 사진 ' + ids.length + '장을 지웠어요' : '사진 한 장을 지웠어요');
   }
   /* 라이트박스에서 바로 코멘트 입력으로 */
   function healthPhotoNoteFromView(){
@@ -7536,7 +7655,7 @@
         '<div class="settingrow"><div><b>전체 비우기</b><span>모든 노트를 지워요 · 되돌릴 수 없어요</span></div>' +
           '<button class="btn sm danger" data-act="wipeAll">비우기</button></div>' +
       '</section>' +
-      '<div class="sfoot"><img src="puppies-logo.png" alt="퍼피댕" style="width:132px;display:block;margin:0 auto 7px;border-radius:7px">퍼피댕 V2.6 · 디데이펫 관리 노트</div>' +
+      '<div class="sfoot"><img src="puppies-logo.png" alt="퍼피댕" style="width:132px;display:block;margin:0 auto 7px;border-radius:7px">퍼피댕 V2.7 · 디데이펫 관리 노트</div>' +
       '</div>';
   }
 
@@ -8333,6 +8452,21 @@
         break;
       case 'healthPhotoOpen':
         openHealthPhoto(el.getAttribute('data-id'));
+        break;
+      case 'healthPhotoDayOpen':
+        openHealthPhotoDay(el.getAttribute('data-day'), 0);
+        break;
+      case 'healthPhotoDayDel':
+        healthPhotoDayDel(el.getAttribute('data-day'));
+        break;
+      case 'healthPhotoDayNote':
+        healthPhotoDayNote(el.getAttribute('data-day'));
+        break;
+      case 'pvHealthDel':
+        pvHealthDelete(false);
+        break;
+      case 'pvHealthDelDay':
+        pvHealthDelete(true);
         break;
       case 'healthPhotoDel':
         deleteHealthPhoto(el.getAttribute('data-id'));
