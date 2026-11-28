@@ -905,6 +905,8 @@
   .feedrow .fline b{font-weight:800}
   .feedrow .fline .fm{color:var(--brown-d);font-weight:800}
   .feedrow .ftm{display:block;font-size:12px;font-weight:800;color:var(--muted-2);letter-spacing:-.02em;margin-top:2px}
+  /* V3.0 — 호텔·픽업 기록 줄은 캘린더로 이동한다는 표시 */
+  .feedrow .fgo{flex:none;align-self:center;font-size:11.5px;font-weight:800;color:#5E51A6;letter-spacing:-.04em;white-space:nowrap}
 
   /* ---------- 목욕 · 약욕 캘린더 ---------- */
   .sidebtn.calbtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;width:58px;font-size:17px;line-height:1}
@@ -1024,6 +1026,9 @@
     box-shadow:0 8px 20px rgba(51,42,116,.24)}
   .hoteladd:active{transform:scale(.985)}
   .calrow .cbdg.hotel{background:#ECE8FB;color:#4B3F94}
+  /* V3.0 — 작업 활동에서 넘어온 일정은 목록에서 한눈에 보이게 강조 */
+  .hotelwrap .calrow.hit{background:#F6F2FF;box-shadow:inset 0 0 0 1.5px #CFC8EF;border-radius:12px}
+  .hotelwrap .calrow.hit .crarr{color:#5B4BAA}
   .calrow .cbdg.pick{background:#FDF0DA;color:#A45F0B}
   .crmain .crst{display:inline-flex;align-items:center;font-size:10.5px;font-weight:800;padding:1px 5px;border-radius:6px;
     background:#ECE8FB;color:#4B3F94;letter-spacing:-.02em;vertical-align:1px;margin-left:2px}
@@ -1252,7 +1257,7 @@
   <header>
     <div class="topline">
       <div class="brand"><img class="blogo" src="puppies-icon.png" alt="퍼피댕 로고" width="30" height="30">
-        <span class="brandtext"><span class="brandname">퍼피댕 · 디데이펫</span><span class="brandver">퍼피댕 V2.9</span></span></div>
+        <span class="brandtext"><span class="brandname">퍼피댕 · 디데이펫</span><span class="brandver">퍼피댕 V3.0</span></span></div>
       <div class="topact">
         <button class="wpill" data-act="openWorker" aria-label="작업자 선택">👤 <b id="workerName">—</b><span class="chev">▾</span></button>
         <button class="gbtn adminonly" data-act="openSettings" aria-label="설정">⚙️</button>
@@ -2763,7 +2768,11 @@
       act: String(it.act || '').slice(0, 40),
       tail: String(it.tail || '입력했습니다').slice(0, 20),
       memo: String(it.memo || '').slice(0, 60),
-      noPts: it.noPts ? 1 : 0        // 담당없음처럼 점수를 주지 않는 기록
+      noPts: it.noPts ? 1 : 0,       // 담당없음처럼 점수를 주지 않는 기록
+      /* V3.0 — 호텔링·분양픽업 기록이면 누를 때 🏨 호텔·픽업 캘린더의 그 일정으로 이동할 참조 */
+      eventId: String(it.eventId || '').slice(0, 40),
+      date: isValidDate(it.date) ? String(it.date).slice(0, 10) : '',
+      stype: (it.stype === 'hotel' || it.stype === 'pickup') ? it.stype : ''
     };
   }
   // 2주가 지난 활동은 읽기/쓰기 때 자동으로 걸러냅니다 (최신순 정렬)
@@ -2846,6 +2855,7 @@
   }
   function feedIcon(it){
     var a = String((it && it.act) || '');
+    if(/호텔링|분양픽업/.test(a)) return '🏨';      // V3.0 — 호텔·픽업 일정 기록은 캘린더와 같은 아이콘
     if(/약욕/.test(a)) return '🧴';
     if(/목욕/.test(a)) return '🛁';
     if(/급여|투약/.test(a)) return '💊';
@@ -2859,7 +2869,7 @@
     if(/분양 상태/.test(a)) return '🏷️';
     return '📝';
   }
-  function logActivity(p, act, tail, memo, by, noPts){
+  function logActivity(p, act, tail, memo, by, noPts, ref){
     var now = new Date();
     var item = normActivity({
       id: 'a' + now.getTime().toString(36) + Math.random().toString(36).slice(2, 6),
@@ -2872,7 +2882,11 @@
       act: act,
       tail: tail || '입력했습니다',
       memo: memoPreview(memo),
-      noPts: noPts ? 1 : 0
+      noPts: noPts ? 1 : 0,
+      /* V3.0 — 일정에서 남긴 기록은 eventId·date 를 함께 저장해 나중에 눌렀을 때 그 일정으로 바로 가요 */
+      eventId: (ref && ref.eventId) ? String(ref.eventId) : '',
+      date: (ref && ref.date) ? String(ref.date) : '',
+      stype: (ref && ref.stype) ? String(ref.stype) : ''
     });
     state.activity = sortActivityDesc(activityFresh([item].concat(state.activity || []))).slice(0, ACTIVITY_MAX);
     saveLocal();
@@ -3032,10 +3046,15 @@
     var items = feed.day ? all.filter(function(it){ return feedDayKey(it) === feed.day; }) : all;
     var sub = feed.day ? (feedDayName(feed.day) + ' · ' + items.length + '건') : ('최근 2주 · ' + all.length + '건');
     var rows = items.map(function(it){
-      return '<button class="feedrow" data-act="feedOpen" data-dog="' + esc(it.dogId || '') + '">' +
+      var rf = schedRefOf(it);    // V3.0 — 호텔링·분양픽업 기록이면 누를 때 🏨 호텔·픽업 캘린더로 이동
+      return '<button class="feedrow" data-act="feedOpen" data-dog="' + esc(it.dogId || '') + '"' +
+        (rf ? ' data-hotel="1" data-event="' + esc(rf.id || '') + '" data-sdate="' + esc(rf.date || '') +
+              '" data-stype="' + esc(rf.type || '') + '" data-hb="' + esc(it.branch || '') + '"' : '') +
+        '>' +
         '<span class="fic" aria-hidden="true">' + feedIcon(it) + '</span>' +
         '<span class="fbody"><span class="fline">' + activityHTML(it) + '</span>' +
-        '<span class="ftm">' + esc(activityStamp(it.at)) + '</span></span></button>';
+        '<span class="ftm">' + esc(activityStamp(it.at)) + '</span></span>' +
+        (rf ? '<span class="fgo" aria-hidden="true">🏨›</span>' : '') + '</button>';
     }).join('');
     return sheetbar('작업 활동', sub) +
       (all.length ? feedChipsHTML(all) : '') +
@@ -3043,7 +3062,7 @@
       (items.length
         ? '<div class="scard" style="margin-top:0;padding:2px 14px">' + rows + '</div>'
         : '<div class="empty"><div class="ee">📣</div><h3>최근 2주 활동이 없어요</h3><p>목욕·약욕, 특이사항, 접종을 기록하면 여기에 쌓여요.</p></div>') +
-      '<p class="hint" style="text-align:center;margin-top:12px">작성한 지 2주가 지난 기록은 자동으로 사라져요 · 활동을 누르면 그 아이 상세로 이동해요</p>' +
+      '<p class="hint" style="text-align:center;margin-top:12px">작성한 지 2주가 지난 기록은 자동으로 사라져요 · 활동을 누르면 그 아이 상세로, 호텔링·분양픽업 활동은 🏨 호텔·픽업 캘린더의 그 일정으로 이동해요</p>' +
       '</div>';
   }
   function openFeed(){
@@ -4649,7 +4668,7 @@
   }
 
   /* ================= 🏨 호텔링 · 분양픽업 캘린더 (목욕 캘린더와 완전히 분리) ================= */
-  var hotel = { branch:'퍼피댕', y:0, m:0, sel:'' };
+  var hotel = { branch:'퍼피댕', y:0, m:0, sel:'', hit:'' };   // hit: 작업 활동에서 넘어온 일정 강조용
   var hd = null;      // 등록·수정 시트의 임시 값
   var hdId = '';      // 수정 중인 일정 id ('' 이면 새 일정)
 
@@ -4806,6 +4825,60 @@
     w.hidden = true;
     syncBodyLock();
   }
+
+  /* ---------- V3.0 — 작업 활동에서 호텔링·분양픽업 기록을 누르면 그 일정으로 이동 ----------
+     새 기록은 eventId·date 를 함께 저장해 두고, 옛 기록(eventId 없음)은 문구의 ‘호텔링’·‘분양픽업’을
+     알아본 뒤 이름이 같은 일정을 찾아 그 날짜·일정까지 맞춥니다. */
+  function schedRefOf(it){
+    if(!it) return null;
+    var type = (it.stype === 'hotel' || it.stype === 'pickup') ? it.stype : '';
+    var id = String(it.eventId || '');
+    if(id) return { id:id, date:(isValidDate(it.date) ? String(it.date).slice(0, 10) : ''), type:(type || 'hotel') };
+    var text = String(it.act || '') + ' ' + String(it.tail || '');
+    if(!/호텔링|분양픽업/.test(text)) return null;
+    var t2 = /분양픽업/.test(text) ? 'pickup' : 'hotel';
+    var want = String(it.name || '').trim();
+    var cands = (state.schedules || []).filter(function(s){
+      if(s.type !== t2) return false;
+      if(!want || String(s.name || '').trim() !== want) return false;
+      return !it.branch || s.branch === it.branch;
+    });
+    if(cands.length){
+      var at = activityTs(it);
+      cands.sort(function(a, b){
+        return Math.abs(new Date(a.updatedAt || 0).getTime() - at) - Math.abs(new Date(b.updatedAt || 0).getTime() - at);
+      });
+      var best = cands[0];
+      return { id:best.id, date:(best.type === 'hotel' ? best.inDate : best.date), type:t2 };
+    }
+    return { id:'', date:'', type:t2 };   // 옛 기록이고 일정도 지워짐 → 캘린더로만 이동
+  }
+  function gotoHotelSchedule(ref, branch){
+    var w = $('#hotelWrap');
+    if(!w) return;
+    var s = (ref && ref.id) ? findSched(ref.id) : null;
+    var gone = !!(ref && ref.id && !s);                 // 이미 지워진 일정
+    var day = s ? ((s.type === 'hotel') ? s.inDate : s.date)
+                : (ref && isValidDate(ref.date) ? String(ref.date).slice(0, 10) : '');
+    hotelOpenInit();
+    if(s) hotel.branch = s.branch;
+    else if(branch && BRANCHES.indexOf(branch) >= 0) hotel.branch = branch;
+    var t = day ? parseYmd(day) : null;
+    if(t !== null){
+      var d = new Date(t);
+      hotel.y = d.getUTCFullYear();
+      hotel.m = d.getUTCMonth();
+      hotel.sel = day;
+    }
+    hotel.hit = s ? s.id : '';
+    w.hidden = false;
+    w.scrollTop = 0;
+    document.body.classList.add('lock');
+    renderHotel();
+    if(s) toast((s.type === 'hotel' ? '🏨 ' : '🚗 ') + (s.name || '') + ' ' + schedTypeName(s.type) + ' 일정으로 왔어요');
+    else if(gone) toast('지워진 일정이에요 · 🏨 호텔·픽업 캘린더에서 확인해 주세요');
+    else toast('🏨 호텔·픽업 캘린더로 왔어요');
+  }
   function hotelMonthRange(){
     var first = hotel.y + '-' + pad(hotel.m + 1) + '-01';
     var last = hotel.y + '-' + pad(hotel.m + 1) + '-' + pad(new Date(hotel.y, hotel.m + 1, 0).getDate());
@@ -4944,6 +5017,18 @@
     cntEl.textContent = '호텔링 ' + dayMap.hotel + ' · 픽업 ' + dayMap.pick;
     listEl.className = 'callist';
     listEl.innerHTML = dayMap.list.map(function(s){ return schedRowHTML(s, sel); }).join('');
+    /* V3.0 — 작업 활동에서 넘어온 일정은 목록에서 강조하고, 화면 밖이면 보이게 스크롤 */
+    if(hotel.hit){
+      var hitRow = null;
+      Array.prototype.forEach.call(listEl.querySelectorAll('.calrow'), function(r){
+        if(r.getAttribute('data-id') === hotel.hit) hitRow = r;
+      });
+      if(hitRow){
+        hitRow.classList.add('hit');
+        try { hitRow.scrollIntoView({ block:'nearest' }); } catch(e){}
+      }
+      hotel.hit = '';
+    }
   }
   function updateSchedNightsHint(){
     var el = $('#hsNights');
@@ -5076,7 +5161,8 @@
     s.updatedAt = now;
     if(isNew) s.by = state.worker;
     if(idx >= 0) state.schedules[idx] = s; else state.schedules.push(s);
-    logActivity({ id:'', branch:s.branch, cage:'', name:s.name }, (s.type === 'hotel' ? '호텔링 일정' : '분양픽업 일정'), isNew ? '등록했습니다' : '수정했습니다', s.memo);
+    logActivity({ id:'', branch:s.branch, cage:'', name:s.name }, (s.type === 'hotel' ? '호텔링 일정' : '분양픽업 일정'), isNew ? '등록했습니다' : '수정했습니다', s.memo, undefined, 0,
+      { eventId:s.id, date:(s.type === 'hotel' ? s.inDate : s.date), stype:s.type });   // V3.0 — 활동에서 이 일정으로 이동
     closeSheet();
     saveSchedLocal();
     if(s.type === 'hotel'){ hotel.sel = s.inDate; }
@@ -5094,7 +5180,8 @@
     s.status = wasDone ? '예정' : '완료';
     s.updatedAt = new Date().toISOString();
     hd.status = s.status;
-    logActivity({ id:'', branch:s.branch, cage:'', name:s.name }, schedTypeName(s.type) + (wasDone ? ' 완료 취소' : ' 완료'), '처리했습니다');
+    logActivity({ id:'', branch:s.branch, cage:'', name:s.name }, schedTypeName(s.type) + (wasDone ? ' 완료 취소' : ' 완료'), '처리했습니다', '', undefined, 0,
+      { eventId:s.id, date:(s.type === 'hotel' ? s.inDate : s.date), stype:s.type });   // V3.0
     saveSchedLocal();
     renderSchedSheet();
     toast(wasDone ? '완료를 취소했어요' : (s.name + ' ' + schedTypeName(s.type) + ' 완료 처리했어요'));
@@ -5106,7 +5193,8 @@
     if(!window.confirm('‘' + (s.name || '일정') + '’ ' + schedTypeName(s.type) + ' 일정을 지울까요?\n지운 일정은 다른 폰에서도 함께 사라져요.')) return;
     state.schedules = (state.schedules || []).filter(function(x){ return x.id !== s.id; });
     state.schedDel = pruneSchedDel([{ id:s.id, at:new Date().toISOString() }].concat(state.schedDel || []));
-    logActivity({ id:'', branch:s.branch, cage:'', name:s.name }, schedTypeName(s.type) + ' 일정', '지웠습니다');
+    logActivity({ id:'', branch:s.branch, cage:'', name:s.name }, schedTypeName(s.type) + ' 일정', '지웠습니다', '', undefined, 0,
+      { eventId:s.id, date:(s.type === 'hotel' ? s.inDate : s.date), stype:s.type });   // V3.0 — 지운 뒤에도 날짜로 이동
     closeSheet();
     saveSchedLocal();
     hotel.sel = (s.type === 'hotel') ? s.inDate : s.date;
@@ -7656,7 +7744,7 @@
         '<div class="settingrow"><div><b>전체 비우기</b><span>모든 노트를 지워요 · 되돌릴 수 없어요</span></div>' +
           '<button class="btn sm danger" data-act="wipeAll">비우기</button></div>' +
       '</section>' +
-      '<div class="sfoot"><img src="puppies-logo.png" alt="퍼피댕" style="width:132px;display:block;margin:0 auto 7px;border-radius:7px">퍼피댕 V2.9 · 디데이펫 관리 노트</div>' +
+      '<div class="sfoot"><img src="puppies-logo.png" alt="퍼피댕" style="width:132px;display:block;margin:0 auto 7px;border-radius:7px">퍼피댕 V3.0 · 디데이펫 관리 노트</div>' +
       '</div>';
   }
 
@@ -8499,6 +8587,16 @@
       case 'feedOpen':
         (function(){
           var dog = el.getAttribute('data-dog');
+          /* V3.0 — 호텔링·분양픽업 기록은 🏨 호텔·픽업 캘린더의 그 일정으로 이동 */
+          if(el.getAttribute('data-hotel')){
+            var ref = { id: el.getAttribute('data-event') || '',
+                        date: el.getAttribute('data-sdate') || '',
+                        type: el.getAttribute('data-stype') || '' };
+            var hb = el.getAttribute('data-hb') || '';
+            closeSheet();
+            gotoHotelSchedule(ref, hb);
+            return;
+          }
           closeSheet();
           if(dog && get(dog)) openDetail(dog);
           else if(dog) toast('지금은 열 수 없는 아이 기록이에요');
